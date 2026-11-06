@@ -1,0 +1,22 @@
+const test=require('node:test');
+const assert=require('node:assert/strict');
+const S=require('../js/storage.js');
+const Seed=require('../js/seed.js');
+test('preview never reads or writes production data, including on import/save/reload',()=>{
+  assert.equal(S.KEY,'kitchen-calculator-pr2-browser-test-v1');
+  const productionKey='kitchen-calculator-v1';
+  const real=JSON.stringify({real:'protected kitchen data'});
+  const entries=new Map([[productionKey,real]]);
+  const reads=[],writes=[];
+  const storage={getItem(k){reads.push(k);return entries.get(k)??null;},setItem(k,v){writes.push(k);entries.set(k,v);}};
+  assert.equal(S.load(storage).data,null);
+  assert.equal(S.save(Seed.create(),storage).ok,true);
+  const imported=S.parseJSON(S.stringify(Seed.create()));
+  assert.equal(S.save(imported,storage).ok,true);
+  assert.equal(S.load(storage).error,null);
+  assert.equal(entries.get(productionKey),real);
+  assert(reads.every(k=>k===S.KEY));assert(writes.every(k=>k===S.KEY));
+  entries.set(S.KEY,'{broken-test');
+  assert(S.load(storage).error);
+  assert.equal(entries.get(productionKey),real);
+});
