@@ -60,6 +60,17 @@
   }
   function renderLibrary() {
     const labels = {dish:['Мои рецепты','Новое блюдо'],prep:['Полуфабрикаты','Новый полуфабрикат'],products:['Продукты','Новый продукт']};
+    $('.workspace').dataset.section = section;
+    const libraryList = $('#library-list');
+    if (section === 'products') {
+      libraryList.setAttribute('role','region');
+      libraryList.setAttribute('aria-labelledby','section-title');
+      libraryList.tabIndex = 0;
+    } else {
+      libraryList.removeAttribute('role');
+      libraryList.removeAttribute('aria-labelledby');
+      libraryList.removeAttribute('tabindex');
+    }
     $('#section-title').textContent = labels[section][0]; $('#create').textContent = '+ ' + labels[section][1];
     for (const key of ['dish','prep','products']) {
       $(`#count-${key}`).textContent = key === 'products' ? state.products.length : state.recipes.filter(r => r.type === key).length;
@@ -76,11 +87,12 @@
         const result = C.calcRecipe(state,item.id);
         caption = section === 'dish' ? 'Открыть технологическую карту' : result.complete ? money(result.knownCost) + (section === 'prep' ? ' / партия' : ' / порция') : 'Неполная калькуляция';
       }
-      return `<button class="library-item ${item.id === selectedId ? 'active' : ''}" data-open="${esc(item.id)}"><strong>${esc(item.name)}</strong><small>${esc(caption)}</small></button>`;
+      return `<button class="library-item ${section === 'products' ? 'product-row' : ''} ${item.id === selectedId ? 'active' : ''}" data-open="${esc(item.id)}" ${section === 'products' ? `aria-current="${item.id === selectedId ? 'true' : 'false'}"` : ''}><strong>${esc(item.name)}</strong><small>${esc(caption)}</small></button>`;
     }).join('') : '<p class="field-help">Ничего не найдено. Создайте новую запись.</p>';
     $('#library-list').querySelectorAll('[data-open]').forEach(btn => btn.addEventListener('click',() => {
       if (!canLeave()) return;
       selectedId = btn.dataset.open; openSelected();
+      if (section === 'products') $(`[data-open="${selectedId}"]`)?.focus({preventScroll:true});
     }));
   }
   function openSelected() {
