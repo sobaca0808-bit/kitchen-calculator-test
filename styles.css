@@ -1055,3 +1055,65 @@ td .card-text { font-size:12px; }
   .compact-library .library-row { min-height:46px; }
   .ingredient-row { border-width:2px; }
 }
+
+/* Lightweight page decoration stays behind the existing opaque working surfaces. */
+@media screen {
+  body {
+    min-height:100vh;
+    background-color:#fbf8f6;
+    background-image:url('assets/food-pattern.svg');
+    background-size:600px 600px;
+    background-attachment:scroll;
+  }
+  .packaging-panel {
+    margin-top:24px;
+    padding-top:18px;
+    border-top:2px solid var(--line);
+    background:var(--paper);
+  }
+  .packaging-panel .section-heading { flex-wrap:wrap; }
+  .packaging-rows { display:grid;gap:12px; }
+  .packaging-row {
+    display:grid;
+    grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);
+    gap:12px;
+    padding:14px;
+    border:2px solid var(--line);
+    border-radius:9px;
+    background:var(--paper);
+    min-width:0;
+  }
+  .packaging-quantity-grid { display:grid;grid-template-columns:minmax(0,1fr) minmax(70px,.7fr);gap:10px; }
+  .packaging-checkbox { display:flex;align-items:center;gap:8px;grid-column:1/-1; }
+  .packaging-checkbox input { flex:0 0 20px;width:20px;height:20px;margin:0;padding:0;accent-color:var(--green); }
+  .packaging-row-total { display:flex;align-items:center;justify-content:space-between;gap:10px;min-width:0; }
+  .packaging-row-total strong { display:block;overflow-wrap:anywhere; }
+  .packaging-subtotal {
+    display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:6px 12px;
+    margin:14px 0 0;padding:12px;border:2px solid var(--line);border-radius:8px;background:var(--soft);
+  }
+  .packaging-subtotal small { grid-column:1/-1;font-size:11px; }
+  .packaging-issues { grid-column:1/-1;color:var(--amber);font-size:12px;line-height:1.5;overflow-wrap:anywhere; }
+  .packaging-issues p { margin:0 0 5px; }
+  .packaging-issues[hidden] { display:none; }
+  .packaging-row input[aria-invalid="true"],.packaging-row select[aria-invalid="true"] { border-color:var(--red); }
+  .summary-breakdown { margin:8px 0;font-size:12px;line-height:1.6; }
+  .packaging-card { border-top:2px solid var(--line);padding-top:4px; }
+  .packaging-card .packaging-subtotal { display:block; }
+}
+.packaging-card-note { display:block;font-size:11px;line-height:1.5; }
+@media screen and (max-width:760px) {
+  .tabs { display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 8px; }
+  .tabs button { min-width:0; }
+  body { background-size:480px 480px; }
+  .packaging-row { grid-template-columns:minmax(0,1fr);padding:11px;gap:10px; }
+  .packaging-panel .section-heading button { width:100%; }
+  .packaging-subtotal { grid-template-columns:minmax(0,1fr); }
+  .packaging-subtotal strong { font-size:18px; }
+}
+@media print {
+  .packaging-card { margin-top:16px; }
+  .packaging-card h2 { break-after:avoid; }
+  .packaging-card .field-help { color:black; }
+  .packaging-subtotal { break-inside:avoid; }
+}

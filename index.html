@@ -10,6 +10,8 @@
   <script defer src="js/calculations.js"></script>
   <script defer src="js/seed.js"></script>
   <script defer src="js/storage.js"></script>
+  <script defer src="js/packaging.js"></script>
+  <script defer src="js/packaging-ui.js"></script>
   <script defer src="js/recipe-view.js"></script>
   <script defer src="js/app.js"></script>
 </head>
@@ -20,7 +22,7 @@
     <div class="backup-actions"><button id="export" class="quiet">↓ Экспорт JSON</button><button id="import" class="quiet">↑ Импорт JSON</button><input id="import-file" type="file" accept=".json,application/json" hidden></div>
   </header>
   <div id="message" role="status" aria-live="polite" hidden></div>
-  <nav class="tabs" aria-label="Разделы"><button data-tab="dish">Мои рецепты <span id="count-dish"></span></button><button data-tab="prep">Полуфабрикаты <span id="count-prep"></span></button><button data-tab="products">Продукты <span id="count-products"></span></button></nav>
+  <nav class="tabs" aria-label="Разделы"><button data-tab="dish">Мои рецепты <span id="count-dish"></span></button><button data-tab="prep">Полуфабрикаты <span id="count-prep"></span></button><button data-tab="products">Продукты <span id="count-products"></span></button><button data-tab="packaging">Упаковка и фасовка <span id="count-packaging"></span></button></nav>
   <main class="workspace">
     <aside class="library" aria-label="Справочник">
       <div class="library-title"><h1 id="section-title">Блюда</h1><span class="eyebrow">ВАША КУХНЯ</span></div>
@@ -31,7 +33,7 @@
     </aside>
     <section id="editor" class="editor" aria-label="Редактор"></section>
   </main>
-  <footer class="page-footer">Продуктовая себестоимость · Труд, аренда и прочие расходы не учитываются</footer>
+  <footer class="page-footer">Себестоимость продуктов и упаковки · Труд, аренда и прочие расходы не учитываются</footer>
   <noscript>Для работы калькулятора включите JavaScript в браузере.</noscript>
 </body>
 </html>

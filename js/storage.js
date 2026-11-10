@@ -9,6 +9,7 @@
   const MAX_IMPORT_BYTES = 10 * 1024 * 1024;
   const MAX_RECIPE_DEPTH = 100;
   const UNITS = ['g', 'kg', 'ml', 'l', 'pcs'];
+  const PACKAGING_UNITS = [...UNITS, 'm', 'cm'];
   const fail = message => { throw new Error(message); };
   const object = (value, label) => {
     if (!value || typeof value !== 'object' || Array.isArray(value)) fail(label + ': ожидался объект.');
@@ -33,7 +34,17 @@
     if (!UNITS.includes(value)) fail(label + ': неизвестная единица измерения.');
     return value;
   }
+  function packagingUnit(value, label) {
+    if (!PACKAGING_UNITS.includes(value)) fail(label + ': неизвестная единица упаковки.');
+    return value;
+  }
+  function boolean(value, label) {
+    if (value === undefined) return false;
+    if (typeof value !== 'boolean') fail(label + ': ожидалось логическое значение.');
+    return value;
+  }
   const dimension = value => value === 'pcs' ? 'count' : ['g', 'kg'].includes(value) ? 'mass' : 'volume';
+  const packagingDimension = value => ['m', 'cm'].includes(value) ? 'length' : dimension(value);
   function validate(input) {
     object(input, 'Данные');
     if (input.version !== 1) fail('Неподдерживаемая версия данных. Ожидается версия 1.');
@@ -61,6 +72,20 @@
         note: text(item.note, label + ', заметка')
       };
     });
+    let packaging;
+    if (input.packaging !== undefined) {
+      if (!Array.isArray(input.packaging)) fail('Справочник packaging должен быть списком.');
+      packaging = input.packaging.map((item, index) => {
+        const label = 'Упаковка ' + (index + 1);
+        object(item, label);
+        return {
+          id: id(item.id, label + ', id'), name: text(item.name, label + ', название', true, 500),
+          price: number(item.price, label + ', цена'),
+          packQuantity: number(item.packQuantity, label + ', закупленное количество', true),
+          unit: packagingUnit(item.unit, label), note: text(item.note, label + ', заметка')
+        };
+      });
+    }
     const recipes = input.recipes.map((item, index) => {
       const label = 'Рецепт ' + (index + 1);
       object(item, label);
@@ -72,6 +97,24 @@
         ...(item.portions !== undefined ? {portions: number(item.portions, label + ', порции', true) ?? 1} : {}),
         ...(item.technology !== undefined ? {technology: text(item.technology, label + ', технология')} : {}),
         actualYield: number(item.actualYield, label + ', фактический выход', true),
+        ...(item.packaging !== undefined ? {packaging: (() => {
+          if (!Array.isArray(item.packaging)) fail(label + ': упаковка должна быть списком.');
+          if (item.type !== 'dish' && item.packaging.length) fail(label + ': упаковка и фасовка учитывается при выдаче блюда, а не в полуфабрикате.');
+          return item.packaging.map((row, rowIndex) => {
+            const prefix = label + ', упаковка ' + (rowIndex + 1);
+            object(row, prefix);
+            const costMode = row.costMode ?? 'auto';
+            if (!['auto', 'additional', 'included'].includes(costMode)) fail(prefix + ': неизвестный способ учёта стоимости.');
+            return {
+              id: id(row.id, prefix + ', id'),
+              refId: row.refId == null ? null : text(row.refId, prefix + ', ссылка', true, 200),
+              ...(row.ingredientRefId !== undefined ? {ingredientRefId: text(row.ingredientRefId, prefix + ', ссылка для защиты от двойного учёта', true, 200)} : {}),
+              quantity: number(row.quantity, prefix + ', расход на порцию', true),
+              unit: packagingUnit(row.unit, prefix),
+              freeForGuest: boolean(row.freeForGuest, prefix + ', бесплатная выдача'), costMode
+            };
+          });
+        })()} : {}),
         ingredients: item.ingredients.map((row, rowIndex) => {
           const prefix = label + ', строка ' + (rowIndex + 1);
           object(row, prefix);
@@ -87,7 +130,16 @@
     });
     const productMap = new Map(products.map(item => [item.id, item]));
     const recipeMap = new Map(recipes.map(item => [item.id, item]));
+    const packagingMap = new Map((packaging || []).map(item => [item.id, item]));
     for (const recipe of recipes) {
+      for (const row of recipe.packaging || []) {
+        const prefix = '«' + recipe.name + '», упаковка ' + row.id;
+        const item = packagingMap.get(row.refId);
+        if (row.refId !== null && !item) fail(prefix + ': ссылка на отсутствующую позицию упаковки.');
+        if (item && packagingDimension(item.unit) !== packagingDimension(row.unit)) {
+          fail(prefix + ': несовместимые единицы закупки и расхода упаковки.');
+        }
+      }
       for (const row of recipe.ingredients) {
         const prefix = '«' + recipe.name + '», ингредиент ' + row.id;
         const product = productMap.get(row.refId);
@@ -148,7 +200,7 @@
         for (const ref of refs) stack.push({ id: ref, exit: false });
       }
     }
-    return { version: 1, products, recipes };
+    return { version: 1, products, recipes, ...(packaging !== undefined ? {packaging} : {}) };
   }
   function parseJSON(source) {
     if (typeof source !== 'string') fail('Резервная копия должна быть текстовым JSON-файлом.');
