@@ -37,5 +37,6 @@ try {
   console.log('Browser checks use an isolated local server:',testURL);
   await run(['tests/browser.test.js'],{...process.env,KITCHEN_TEST_URL:testURL});
   await run(['tests/products-list.browser.test.js'],{...process.env,KITCHEN_TEST_URL:testURL});
+  await run(['tests/library-lists.browser.test.js'],{...process.env,KITCHEN_TEST_URL:testURL});
 } catch(error){console.error(error.message);process.exitCode=1;}
 finally {await new Promise(done=>server.close(done));}

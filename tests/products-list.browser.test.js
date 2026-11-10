@@ -216,10 +216,13 @@ async function scenario(width, count) {
     for (const section of ['prep', 'dish']) {
       await page.locator(`[data-tab="${section}"]`).click();
       assert.equal(await page.locator('.workspace').getAttribute('data-section'), section);
-      assert.equal(await page.locator('.product-row').count(), 0, 'Product row styling is scoped to products');
-      assert.equal(await page.locator('#library-list').getAttribute('role'), null);
-      assert.equal(await page.locator('#library-list').getAttribute('tabindex'), null);
-      assert.deepEqual(await listStyles(page), originalStyles, 'Other sections retain their original list layout');
+      assert.equal(await page.locator('.product-row').count(), 0, 'The product-specific marker remains scoped to products');
+      assert(await page.locator('.workspace').evaluate(el=>el.classList.contains('compact-library')));
+      assert.equal(await page.locator('#library-list').getAttribute('role'), 'region');
+      assert.equal(await page.locator('#library-list').getAttribute('aria-labelledby'), 'section-title');
+      assert.equal(await page.locator('#library-list').getAttribute('tabindex'), '0');
+      assert.equal(await page.locator('.library-row').count(), 1);
+      assert.deepEqual(await listStyles(page), originalStyles, 'All sections use the shared compact list layout');
     }
     await checkStorageIsolation(page);
     assert.deepEqual(errors, [], 'No application JavaScript exceptions');

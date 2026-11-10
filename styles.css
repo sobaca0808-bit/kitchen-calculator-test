@@ -962,71 +962,96 @@ td .card-text { font-size:12px; }
 
 .test-notice { margin:0; padding:12px 16px; background:#fff4df; color:#593b14; text-align:center; line-height:1.6; }
 
-/* Compact, independently scrolling product library; other sections keep their layout. */
-@media(min-width:1001px) {
-  .workspace[data-section="products"] {
+/* One compact library for products, preparations and recipe cards. */
+@media screen and (min-width:1001px) {
+  .workspace.compact-library {
     grid-template-columns:240px minmax(0,1fr);
     gap:20px;
   }
 }
-.workspace[data-section="products"] .library-list {
-  display:block;
-  max-height:min(58vh,560px);
-  max-height:min(58dvh,560px);
-  overflow-y:auto;
-  overflow-x:hidden;
-  overscroll-behavior-y:contain;
-  scrollbar-gutter:stable;
-  border:1px solid var(--line);
-  border-radius:8px;
-  padding:0;
+@media screen {
+  .compact-library .compact-list {
+    display:block;
+    max-height:min(58vh,560px);
+    max-height:min(58dvh,560px);
+    overflow-y:auto;
+    overflow-x:hidden;
+    overscroll-behavior-y:contain;
+    scrollbar-gutter:stable;
+    border:2px solid var(--line);
+    border-radius:8px;
+    padding:0;
+  }
+  .compact-library .library-row {
+    display:grid;
+    grid-template-columns:minmax(0,1fr) fit-content(45%);
+    align-items:center;
+    gap:10px;
+    width:100%;
+    min-height:44px;
+    padding:8px 10px;
+    margin:0;
+    border:0;
+    border-bottom:1px solid var(--line);
+    border-radius:0;
+    font-size:14px;
+    line-height:1.4;
+    text-align:left;
+  }
+  .compact-library .library-row:last-child { border-bottom:0; }
+  .compact-library .library-row strong {
+    min-width:0;
+    margin:0;
+    overflow-wrap:anywhere;
+  }
+  .compact-library .library-row small {
+    min-width:0;
+    color:var(--muted);
+    font-size:12px;
+    line-height:1.4;
+    text-align:right;
+    overflow-wrap:anywhere;
+  }
+  .compact-library .library-row.active {
+    border-color:#769a82;
+    box-shadow:inset 3px 0 var(--green),inset 0 0 0 1px #82a48a;
+  }
+  .compact-library .library-row:focus-visible {
+    outline:3px solid var(--green);
+    outline-offset:-3px;
+  }
+  .compact-library .compact-list:focus-visible {
+    outline:3px solid var(--green);
+    outline-offset:2px;
+  }
+
+  /* Slightly clearer screen contours; the A4 print rules remain unchanged. */
+  :root { --line:#b8c7b8; }
+  .editor { border-width:2px; }
+  input:not(.name-input),textarea,select {
+    border-width:2px;
+    border-color:#9eae9f;
+  }
+  .name-input { border-bottom:2px solid var(--line); }
+  .ingredient-row input,.ingredient-row select { height:40px; }
+  .yield-panel,.summary,.suggestions { border-width:2px; }
+  .yield-panel { border-color:var(--line); }
+  .summary { border-color:#aebfae; }
+  .suggestions { border-color:#9eae9f; }
+  input:focus,textarea:focus,select:focus {
+    border-color:var(--green);
+    box-shadow:0 0 0 3px #24634d20;
+  }
+  button:focus-visible,a:focus-visible { outline-color:var(--green); }
+  input[aria-invalid="true"] { border-color:var(--red); }
+  input[aria-invalid="true"]:focus { box-shadow:0 0 0 3px #a43a3220; }
 }
-.workspace[data-section="products"] .product-row {
-  display:grid;
-  grid-template-columns:minmax(0,1fr) fit-content(45%);
-  align-items:center;
-  gap:10px;
-  width:100%;
-  min-height:44px;
-  padding:8px 10px;
-  margin:0;
-  border:0;
-  border-bottom:1px solid var(--line);
-  border-radius:0;
-  font-size:14px;
-  line-height:1.4;
-  text-align:left;
-}
-.workspace[data-section="products"] .product-row:last-child {
-  border-bottom:0;
-}
-.workspace[data-section="products"] .product-row strong {
-  min-width:0;
-  margin:0;
-  overflow-wrap:anywhere;
-}
-.workspace[data-section="products"] .product-row small {
-  min-width:0;
-  color:var(--muted);
-  font-size:12px;
-  line-height:1.4;
-  text-align:right;
-  overflow-wrap:anywhere;
-}
-.workspace[data-section="products"] .product-row:focus-visible {
-  outline-offset:-3px;
-}
-.workspace[data-section="products"] .library-list:focus-visible {
-  outline:3px solid #85b69c;
-  outline-offset:2px;
-}
-@media(max-width:760px) {
-  .workspace[data-section="products"] .library-list {
+@media screen and (max-width:760px) {
+  .compact-library .compact-list {
     max-height:min(28vh,240px);
     max-height:min(28dvh,240px);
     margin-top:10px;
   }
-  .workspace[data-section="products"] .product-row {
-    min-height:46px;
-  }
+  .compact-library .library-row { min-height:46px; }
+  .ingredient-row { border-width:2px; }
 }
