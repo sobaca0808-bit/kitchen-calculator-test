@@ -314,7 +314,7 @@ async function importJSON(page,data,accept = true) {
     }
     await page.locator('#search-gyro-onion').fill('томаты');
     await page.locator('#options-gyro-onion .suggestion').tap();assert.equal(await page.locator('#search-gyro-onion').inputValue(),'Помидоры');
-    await page.reload();await editIfCard(page);await page.evaluate(()=>{document.activeElement.blur();window.scrollTo(0,0);});
+    await page.reload();await editIfCard(page);await page.evaluate(()=>{document.activeElement.blur();document.querySelector(".editor").scrollIntoView({block:"start"});});
     assert.equal(await page.locator('.form-actions').evaluate(el=>getComputedStyle(el).position),'sticky');
     assert.match(await page.locator('#mobile-summary').innerText(),/Известная часть.*неполно/s);
     const bar=await page.locator('.form-actions').boundingBox();

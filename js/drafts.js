@@ -25,7 +25,21 @@
       if (++nodes > 100000 || depth > 100) fail('Черновик слишком сложный.');
       if (item === null || typeof item === 'string' || typeof item === 'boolean') return item;
       if (typeof item === 'number' && Number.isFinite(item)) return item;
-      if (Array.isArray(item)) return item.map(entry => visit(entry, depth + 1));
+      if (Array.isArray(item)) {
+        if (item.length > 100000 || Reflect.ownKeys(item).some(key => key !== 'length' &&
+            (typeof key !== 'string' || !/^(0|[1-9][0-9]*)$/.test(key) || Number(key) >= item.length))) {
+          fail('Черновик содержит неподдерживаемый список.');
+        }
+        const result = [];
+        for (let index = 0; index < item.length; index++) {
+          const descriptor = Object.getOwnPropertyDescriptor(item, String(index));
+          if (!descriptor || !descriptor.enumerable || !Object.hasOwn(descriptor, 'value')) {
+            fail('Черновик содержит неподдерживаемое значение списка.');
+          }
+          result.push(visit(descriptor.value, depth + 1));
+        }
+        return result;
+      }
       if (!plain(item)) fail('Черновик содержит данные, которые нельзя сохранить в JSON.');
       const result = {};
       for (const key of Reflect.ownKeys(item)) {
@@ -43,9 +57,10 @@
     return visit(value, 0);
   }
   function validate(record) {
-    if (!plain(record) || !identifier(record.id) || !TYPES.includes(record.type)) fail('Некорректный идентификатор или тип черновика.');
-    if (typeof record.isNew !== 'boolean') fail('Некорректный признак нового рецепта.');
+    if (!plain(record)) fail('Некорректный формат черновика.');
     const result = copyJSON(record);
+    if (!identifier(result.id) || !TYPES.includes(result.type)) fail('Некорректный идентификатор или тип черновика.');
+    if (typeof result.isNew !== 'boolean') fail('Некорректный признак нового рецепта.');
     const recipe = result.data;
     if (!plain(recipe) || recipe.id !== result.id || recipe.type !== result.type || !Array.isArray(recipe.ingredients)) {
       fail('Черновик не соответствует своему рецепту.');

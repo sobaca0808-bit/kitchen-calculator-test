@@ -140,11 +140,11 @@ async function test(name,fn,{width=1366,data=fixture(false)}={}){
       const background=await page.evaluate(async()=>{
         const body=getComputedStyle(document.body),url=body.backgroundImage.match(/url\(["']?([^"')]+)["']?\)/);
         const response=url?await fetch(url[1]):null;
-        return {image:body.backgroundImage,status:response?.status,type:response?.headers.get('content-type'),bytes:response?(await response.text()).length:0,
+        return {image:body.backgroundImage,status:response?.status,type:response?.headers.get('content-type'),bytes:response?(await response.arrayBuffer()).byteLength:0,
           editor:getComputedStyle(document.querySelector('.editor')).backgroundColor,input:getComputedStyle(document.querySelector('#view-portions')).backgroundColor};
       });
-      assert.match(background.image,/url\(/);assert.equal(background.status,200);assert.match(background.type,/image\/svg\+xml/);
-      assert(background.bytes>0&&background.bytes<20000,'Decorative background remains a small local SVG');
+      assert.match(background.image,/url\(/);assert.equal(background.status,200);assert.match(background.type,/image\/webp/);
+      assert(background.bytes>0&&background.bytes<350*1024,'Decorative background remains a small local WebP');
       assert.equal(background.editor,'rgb(255, 255, 255)');assert.equal(background.input,'rgb(255, 255, 255)');
       await page.emulateMedia({media:'print'});
       assert.equal(await page.locator('.library').isVisible(),false);assert.equal(await page.locator('.card-controls').isVisible(),false);
