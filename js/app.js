@@ -1,6 +1,6 @@
 (function () {
   'use strict';
-  const C = KitchenCalc, S = KitchenStorage, P = KitchenPackaging;
+  const C = KitchenCalc, S = KitchenStorage, P = KitchenPackaging, D = KitchenDrafts, Photos = KitchenPhotos;
   const $ = (selector, scope = document) => scope.querySelector(selector);
   const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const clone = value => JSON.parse(JSON.stringify(value));
@@ -16,7 +16,10 @@
   let draft = null, dirty = false, isNew = false, errors = new Map(), invalidValues = new Map(), storageBlocked = !!loaded.error;
   const editor = $('#editor');
   let packagingEditor = null;
+  let photoEditor = null, photoPreview = null, draftTimer = null, draftStatus = '', restoring = false, printPhoto = true;
+  const unusedPhotos = new Set();
   const isCatalog = () => section === 'products' || section === 'packaging';
+  const editingRecipe = () => draft && !isCatalog() && !(section === 'dish' && viewing);
 
   function message(text, error = false) {
     const el = $('#message'); el.textContent = text; el.className = error ? 'error' : ''; el.hidden = false;
@@ -44,8 +47,88 @@
     }
     return next;
   }
-  function canLeave() { return !dirty || confirm('Есть несохранённые изменения. Перейти и отменить их?'); }
-  function markDirty() { dirty = true; const button = $('#save-item'); if(button) {button.textContent = 'Сохранить';button.classList.remove('saved');} const el = $('#save-state'); if (el) el.textContent = 'Не сохранено'; }
+  function setDraftStatus(text, failed = false) {
+    draftStatus = text;
+    const el = $('#draft-status');
+    if (el) { el.textContent = text; el.classList.toggle('inline-error',failed); }
+  }
+  function releaseUnusedPhotos() {
+    if (storageBlocked) return;
+    const savedDrafts = D.load();
+    if (savedDrafts.error) return;
+    for (const id of unusedPhotos) {
+      if (state.recipes.some(r=>r.photoId===id) || savedDrafts.items.some(r=>r.data.photoId===id) || draft?.photoId===id) continue;
+      unusedPhotos.delete(id);
+      Photos.remove(id).catch(()=>message('Не удалось удалить прежнюю фотографию из браузера. Основная база сохранена.',true));
+    }
+  }
+  function flushDraft() {
+    clearTimeout(draftTimer); draftTimer = null;
+    if (!editingRecipe() || !dirty) return true;
+    const record = {
+      id:draft.id,type:section,isNew,data:clone(draft),updatedAt:Date.now(),
+      invalidValues:[...invalidValues],errors:[...errors],
+      formValues:[...editor.querySelectorAll('input[id],select[id],textarea[id]')].filter(el=>el.type!=='file' && !el.readOnly).map(el=>({id:el.id,value:el.value,checked:el.checked})),
+      details:[...editor.querySelectorAll('details')].map((el,index)=>({index,open:el.open}))
+    };
+    const result = D.save(record);
+    setDraftStatus(result.ok ? 'Черновик сохранён' : 'Черновик не сохранён: '+result.error,!result.ok);
+    if (result.ok) releaseUnusedPhotos();
+    renderDrafts();
+    return result.ok;
+  }
+  function renderDrafts() {
+    const host = $('#drafts-panel'), result = D.load();
+    host.hidden = !result.error && !result.items.length;
+    if (result.error) { host.innerHTML = '<p class="inline-error">Не удалось прочитать черновики: '+esc(result.error)+' Исходная запись не изменена.</p>';return; }
+    host.innerHTML = '<h2>Незавершённые рецепты</h2><p>Восстановите работу или удалите ненужный черновик. Сохранённые карточки не изменены.</p><div class="draft-list">'+result.items.sort((a,b)=>b.updatedAt-a.updatedAt).map(record=>{
+      const active = editingRecipe() && draft.id===record.id && section===record.type;
+      return `<div class="draft-entry"><div><strong>${esc(record.data.name || 'Без названия')}</strong><small>${record.type==='prep'?'Полуфабрикат':'Блюдо'} · ${esc(new Date(record.updatedAt).toLocaleString('ru-RU'))}</small></div><button data-restore-draft="${esc(record.id)}" data-type="${record.type}" ${active?'disabled':''}>${active?'Открыт':'Восстановить'}</button><button class="danger" data-delete-draft="${esc(record.id)}" data-type="${record.type}">Удалить черновик</button></div>`;
+    }).join('')+'</div>';
+    host.querySelectorAll('[data-restore-draft]').forEach(btn=>btn.addEventListener('click',()=>restoreDraft(btn.dataset.restoreDraft,btn.dataset.type)));
+    host.querySelectorAll('[data-delete-draft]').forEach(btn=>btn.addEventListener('click',()=>discardDraft(btn.dataset.deleteDraft,btn.dataset.type)));
+  }
+  function restoreDraft(id,type) {
+    if (!canLeave()) return;
+    const result = D.load(), record = result.items.find(r=>r.id===id && r.type===type);
+    if (result.error || !record) { message('Черновик недоступен. '+(result.error||''),true);return; }
+    clearTimeout(draftTimer); section=type;selectedId=id;viewing=false;
+    draft=clone(record.data);isNew=record.isNew || !state.recipes.some(r=>r.id===id);dirty=true;
+    errors=new Map(record.errors);invalidValues=new Map(record.invalidValues);draftStatus='Черновик восстановлен · нажмите «Сохранить» для изменения карточки';
+    $('#library-search').value='';restoring=true;renderLibrary();renderEditor();
+    for (const field of record.formValues) {
+      const el=document.getElementById(field.id);
+      if (!el || !editor.contains(el) || el.type==='file' || el.readOnly) continue;
+      el.value=field.value;if(el.type==='checkbox')el.checked=field.checked;
+      // The packaging module keeps invalid raw values separately from its recipe data.
+      if (field.id.startsWith('pack-qty-')) el.dispatchEvent(new Event('input',{bubbles:true}));
+    }
+    for (const item of record.details) {const el=editor.querySelectorAll('details')[item.index];if(el)el.open=item.open;}
+    for (const [key,text] of errors) {const el=document.getElementById(key);if(el && el.setCustomValidity){el.setCustomValidity(text);el.setAttribute('aria-invalid','true');}}
+    updateRecipeSummary();restoring=false;renderDrafts();$('#item-name').focus();
+    message('Черновик восстановлен. Основная карточка изменится только после нажатия «Сохранить».');
+  }
+  function discardDraft(id,type) {
+    if (!confirm('Удалить этот черновик? Незавершённые изменения будут потеряны. Сохранённая карточка останется.')) return;
+    const result=D.load(), record=result.items.find(r=>r.id===id && r.type===type);
+    const active=editingRecipe() && draft.id===id && section===type;
+    if (active && photoEditor?.busy) {message('Дождитесь обработки фотографии.',true);return;}
+    const removed=D.remove(id,type);
+    if (!removed.ok) {message('Не удалось удалить черновик: '+removed.error,true);return;}
+    if(record?.data.photoId)unusedPhotos.add(record.data.photoId);
+    if(active) {clearTimeout(draftTimer);dirty=false;selectedId=state.recipes.some(r=>r.id===id)?id:null;openSelected();}
+    renderDrafts();releaseUnusedPhotos();
+  }
+  function canLeave() {
+    if (photoEditor?.busy) {message('Дождитесь обработки фотографии перед переходом.',true);return false;}
+    if (!dirty) return true;
+    if (editingRecipe() && flushDraft()) return true;
+    return confirm('Есть несохранённые изменения. '+(editingRecipe()?'Не удалось сохранить черновик. ':'')+'Перейти и отменить их?');
+  }
+  function markDirty() {
+    dirty = true; const button = $('#save-item'); if(button) {button.textContent = 'Сохранить';button.classList.remove('saved');} const el = $('#save-state'); if (el) el.textContent = 'Не сохранено';
+    if(editingRecipe() && !restoring) {setDraftStatus('Сохраняем черновик…');clearTimeout(draftTimer);draftTimer=setTimeout(flushDraft,400);}
+  }
   function numeric(input, options = {}) {
     try {
       const value = C.parseNumber(input.value);

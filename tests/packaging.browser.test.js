@@ -5,6 +5,7 @@ const assert=require('node:assert/strict');
 const fs=require('node:fs/promises');
 const {chromium}=require('playwright');
 const TEST_KEY='kitchen-calculator-pr2-browser-test-v1';
+const DRAFT_KEY='kitchen-calculator-pr2-browser-drafts-v1';
 const PRODUCTION_KEY='kitchen-calculator-v1';
 const SENTINEL='{"fictional":"issue-7-protected-production-placeholder"}';
 const testURL=process.env.KITCHEN_TEST_URL;
@@ -42,7 +43,7 @@ async function guard(page){
 async function isolation(page,expectSentinel=true){
   const proof=await page.evaluate(key=>({ops:window.__packagingStorageOps.slice(),sentinel:window.__readPackagingSentinel(key)}),PRODUCTION_KEY);
   if(expectSentinel)assert.equal(proof.sentinel,SENTINEL,'The production placeholder remains unchanged');
-  assert(proof.ops.length>0&&proof.ops.every(op=>op.method!=='clear'&&op.key===TEST_KEY),'Application storage operations stay in the preview namespace');
+  assert(proof.ops.length>0&&proof.ops.every(op=>op.method!=='clear'&&[TEST_KEY,DRAFT_KEY].includes(op.key)),'Application storage operations stay in the preview namespace');
 }
 async function noOverflow(page){
   assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'No horizontal page overflow');

@@ -5,6 +5,7 @@ const assert = require('node:assert/strict');
 const { chromium } = require('playwright');
 
 const PREVIEW_KEY = 'kitchen-calculator-pr2-browser-test-v1';
+const DRAFT_KEY = 'kitchen-calculator-pr2-browser-drafts-v1';
 const PRODUCTION_KEY = 'kitchen-calculator-v1';
 const SENTINEL = '{"fictional":"issue-4-protected-production-placeholder"}';
 const testURL = process.env.KITCHEN_TEST_URL;
@@ -44,10 +45,10 @@ async function guard(page) {
 async function checkStorageIsolation(page, expectSentinel = true) {
   const proof = await page.evaluate(key => {
     const ops = window.__productListStorageOps.slice();
-    return { ops, sentinel: localStorage.getItem(key) };
+    return { ops, sentinel: window.__readProductListSentinel(key) };
   }, PRODUCTION_KEY);
   if (expectSentinel) assert.equal(proof.sentinel, SENTINEL, 'The fictional production-key sentinel is unchanged');
-  assert(proof.ops.length > 0 && proof.ops.every(op => op.method !== 'clear' && op.key === PREVIEW_KEY), 'Application storage operations remain inside the test namespace');
+  assert(proof.ops.length > 0 && proof.ops.every(op => op.method !== 'clear' && [PREVIEW_KEY,DRAFT_KEY].includes(op.key)), 'Application storage operations remain inside the test namespace');
 }
 async function listStyles(page) {
   return page.locator('#library-list').evaluate(list => {
@@ -77,6 +78,8 @@ async function scenario(width, count) {
   const context = await browser.newContext({ viewport: { width, height: 900 } });
   await context.addInitScript(() => {
     window.__productListStorageOps = [];
+    const nativeGetItem=Storage.prototype.getItem;
+    window.__readProductListSentinel=key=>nativeGetItem.call(localStorage,key);
     for (const method of ['getItem', 'setItem', 'removeItem', 'clear']) {
       const original = Storage.prototype[method];
       Storage.prototype[method] = function (...args) {

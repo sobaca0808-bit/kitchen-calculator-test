@@ -6,7 +6,9 @@
   'use strict';
   // Separate preview namespace: never read or write the live calculator key.
   const KEY = 'kitchen-calculator-pr2-browser-test-v1';
-  const MAX_IMPORT_BYTES = 10 * 1024 * 1024;
+  const MAX_IMPORT_BYTES = 50 * 1024 * 1024;
+  const MAX_PHOTO_BYTES = 180 * 1024;
+  const MAX_PHOTO_SIDE = 1280;
   const MAX_RECIPE_DEPTH = 100;
   const UNITS = ['g', 'kg', 'ml', 'l', 'pcs'];
   const PACKAGING_UNITS = [...UNITS, 'm', 'cm'];
@@ -42,6 +44,30 @@
     if (value === undefined) return false;
     if (typeof value !== 'boolean') fail(label + ': ожидалось логическое значение.');
     return value;
+  }
+  function photoId(value, label) {
+    const result = text(value, label, true, 200);
+    if (!/^[A-Za-z0-9_-]+$/.test(value)) fail(label + ': некорректная ссылка на фотографию.');
+    return result;
+  }
+  function photo(value, label) {
+    object(value, label);
+    if (!['image/jpeg', 'image/png', 'image/webp'].includes(value.mime)) fail(label + ': допустимы только JPEG, PNG и WebP.');
+    for (const key of ['width', 'height']) {
+      if (!Number.isInteger(value[key]) || value[key] <= 0 || value[key] > MAX_PHOTO_SIDE) {
+        fail(label + ': размер фотографии должен быть от 1 до ' + MAX_PHOTO_SIDE + ' пикселей.');
+      }
+    }
+    const prefix = 'data:' + value.mime + ';base64,';
+    if (typeof value.dataUrl !== 'string' || !value.dataUrl.startsWith(prefix)) fail(label + ': некорректные данные фотографии.');
+    const encoded = value.dataUrl.slice(prefix.length);
+    if (!encoded.length || encoded.length > 4 * Math.ceil(MAX_PHOTO_BYTES / 3) ||
+        encoded.length % 4 !== 0 || !/^[A-Za-z0-9+/]+={0,2}$/.test(encoded)) {
+      fail(label + ': фотография повреждена или превышает 180 КБ.');
+    }
+    const byteLength = encoded.length / 4 * 3 - (encoded.endsWith('==') ? 2 : encoded.endsWith('=') ? 1 : 0);
+    if (byteLength > MAX_PHOTO_BYTES) fail(label + ': фотография превышает 180 КБ.');
+    return {dataUrl: value.dataUrl, width: value.width, height: value.height, mime: value.mime};
   }
   const dimension = value => value === 'pcs' ? 'count' : ['g', 'kg'].includes(value) ? 'mass' : 'volume';
   const packagingDimension = value => ['m', 'cm'].includes(value) ? 'length' : dimension(value);
@@ -91,12 +117,15 @@
       object(item, label);
       if (!['prep', 'dish'].includes(item.type)) fail(label + ': неизвестный тип рецепта.');
       if (!Array.isArray(item.ingredients)) fail(label + ': отсутствует список ингредиентов.');
+      if (item.photoId !== undefined && item.photo !== undefined) fail(label + ': фотография и ссылка на неё не могут присутствовать одновременно.');
       return {
         id: id(item.id, label + ', id'), type: item.type,
         name: text(item.name, label + ', название', true, 500), note: text(item.note, label + ', заметка'),
         ...(item.portions !== undefined ? {portions: number(item.portions, label + ', порции', true) ?? 1} : {}),
         ...(item.technology !== undefined ? {technology: text(item.technology, label + ', технология')} : {}),
         actualYield: number(item.actualYield, label + ', фактический выход', true),
+        ...(item.photoId !== undefined ? {photoId: photoId(item.photoId, label + ', фотография')} : {}),
+        ...(item.photo !== undefined ? {photo: photo(item.photo, label + ', фотография')} : {}),
         ...(item.packaging !== undefined ? {packaging: (() => {
           if (!Array.isArray(item.packaging)) fail(label + ': упаковка должна быть списком.');
           if (item.type !== 'dish' && item.packaging.length) fail(label + ': упаковка и фасовка учитывается при выдаче блюда, а не в полуфабрикате.');
@@ -205,13 +234,18 @@
   function parseJSON(source) {
     if (typeof source !== 'string') fail('Резервная копия должна быть текстовым JSON-файлом.');
     const bytes = typeof TextEncoder === 'function' ? new TextEncoder().encode(source).length : source.length * 2;
-    if (bytes > MAX_IMPORT_BYTES) fail('Файл больше 10 МБ. Импорт отменён.');
+    if (bytes > MAX_IMPORT_BYTES) fail('Файл больше 50 МБ. Импорт отменён.');
     let value;
     try { value = JSON.parse(source); }
     catch (_) { fail('Не удалось прочитать JSON. Проверьте, что выбран файл резервной копии.'); }
     return validate(value);
   }
-  const stringify = data => JSON.stringify(validate(data), null, 2);
+  function stringify(data) {
+    const source = JSON.stringify(validate(data), null, 2);
+    const bytes = typeof TextEncoder === 'function' ? new TextEncoder().encode(source).length : source.length * 2;
+    if (bytes > MAX_IMPORT_BYTES) fail('Резервная копия больше 50 МБ. Уменьшите число фотографий перед экспортом.');
+    return source;
+  }
   function getStorage(explicit) {
     if (explicit !== undefined) return explicit;
     if (typeof globalThis.localStorage === 'undefined') fail('Локальное хранилище недоступно в этом браузере.');
@@ -227,6 +261,9 @@
   }
   function save(data, storage) {
     try {
+      if (Array.isArray(data?.recipes) && data.recipes.some(recipe => recipe.photo !== undefined)) {
+        fail('Сначала сохраните фотографии в отдельном хранилище устройства.');
+      }
       const serialized = stringify(data);
       getStorage(storage).setItem(KEY, serialized);
       return { ok: true, error: null };
@@ -234,5 +271,5 @@
       return { ok: false, error: 'Не удалось сохранить данные: ' + error.message + ' Скачайте JSON, чтобы не потерять изменения.' };
     }
   }
-  return { KEY, MAX_IMPORT_BYTES, MAX_RECIPE_DEPTH, validate, parseJSON, stringify, load, save };
+  return { KEY, MAX_IMPORT_BYTES, MAX_PHOTO_BYTES, MAX_PHOTO_SIDE, MAX_RECIPE_DEPTH, validate, parseJSON, stringify, load, save };
 });
