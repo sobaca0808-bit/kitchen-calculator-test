@@ -29,6 +29,8 @@ function fixture() {
 const stored = page => page.evaluate(key=>JSON.parse(localStorage.getItem(key)),TEST_KEY);
 const drafts = page => page.evaluate(()=>KitchenDrafts.load().items);
 const draftById = async (page,id) => (await drafts(page)).find(record=>record.id===id);
+const firstPhotoId = recipe => recipe.photoIds?.[0] || recipe.photoId || undefined;
+const embeddedPhoto = recipe => recipe.photos?.[0] || recipe.photo;
 async function draftSaved(page) {
   await page.waitForFunction(()=>document.querySelector('#draft-status')?.textContent.includes('Черновик сохранён'));
 }
@@ -249,29 +251,29 @@ async function test(name,fn,options={}) {
 
     await test('photo is compressed, persists through draft recovery and explicit save, and does not affect costs',async page=>{
       const before=await stored(page),file=await imageFile(page);await edit(page);await uploadPhoto(page,file);await draftSaved(page);
-      assert.equal((await stored(page)).recipes[0].photoId,undefined,'Uploading only changes the separate draft');
-      const photoId=(await draftById(page,'dish-a')).data.photoId;assert(photoId);
+      assert.equal(firstPhotoId((await stored(page)).recipes[0]),undefined,'Uploading only changes the separate draft');
+      const photoId=firstPhotoId((await draftById(page,'dish-a')).data);assert(photoId);
       const info=await page.evaluate(async id=>{const photo=await KitchenPhotos.get(id);return {width:photo.width,height:photo.height,mime:photo.mime,bytes:photo.blob.size};},photoId);
-      assert(info.width<=1280 && info.height<=1280 && info.bytes<=180*1024);assert.equal(info.mime,'image/jpeg');
+      assert(info.width<=1920 && info.height<=1920 && info.bytes<=500*1024);assert.equal(info.mime,'image/jpeg');
       await page.reload();await restore(page,'dish-a');await page.waitForFunction(()=>document.querySelector('.photo-editor img')?.naturalWidth>0);
-      await page.locator('#save-item').click();const saved=await stored(page);assert.equal(saved.recipes[0].photoId,photoId);
+      await page.locator('#save-item').click();const saved=await stored(page);assert.equal(firstPhotoId(saved.recipes[0]),photoId);
       assert.equal(await draftById(page,'dish-a'),undefined);assert.deepEqual(saved.products,before.products);assert.deepEqual(saved.packaging,before.packaging);
       assert.deepEqual(saved.recipes[0].ingredients,before.recipes[0].ingredients);assert.deepEqual(saved.recipes[0].packaging,before.recipes[0].packaging);
       await showCard(page);assert(await page.locator('.recipe-photo img').isVisible());
       const calculation=await page.evaluate(()=>{const data=KitchenStorage.load().data;return {food:KitchenCalc.calcRecipe(data,'dish-a').knownCost,pack:KitchenPackaging.calculate(data,data.recipes[0],2).knownCost};});
       assert.deepEqual(calculation,{food:15,pack:26});assert.match(await page.locator('.card-cost').innerText(),/41,00/);
       await page.locator('#view-portions').fill('10');assert.match(await page.locator('.card-cost').innerText(),/205,00/);assert.deepEqual(await stored(page),saved);
-      await page.reload();await page.waitForFunction(()=>document.querySelector('.recipe-photo img')?.naturalWidth>0);assert.equal((await stored(page)).recipes[0].photoId,photoId);
+      await page.reload();await page.waitForFunction(()=>document.querySelector('.recipe-photo img')?.naturalWidth>0);assert.equal(firstPhotoId((await stored(page)).recipes[0]),photoId);
     },{width:390});
 
     await test('replacing and removing a photo remain drafts until explicitly saved',async page=>{
       await edit(page);await uploadPhoto(page,await imageFile(page,'#53724b'));await page.locator('#save-item').click();
-      const original=(await stored(page)).recipes[0].photoId;await uploadPhoto(page,await imageFile(page,'#713b30'));await draftSaved(page);
-      const replacement=(await draftById(page,'dish-a')).data.photoId;assert.notEqual(replacement,original);assert.equal((await stored(page)).recipes[0].photoId,original);
+      const original=firstPhotoId((await stored(page)).recipes[0]);await uploadPhoto(page,await imageFile(page,'#713b30'));await draftSaved(page);
+      const replacement=firstPhotoId((await draftById(page,'dish-a')).data);assert.notEqual(replacement,original);assert.equal(firstPhotoId((await stored(page)).recipes[0]),original);
       await page.reload();await restore(page,'dish-a');await page.waitForFunction(()=>document.querySelector('.photo-editor img')?.naturalWidth>0);
-      await page.locator('#save-item').click();assert.equal((await stored(page)).recipes[0].photoId,replacement);
-      await page.locator('#remove-photo').click();await draftSaved(page);assert.equal((await stored(page)).recipes[0].photoId,replacement);
-      assert.equal((await draftById(page,'dish-a')).data.photoId,undefined);await page.locator('#save-item').click();assert.equal((await stored(page)).recipes[0].photoId,undefined);
+      await page.locator('#save-item').click();assert.equal(firstPhotoId((await stored(page)).recipes[0]),replacement);
+      await page.locator('#remove-photo').click();await draftSaved(page);assert.equal(firstPhotoId((await stored(page)).recipes[0]),replacement);
+      assert.equal(firstPhotoId((await draftById(page,'dish-a')).data),undefined);await page.locator('#save-item').click();assert.equal(firstPhotoId((await stored(page)).recipes[0]),undefined);
       await showCard(page);assert.equal(await page.locator('.recipe-photo').count(),0);await page.reload();assert.equal(await page.locator('.recipe-photo').count(),0);
     });
 
@@ -281,7 +283,7 @@ async function test(name,fn,options={}) {
       await page.waitForTimeout(150);assert.deepEqual(await stored(page),before);assert(await page.locator('.photo-editor img').isVisible());
       await page.locator('#photo-file').setInputFiles({name:'oversized.jpg',mimeType:'image/jpeg',buffer:Buffer.alloc(11*1024*1024)});
       await page.waitForTimeout(150);assert.deepEqual(await stored(page),before);assert(await page.locator('.photo-editor img').isVisible());
-      await page.locator('#save-item').click();assert.equal((await stored(page)).recipes[0].photoId,before.recipes[0].photoId);
+      await page.locator('#save-item').click();assert.equal(firstPhotoId((await stored(page)).recipes[0]),firstPhotoId(before.recipes[0]));
     });
 
     await test('photo storage quota preserves the previous photo, saved recipe and recoverable draft',async page=>{
@@ -296,7 +298,7 @@ async function test(name,fn,options={}) {
       await page.waitForFunction(()=>document.querySelector('.photo-status')?.textContent.includes('Фотография не добавлена'));
       assert.deepEqual(await stored(page),before);assert.deepEqual((await draftById(page,'dish-a')).data,checkpoint.data);
       assert(await page.locator('.photo-editor img').isVisible());
-      const retained=await page.evaluate(async id=>{const record=await KitchenPhotos.get(id);return record.blob.size;},before.recipes[0].photoId);
+      const retained=await page.evaluate(async id=>{const record=await KitchenPhotos.get(id);return record.blob.size;},firstPhotoId(before.recipes[0]));
       assert(retained>0,'A failed replacement never deletes the original blob');
       await page.reload();await restore(page,'dish-a');assert.equal(await page.locator('#item-name').inputValue(),'Изменение без новой фотографии');
       await page.waitForFunction(()=>document.querySelector('.photo-editor img')?.naturalWidth>0);
@@ -305,9 +307,9 @@ async function test(name,fn,options={}) {
     await test('a failed main save keeps the separate photo draft until saving succeeds',async page=>{
       const before=await stored(page);await edit(page);await page.locator('#item-name').fill('Восстановить после ошибки main');await uploadPhoto(page,await imageFile(page));
       const checkpoint=await draftById(page,'dish-a');await page.evaluate(()=>window.__task8BlockMain=true);await page.locator('#save-item').click();
-      assert.deepEqual(await stored(page),before);assert.equal((await draftById(page,'dish-a')).data.photoId,checkpoint.data.photoId);
+      assert.deepEqual(await stored(page),before);assert.equal(firstPhotoId((await draftById(page,'dish-a')).data),firstPhotoId(checkpoint.data));
       assert.match(await page.locator('#save-state').innerText(),/памяти|JSON/);
-      const salvage=await exportJSON(page);assert.equal(salvage.recipes[0].name,'Восстановить после ошибки main');assert(salvage.recipes[0].photo?.dataUrl);
+      const salvage=await exportJSON(page);assert.equal(salvage.recipes[0].name,'Восстановить после ошибки main');assert(embeddedPhoto(salvage.recipes[0])?.dataUrl);
       await page.reload();assert.deepEqual(await stored(page),before);await restore(page,'dish-a');
       await page.waitForFunction(()=>document.querySelector('.photo-editor img')?.naturalWidth>0);await page.locator('#save-item').click();
       assert.equal((await stored(page)).recipes[0].name,'Восстановить после ошибки main');assert.equal(await draftById(page,'dish-a'),undefined);
@@ -315,13 +317,13 @@ async function test(name,fn,options={}) {
 
     await test('a missing local photo is reported; printing without a photo remains possible',async page=>{
       await edit(page);await uploadPhoto(page,await imageFile(page));await page.locator('#save-item').click();
-      const id=(await stored(page)).recipes[0].photoId;await page.evaluate(id=>KitchenPhotos.remove(id),id);await page.reload();
+      const id=firstPhotoId((await stored(page)).recipes[0]);await page.evaluate(id=>KitchenPhotos.remove(id),id);await page.reload();
       await page.waitForFunction(()=>document.querySelector('#view-error')?.textContent.length>0);
       assert.equal(await page.locator('#print-recipe').isDisabled(),true,'Printing with a missing image is blocked explicitly');
       assert.match(await page.locator('.recipe-photo').innerText(),/недоступна|не найдена/i);
       await page.locator('#print-photo').uncheck();await page.waitForFunction(()=>document.querySelector('#print-recipe')?.disabled===false);
       await page.emulateMedia({media:'print'});assert.equal(await page.locator('.recipe-photo').isVisible(),false);await page.emulateMedia({media:'screen'});
-      const before=await stored(page);await importJSON(page,{...before,recipes:before.recipes.map(recipe=>recipe.id==='dish-a'?{...recipe,photoId:'missing-photo'}:recipe)});
+      const before=await stored(page);await importJSON(page,{...before,recipes:before.recipes.map(recipe=>recipe.id==='dish-a'?{...recipe,photoIds:['missing-photo',null]}:recipe)});
       await page.waitForFunction(()=>document.querySelector('#message')?.textContent.includes('Импорт отменён'));assert.deepEqual(await stored(page),before);
     });
 
@@ -343,19 +345,19 @@ async function test(name,fn,options={}) {
 
     await test('JSON includes portable photos and imports into a fresh browser; old backups remain compatible',async page=>{
       await edit(page);await uploadPhoto(page,await imageFile(page));await page.locator('#save-item').click();const original=await stored(page),backup=await exportJSON(page);
-      assert(backup.recipes[0].photo?.dataUrl.startsWith('data:image/jpeg;base64,'));assert.equal(backup.recipes[0].photoId,undefined);
+      assert(embeddedPhoto(backup.recipes[0])?.dataUrl.startsWith('data:image/jpeg;base64,'));assert.equal(backup.recipes[0].photoId,undefined);
       const isolated=await makeContext(browser),second=await isolated.newPage();second.setDefaultTimeout(9000);second.on('dialog',dialog=>dialog.accept());
       try {
         await second.goto(testURL);await importJSON(second,backup);
-        await second.waitForFunction(()=>KitchenStorage.load().data.recipes[0].photoId);
-        const imported=await stored(second);assert(imported.recipes[0].photoId);assert.notEqual(imported.recipes[0].photoId,original.recipes[0].photoId);
+        await second.waitForFunction(()=>KitchenPhotos.ids(KitchenStorage.load().data.recipes[0]).some(Boolean));
+        const imported=await stored(second);assert(firstPhotoId(imported.recipes[0]));assert.notEqual(firstPhotoId(imported.recipes[0]),firstPhotoId(original.recipes[0]));
         assert.equal(imported.recipes[0].photo,undefined);await second.waitForFunction(()=>document.querySelector('.recipe-photo img')?.naturalWidth>0);
         assert.deepEqual(await exportJSON(second),backup,'A backup round trip keeps all compressed photo bytes and recipe fields');
-        const before=await stored(second),bad=JSON.parse(JSON.stringify(backup));bad.recipes[0].photo.width=1;
+        const before=await stored(second),bad=JSON.parse(JSON.stringify(backup));embeddedPhoto(bad.recipes[0]).width=1;
         await importJSON(second,bad);await second.waitForFunction(()=>document.querySelector('#message')?.textContent.includes('Импорт отменён'));
         assert.deepEqual(await stored(second),before,'A bad embedded photo never replaces the main database');
         const old=fixture();delete old.packaging;for(const recipe of old.recipes)delete recipe.packaging;
-        await importJSON(second,old);await second.waitForFunction(()=>!KitchenStorage.load().data.recipes[0].photoId);
+        await importJSON(second,old);await second.waitForFunction(()=>!KitchenPhotos.ids(KitchenStorage.load().data.recipes[0]).some(Boolean));
         assert.deepEqual(await stored(second),old);await second.reload();assert.deepEqual(await stored(second),old);assert.equal(await second.locator('.recipe-photo').count(),0);
         await guard(second);
       } finally {await isolated.close();}
@@ -364,7 +366,7 @@ async function test(name,fn,options={}) {
     await test('export preserves an unfinished draft without silently saving it as a recipe',async page=>{
       const before=await stored(page);await edit(page);await page.locator('#item-name').fill('Экспорт не подтверждает рецепт');
       await uploadPhoto(page,await imageFile(page));const backup=await exportJSON(page);
-      assert.deepEqual(backup,before);assert.deepEqual(await stored(page),before);assert((await draftById(page,'dish-a')).data.photoId);
+      assert.deepEqual(backup,before);assert.deepEqual(await stored(page),before);assert(firstPhotoId((await draftById(page,'dish-a')).data));
       assert.equal((await draftById(page,'dish-a')).data.name,'Экспорт не подтверждает рецепт');
     });
 

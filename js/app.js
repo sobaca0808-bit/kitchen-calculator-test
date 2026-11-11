@@ -57,7 +57,7 @@
     const savedDrafts = D.load(), savedDatabase=S.load();
     if (savedDrafts.error || savedDatabase.error) return;
     for (const id of unusedPhotos) {
-      if (state.recipes.some(r=>r.photoId===id) || savedDatabase.data?.recipes.some(r=>r.photoId===id) || savedDrafts.items.some(r=>r.data.photoId===id) || draft?.photoId===id) continue;
+      if (state.recipes.some(r=>Photos.ids(r).includes(id)) || savedDatabase.data?.recipes.some(r=>Photos.ids(r).includes(id)) || savedDrafts.items.some(r=>Photos.ids(r.data).includes(id)) || Photos.ids(draft).includes(id)) continue;
       unusedPhotos.delete(id);
       Photos.remove(id).catch(()=>message('Не удалось удалить прежнюю фотографию из браузера. Основная база сохранена.',true));
     }
@@ -121,7 +121,7 @@
     if (active && photoEditor?.busy) {message('Дождитесь обработки фотографии.',true);return;}
     const removed=D.remove(id,type);
     if (!removed.ok) {message('Не удалось удалить черновик: '+removed.error,true);return;}
-    if(record?.data.photoId)unusedPhotos.add(record.data.photoId);
+    Photos.ids(record?.data).filter(Boolean).forEach(id=>unusedPhotos.add(id));
     if(active) {clearTimeout(draftTimer);dirty=false;selectedId=state.recipes.some(r=>r.id===id)?id:null;openSelected();}
     renderDrafts();releaseUnusedPhotos();
   }
@@ -203,7 +203,8 @@
     else if (section === 'products') renderProduct(); else if (section === 'packaging') renderPackaging(); else renderRecipe();
   }
   function renderCard() {
-    editor.innerHTML = `<div class="card-controls"><button id="back-list">← К списку</button><button id="edit-recipe">Изменить</button><button id="print-recipe">Печать</button><label>Количество порций<input id="view-portions" type="text" inputmode="decimal" value="${esc(num(viewPortions,8))}"></label><label>ПОКАЗЫВАТЬ ЦЕНЫ<select id="show-prices"><option value="yes" ${showPrices ? 'selected' : ''}>ДА</option><option value="no" ${!showPrices ? 'selected' : ''}>НЕТ</option></select></label>${draft.photoId?`<label class="photo-print-toggle"><input id="print-photo" type="checkbox" ${printPhoto?'checked':''}> Печатать фотографию</label>`:''}<p id="view-error" role="status"></p></div><article id="recipe-card" class="recipe-card"></article>`;
+    editor.innerHTML = `<div class="card-controls"><button id="back-list">← К списку</button><button id="edit-recipe">Изменить</button><button id="print-recipe">Печать</button><label>Количество порций<input id="view-portions" type="text" inputmode="decimal" value="${esc(num(viewPortions,8))}"></label><label>ПОКАЗЫВАТЬ ЦЕНЫ<select id="show-prices"><option value="yes" ${showPrices ? 'selected' : ''}>ДА</option><option value="no" ${!showPrices ? 'selected' : ''}>НЕТ</option></select></label>${Photos.ids(draft).some(Boolean)?`<label class="photo-print-toggle"><input id="print-photo" type="checkbox" ${printPhoto?'checked':''}> Печатать фотографии</label>`:''}<p id="view-error" role="status"></p></div><article id="recipe-card" class="recipe-card"></article>`;
+    const card=$('#recipe-card');
     let drawVersion=0;
     function draw() {
       const version=++drawVersion;
@@ -217,19 +218,19 @@
         if (!Number.isFinite(total)) throw Error('Слишком большая полная себестоимость. Уменьшите количество порций.');
         const complete = result.complete && packaging.complete;
         $('#recipe-card').dataset.printPhoto=printPhoto?'yes':'no';
-        $('#recipe-card').innerHTML = `<p class="eyebrow">ТЕХНОЛОГИЧЕСКАЯ КАРТА</p><h1>${esc(recipe.name)}</h1>${recipe.photoId?'<div id="card-photo"></div>':''}<p>Количество порций: ${esc(num(viewPortions,8))}</p>
+        $('#recipe-card').innerHTML = `<p class="eyebrow">ТЕХНОЛОГИЧЕСКАЯ КАРТА</p><h1>${esc(recipe.name)}</h1><div id="card-photos"></div><p>Количество порций: ${esc(num(viewPortions,8))}</p>
           <table class="food-ingredients"><thead><tr><th>Ингредиент</th><th>Кол-во</th><th>Выход, г</th>${showPrices ? '<th>Сумма</th>' : ''}</tr></thead><tbody>${recipe.ingredients.map((row,i) => `<tr><td>${esc(findRef(row.refId)?.name || 'Ингредиент не выбран')}${row.note ? `<div class="card-text">${esc(row.note)}</div>` : ''}</td><td>${row.quantity == null ? 'Не задано' : esc(num(row.quantity,8))+' '+esc(C.units[row.unit].label)}</td><td>${result.rows[i].massGrams == null ? 'Неизвестен' : esc(num(result.rows[i].massGrams))}</td>${showPrices ? `<td>${esc(money(result.rows[i].knownCost))}${result.rows[i].complete ? '' : ' (неполно)'}</td>` : ''}</tr>`).join('')}</tbody></table>
           ${KitchenPackagingUI.renderCard(state,recipe,viewPortions,showPrices)}
           <p>Общая масса ингредиентов: ${view.rawMass == null ? 'неизвестна — задайте коэффициенты массы' : esc(num(view.rawMass))+' г'}</p><p><strong>Выход готового блюда: ${view.yieldGrams == null ? 'неизвестен — уточните массу компонентов' : esc(num(view.yieldGrams))+' г'}</strong></p>
           ${showPrices ? `${(recipe.packaging || []).length ? `<p class="food-cost">Себестоимость ингредиентов: ${esc(money(result.knownCost))}${result.complete ? '' : ' (неполно)'}</p>` : ''}<p class="card-cost">${complete ? 'Общая себестоимость' : 'Известная часть стоимости (расчёт неполный)'}: ${esc(money(total))}</p>${(recipe.packaging || []).length ? `<p class="portion-cost">На одну порцию: ${esc(money(total/viewPortions))}${complete ? '' : ' (неполно)'}</p>` : ''}` : ''}
           ${recipe.technology?.trim() ? `<h2>Способ приготовления</h2><div class="card-text">${esc(recipe.technology)}</div>` : ''}${recipe.note?.trim() ? `<h2>Примечания</h2><div class="card-text">${esc(recipe.note)}</div>` : ''}`;
         $('#view-error').textContent = '';$('#print-recipe').disabled = false;
-        if(recipe.photoId) {
-          $('#print-recipe').disabled=true;
-          photoPreview=Photos.mountPreview($('#card-photo'),recipe.photoId);
-          photoPreview.ready.then(()=>{if(version===drawVersion && $('#print-recipe')) $('#print-recipe').disabled=false;}).catch(e=>{
-            if(version!==drawVersion || !$('#view-error'))return;
-            $('#view-error').textContent='Фотография недоступна: '+e.message+' Для печати без неё снимите флажок «Печатать фотографию».';
+        {
+          $('#print-recipe').disabled=Photos.ids(recipe).some(Boolean);
+          photoPreview=Photos.mountGallery($('#card-photos'),recipe);
+          photoPreview.ready.then(()=>{if(version===drawVersion && $('#recipe-card')===card) $('#print-recipe').disabled=false;}).catch(e=>{
+            if(version!==drawVersion || $('#recipe-card')!==card)return;
+            $('#view-error').textContent='Фотография недоступна: '+e.message+' Для печати без фотографий снимите флажок «Печатать фотографии».';
             $('#print-recipe').disabled=printPhoto;
           });
         }
@@ -306,14 +307,14 @@
     summary();
   }
   function renderRecipe() {
-    editor.innerHTML = head(section === 'prep' ? 'Полуфабрикат · партия' : 'Блюдо · рецептура',section === 'prep' ? 'Сырьё считается по закупочной стоимости. Себестоимость готового продукта зависит от фактического выхода партии.' : 'Выбирайте продукты и готовые полуфабрикаты. Их производственные потери уже учтены.') + `<div class="editor-content"><div class="section-heading"><h3>Ингредиенты</h3><small id="row-count"></small></div><div class="ingredient-head" aria-hidden="true"><span>Продукт / полуфабрикат</span><span>Количество</span><span>Ед.</span><span>Стоимость</span><span></span></div><div id="ingredients"></div>${section === 'dish' ? '<div id="packaging-editor"></div>' : ''}
+    editor.innerHTML = head(section === 'prep' ? 'Полуфабрикат · партия' : 'Блюдо · рецептура',section === 'prep' ? 'Сырьё считается по закупочной стоимости. Себестоимость готового продукта зависит от фактического выхода партии.' : 'Выбирайте продукты и готовые полуфабрикаты. Их производственные потери уже учтены.') + `<div id="photo-editor" class="recipe-photo-editor"></div><div class="editor-content"><div class="section-heading"><h3>Ингредиенты</h3><small id="row-count"></small></div><div class="ingredient-head" aria-hidden="true"><span>Продукт / полуфабрикат</span><span>Количество</span><span>Ед.</span><span>Стоимость</span><span></span></div><div id="ingredients"></div>${section === 'dish' ? '<div id="packaging-editor"></div>' : ''}
       ${section === 'prep' ? `<div class="yield-panel"><div><h3>Фактический выход партии</h3><p>Взвесьте всю готовую партию. По этому значению рассчитывается себестоимость грамма и килограмма.</p></div><label>Выход готовой партии, г${numericInput('actualYield',draft.actualYield,'Обязательно')}</label></div>` : ''}
       ${section === 'dish' ? `<div class="product-grid recipe-note"><label>Количество порций в рецепте${numericInput('recipe-portions',draft.portions || 1)}</label><label>Фактический выход блюда, г (необязательно)${numericInput('dish-yield',draft.actualYield)}</label></div>` : ''}
       <label class="recipe-note">Способ приготовления<textarea id="technology" maxlength="10000">${esc(draft.technology)}</textarea></label>
-      <details class="recipe-note" ${draft.note ? 'open' : ''}><summary>Заметка к рецепту</summary><textarea id="recipe-note" placeholder="Что нужно уточнить или учесть">${esc(draft.note)}</textarea></details><div id="photo-editor" class="recipe-note"></div><div id="summary" class="summary" aria-live="polite"></div><p id="form-error" class="inline-error" role="status"></p></div>` + actions(true);
+      <details class="recipe-note" ${draft.note ? 'open' : ''}><summary>Заметка к рецепту</summary><textarea id="recipe-note" placeholder="Что нужно уточнить или учесть">${esc(draft.note)}</textarea></details><div id="summary" class="summary" aria-live="polite"></div><p id="form-error" class="inline-error" role="status"></p></div>` + actions(true);
     bindCommon(); renderRows();
     photoEditor=Photos.mountEditor($('#photo-editor'),{recipe:draft,
-      onChange:({previousPhotoId})=>{if(previousPhotoId)unusedPhotos.add(previousPhotoId);markDirty();flushDraft();},
+      onChange:({previousPhotoId,previousPhotoIds=[]})=>{[previousPhotoId,...previousPhotoIds].filter(Boolean).forEach(id=>unusedPhotos.add(id));markDirty();flushDraft();},
       onStatus:(text)=>{if(text)message(text,true);}
     });
     photoEditor.ready?.catch(()=>{});
@@ -501,7 +502,7 @@
     candidate[key] = candidate[key].filter(item => item.id !== draft.id);
     if(persist(candidate,'Запись удалена.')) {
       if(!storageBlocked && !isCatalog()) {
-        if(draft.photoId)unusedPhotos.add(draft.photoId);
+        Photos.ids(draft).filter(Boolean).forEach(id=>unusedPhotos.add(id));
         const removed=D.remove(draft.id,section);
         if(!removed.ok)message('Запись удалена, но её черновик остался: '+removed.error,true);
       }
@@ -548,7 +549,7 @@
       backupBusy=true;$('#import').disabled=true;$('#export').disabled=true;
       $('.workspace').inert=true;$('#drafts-panel').inert=true;
       prepared=await Photos.prepareImport(candidate);
-      const oldPhotoIds=state.recipes.map(r=>r.photoId).filter(Boolean);
+      const oldPhotoIds=state.recipes.flatMap(r=>Photos.ids(r)).filter(Boolean);
       if(persist(prepared.data,'Данные импортированы. Сохранённые карточки заменены. Черновики остались отдельно.',true)) {
         prepared=null;
         if(!storageBlocked)oldPhotoIds.forEach(id=>unusedPhotos.add(id));

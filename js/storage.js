@@ -7,8 +7,8 @@
   // Separate preview namespace: never read or write the live calculator key.
   const KEY = 'kitchen-calculator-pr2-browser-test-v1';
   const MAX_IMPORT_BYTES = 50 * 1024 * 1024;
-  const MAX_PHOTO_BYTES = 180 * 1024;
-  const MAX_PHOTO_SIDE = 1280;
+  const MAX_PHOTO_BYTES = 500 * 1024;
+  const MAX_PHOTO_SIDE = 1920;
   const MAX_RECIPE_DEPTH = 100;
   const UNITS = ['g', 'kg', 'ml', 'l', 'pcs'];
   const PACKAGING_UNITS = [...UNITS, 'm', 'cm'];
@@ -63,10 +63,10 @@
     const encoded = value.dataUrl.slice(prefix.length);
     if (!encoded.length || encoded.length > 4 * Math.ceil(MAX_PHOTO_BYTES / 3) ||
         encoded.length % 4 !== 0 || !/^[A-Za-z0-9+/]+={0,2}$/.test(encoded)) {
-      fail(label + ': фотография повреждена или превышает 180 КБ.');
+      fail(label + ': фотография повреждена или превышает 500 КБ.');
     }
     const byteLength = encoded.length / 4 * 3 - (encoded.endsWith('==') ? 2 : encoded.endsWith('=') ? 1 : 0);
-    if (byteLength > MAX_PHOTO_BYTES) fail(label + ': фотография превышает 180 КБ.');
+    if (byteLength > MAX_PHOTO_BYTES) fail(label + ': фотография превышает 500 КБ.');
     return {dataUrl: value.dataUrl, width: value.width, height: value.height, mime: value.mime};
   }
   const dimension = value => value === 'pcs' ? 'count' : ['g', 'kg'].includes(value) ? 'mass' : 'volume';
@@ -117,7 +117,11 @@
       object(item, label);
       if (!['prep', 'dish'].includes(item.type)) fail(label + ': неизвестный тип рецепта.');
       if (!Array.isArray(item.ingredients)) fail(label + ': отсутствует список ингредиентов.');
-      if (item.photoId !== undefined && item.photo !== undefined) fail(label + ': фотография и ссылка на неё не могут присутствовать одновременно.');
+      if (['photoId','photo','photoIds','photos'].filter(key=>item[key] !== undefined).length > 1) fail(label + ': разные форматы фотографий не могут присутствовать одновременно.');
+      function photoSlots(value, embedded) {
+        if (!Array.isArray(value) || value.length > 2) fail(label + ': допустимо не больше двух фотографий.');
+        return Array.from(value, (entry, slot)=>entry === null ? null : embedded ? photo(entry,label+', фото '+(slot+1)) : photoId(entry,label+', фото '+(slot+1)));
+      }
       return {
         id: id(item.id, label + ', id'), type: item.type,
         name: text(item.name, label + ', название', true, 500), note: text(item.note, label + ', заметка'),
@@ -126,6 +130,8 @@
         actualYield: number(item.actualYield, label + ', фактический выход', true),
         ...(item.photoId !== undefined ? {photoId: photoId(item.photoId, label + ', фотография')} : {}),
         ...(item.photo !== undefined ? {photo: photo(item.photo, label + ', фотография')} : {}),
+        ...(item.photoIds !== undefined ? {photoIds: photoSlots(item.photoIds,false)} : {}),
+        ...(item.photos !== undefined ? {photos: photoSlots(item.photos,true)} : {}),
         ...(item.packaging !== undefined ? {packaging: (() => {
           if (!Array.isArray(item.packaging)) fail(label + ': упаковка должна быть списком.');
           if (item.type !== 'dish' && item.packaging.length) fail(label + ': упаковка и фасовка учитывается при выдаче блюда, а не в полуфабрикате.');
@@ -261,7 +267,7 @@
   }
   function save(data, storage) {
     try {
-      if (Array.isArray(data?.recipes) && data.recipes.some(recipe => recipe.photo !== undefined)) {
+      if (Array.isArray(data?.recipes) && data.recipes.some(recipe => recipe.photo !== undefined || recipe.photos !== undefined)) {
         fail('Сначала сохраните фотографии в отдельном хранилище устройства.');
       }
       const serialized = stringify(data);
