@@ -8,6 +8,8 @@ const fs = require('node:fs/promises');
 const { chromium } = require('playwright');
 const URL = process.env.KITCHEN_TEST_URL || 'http://127.0.0.1:8765';
 const PREVIEW_KEY = 'kitchen-calculator-pr2-browser-test-v1';
+const DRAFT_KEY = 'kitchen-calculator-pr2-browser-drafts-v1';
+const previewOperation = op => op.method !== 'clear' && [PREVIEW_KEY,DRAFT_KEY].includes(op.key);
 const target = new globalThis.URL(URL);
 const local = ['localhost','127.0.0.1','[::1]'].includes(target.hostname);
 const publishedTest = target.protocol === 'https:' && target.hostname === 'sobaca0808-bit.github.io' && target.pathname.startsWith('/kitchen-calculator-test/');
@@ -84,7 +86,7 @@ async function importJSON(page,data,accept = true) {
       await page.locator('#view-portions').fill('10');
       assert.deepEqual(await stored(page),beforeScale,'Temporary portions do not change storage');
       const firstOps=await page.evaluate(()=>window.__previewStorageOps.slice());
-      assert(firstOps.length>0 && firstOps.every(op=>op.method!=='clear' && op.key===PREVIEW_KEY));
+      assert(firstOps.length>0 && firstOps.every(previewOperation));
       await page.reload();
       await page.locator(`[data-open="${id}"]`).click();
       assert.match(await page.locator('#recipe-card').innerText(),/Проверочная карточка/);
@@ -110,7 +112,7 @@ async function importJSON(page,data,accept = true) {
       }));
       assert.equal(proof.production,sentinel);assert.equal(proof.unrelated,sentinel);
       assert(proof.ops.length>0);
-      assert(proof.ops.every(op=>op.method!=='clear' && op.key===PREVIEW_KEY),'App operations touch only the preview key');
+      assert(proof.ops.every(previewOperation),'App operations touch only the exact preview and draft keys');
     },{card:true,viewport:{width,height:900}});
   }
   await test('Recipe card, prices, temporary portions, print and list navigation', async page => {
@@ -120,7 +122,7 @@ async function importJSON(page,data,accept = true) {
     await page.locator('#view-portions').fill('10');
     assert.match(await page.locator('#recipe-card').innerText(),/Количество порций: 10/);
     assert.deepEqual(await stored(page),before);
-    await page.locator('#show-prices').selectOption('no');
+    await page.locator('#card-mode').selectOption('chef');
     assert.doesNotMatch(await page.locator('#recipe-card').innerText(),/₽|стоимост/i);
     await page.emulateMedia({media:'print'});
     assert.equal(await page.locator('.library').isVisible(),false);
@@ -140,17 +142,33 @@ async function importJSON(page,data,accept = true) {
     await page.locator('#view-recipe').click();
     assert.match(await page.locator('#recipe-card').innerText(),/Запечь <до готовности>/);
     await page.locator('#view-portions').fill('10');
+    await page.locator('#card-mode').selectOption('calculation');
     assert.match(await page.locator('#recipe-card').innerText(),/Выход готового блюда: 4500 г/);
     await page.locator('#back-list').click();assert.equal(await page.locator('#recipe-card').count(),0);
     await page.locator('#library-search').fill('Гиро');assert.equal(await page.locator('[data-open]').count(),1);
   }, {card:true});
-  await test('Unsaved edits can be kept when navigation is cancelled', async page => {
+  await test('Recipe edits survive navigation as a separate draft until explicit save', async page => {
+    const before=await stored(page);
+    const original=before.recipes.find(recipe=>recipe.id==='dish-gyro');
     await page.locator('#item-name').fill('Не терять');
-    page.removeAllListeners('dialog');page.on('dialog',d=>d.dismiss());
+    await page.locator('#technology').fill('Незавершённая технология');
+    page.removeAllListeners('dialog');
+    const dialogs=[];page.on('dialog',dialog=>{dialogs.push(dialog.message());dialog.dismiss();});
     await page.locator('[data-tab="products"]').click();
+    assert.equal(await page.locator('.workspace').getAttribute('data-section'),'products');
+    assert.deepEqual(dialogs,[],'A safely saved recipe draft needs no discard confirmation');
+    assert.deepEqual(await stored(page),before,'Autosaving never modifies the saved recipe');
+    await page.locator('[data-tab="dish"]').click();
+    assert.equal(await page.locator('#recipe-card h1').innerText(),original.name,'The main card remains saved');
+    await page.locator('#drafts-panel [data-restore-draft="dish-gyro"]').click();
     assert.equal(await page.locator('#item-name').inputValue(),'Не терять');
-    await page.locator('#view-recipe').click();
-    assert.equal(await page.locator('#item-name').inputValue(),'Не терять');
+    assert.equal(await page.locator('#technology').inputValue(),'Незавершённая технология');
+    assert.deepEqual(await stored(page),before,'Restoring a draft still requires explicit save');
+    await page.locator('#save-item').click();
+    const saved=await stored(page);
+    assert.equal(saved.recipes.find(recipe=>recipe.id==='dish-gyro').name,'Не терять');
+    assert.deepEqual(saved.products,before.products);
+    assert.deepEqual(saved.recipes.filter(recipe=>recipe.id!=='dish-gyro'),before.recipes.filter(recipe=>recipe.id!=='dish-gyro'));
   });
   await test('Mobile cards and multi-page A4 print preserve all rows with and without prices',async page => {
     for(const width of [360,390,430]) {
@@ -170,11 +188,12 @@ async function importJSON(page,data,accept = true) {
     await page.reload();
     assert.equal(await page.locator('#recipe-card tbody tr').count(),90);
     await page.pdf({path:'/tmp/kitchen-long-with-prices.pdf',format:'A4'});
-    await page.locator('#show-prices').selectOption('no');
+    await page.locator('#card-mode').selectOption('chef');
     await page.pdf({path:'/tmp/kitchen-long-no-prices.pdf',format:'A4'});
-    assert.equal(await page.locator('#recipe-card th').count(),3);
+    assert.equal(await page.locator('.food-ingredients th').count(),2,'Chef card has only ingredient and per-portion quantities');
+    assert.doesNotMatch(await page.locator('.food-ingredients thead').innerText(),/Выход|Сумма|сырья/i);
     await page.locator('#view-portions').fill('0');
-    await page.locator('#show-prices').selectOption('yes');
+    await page.locator('#card-mode').selectOption('calculation');
     assert(await page.locator('#print-recipe').isDisabled());
   },{card:true});
   await test('Corrupt browser data is never replaced by seed or a new save',async page => {
@@ -297,7 +316,7 @@ async function importJSON(page,data,accept = true) {
     }
     await page.locator('#search-gyro-onion').fill('томаты');
     await page.locator('#options-gyro-onion .suggestion').tap();assert.equal(await page.locator('#search-gyro-onion').inputValue(),'Помидоры');
-    await page.reload();await editIfCard(page);await page.evaluate(()=>{document.activeElement.blur();window.scrollTo(0,0);});
+    await page.reload();await editIfCard(page);await page.evaluate(()=>{document.activeElement.blur();document.querySelector(".editor").scrollIntoView({block:"start"});});
     assert.equal(await page.locator('.form-actions').evaluate(el=>getComputedStyle(el).position),'sticky');
     assert.match(await page.locator('#mobile-summary').innerText(),/Известная часть.*неполно/s);
     const bar=await page.locator('.form-actions').boundingBox();

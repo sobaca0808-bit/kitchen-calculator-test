@@ -4,6 +4,7 @@
 const assert = require('node:assert/strict');
 const { chromium } = require('playwright');
 const TEST_KEY = 'kitchen-calculator-pr2-browser-test-v1';
+const DRAFT_KEY = 'kitchen-calculator-pr2-browser-drafts-v1';
 const PRODUCTION_KEY = 'kitchen-calculator-v1';
 const SENTINEL = '{"fictional":"issue-6-production-placeholder"}';
 const testURL = process.env.KITCHEN_TEST_URL;
@@ -36,9 +37,9 @@ async function guard(page) {
   assert.match(await page.locator('.test-notice').innerText(),/ТЕСТ/);
 }
 async function isolation(page, expectSentinel = true) {
-  const proof = await page.evaluate(key=>({ops:window.__issue6StorageOps.slice(),sentinel:localStorage.getItem(key)}),PRODUCTION_KEY);
+  const proof = await page.evaluate(key=>({ops:window.__issue6StorageOps.slice(),sentinel:window.__readIssue6Sentinel(key)}),PRODUCTION_KEY);
   if(expectSentinel)assert.equal(proof.sentinel,SENTINEL,'Production-key placeholder is unchanged');
-  assert(proof.ops.length>0 && proof.ops.every(op=>op.method!=='clear' && op.key===TEST_KEY),'Only the preview namespace is used');
+  assert(proof.ops.length>0 && proof.ops.every(op=>op.method!=='clear' && [TEST_KEY,DRAFT_KEY].includes(op.key)),'Only the preview namespace is used');
 }
 async function expectedView(page,type,name) {
   if(type==='dish') {
@@ -60,6 +61,8 @@ async function scenario(type,count,width) {
   const context=await browser.newContext({viewport:{width,height:900}});
   await context.addInitScript(()=>{
     window.__issue6StorageOps=[];
+    const nativeGetItem=Storage.prototype.getItem;
+    window.__readIssue6Sentinel=key=>nativeGetItem.call(localStorage,key);
     for(const method of ['getItem','setItem','removeItem','clear']) {
       const original=Storage.prototype[method];
       Storage.prototype[method]=function(...args){window.__issue6StorageOps.push({method,key:args[0]});return original.apply(this,args);};
