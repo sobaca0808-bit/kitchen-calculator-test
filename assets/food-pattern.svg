@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600" viewBox="0 0 600 600">
+  <g fill="none" stroke="#75856f" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" opacity=".105">
+    <!-- Carrot and leaves -->
+    <g transform="translate(74 72) rotate(-20)">
+      <path d="M0 5C-20 10-13 39 2 73C14 42 27 13 6 5Z"/>
+      <path d="M3 7C-6-7-16-9-19-24C-5-20 1-12 3-3C7-17 11-23 21-26C23-12 16-3 6 7"/>
+      <path d="M-10 22L0 25M14 34L5 37M-4 47L3 50"/>
+    </g>
+    <!-- Tomato -->
+    <g transform="translate(426 108) rotate(12)">
+      <path d="M-3-13C-44-32-55 29-24 44C-9 53 10 49 26 40C51 16 36-28 9-15"/>
+      <path d="M1-9L-15-19L-3-19L-4-31L4-20L18-28L12-15L26-10L11-7L6 4Z"/>
+      <path d="M-29 6C-34 13-34 23-27 29M7-24C4-36 9-42 16-43"/>
+    </g>
+    <!-- Herb sprig -->
+    <g transform="translate(174 337) rotate(23)">
+      <path d="M0 65C-3 38 2 1 10-35"/>
+      <path d="M3 37C-22 40-33 25-30 13C-11 10 0 20 3 37ZM3 16C28 17 39 3 35-9C17-9 6 3 3 16ZM8-8C-12-7-24-19-22-31C-6-34 5-22 8-8ZM8-14C23-17 29-28 25-39C12-38 7-27 8-14Z"/>
+    </g>
+    <!-- Pear -->
+    <g transform="translate(350 458) rotate(-12)">
+      <path d="M-7-35C-23-25-13-11-29 9C-53 42-27 64 0 62C30 59 44 33 25 10C11-8 19-27 4-35Z"/>
+      <path d="M-2-36C-2-52 6-61 16-64M2-44C20-57 34-50 35-38C20-34 9-36 2-44M-24 21C-34 39-21 48-13 49"/>
+    </g>
+    <!-- Steak, outer cut and marbling -->
+    <g transform="translate(521 337) rotate(18)">
+      <path d="M-42-16C-37-44 1-46 25-27C45-11 50 23 31 38C11 54-26 39-43 16C-51 4-50-6-42-16Z"/>
+      <path d="M-31-13C-21-30 2-31 20-17C35-4 39 17 25 26C9 36-16 26-29 11C-37 2-37-6-31-13Z"/>
+      <path d="M-20-9C-6 5-6 15 8 21M-2-25C-5-13 10-7 16 6M-26 12L-10 9M16 6L29 4"/>
+    </g>
+  </g>
+</svg>

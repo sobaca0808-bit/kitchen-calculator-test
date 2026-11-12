@@ -7,7 +7,7 @@ import {resolve} from 'node:path';
 
 const root=fileURLToPath(new URL('../',import.meta.url));
 const mount='/kitchen-calculator-test';
-const logicTests=['calculations','storage','recipe-view','preview-isolation','pages'].map(name=>'tests/'+name+'.test.js');
+const logicTests=['calculations','storage','recipe-view','recipe-card-model','preview-isolation','pages','packaging','drafts','photos','photo-print-selection'].map(name=>'tests/'+name+'.test.js');
 function run(args,env=process.env) {
   return new Promise((done,reject)=>{
     const child=spawn(process.execPath,args,{cwd:root,env,stdio:'inherit'});
@@ -16,8 +16,9 @@ function run(args,env=process.env) {
   });
 }
 const runtimeFiles=new Map([
-  ['/','index.html'],['/index.html','index.html'],['/styles.css','styles.css'],
-  ...['calculations','seed','storage','recipe-view','app'].map(name=>['/js/'+name+'.js','js/'+name+'.js'])
+  ['/','index.html'],['/index.html','index.html'],['/styles.css','styles.css'],['/assets/food-pattern.svg','assets/food-pattern.svg'],
+  ['/assets/gastronomic-background.webp','assets/gastronomic-background.webp'],
+  ...['calculations','seed','storage','recipe-view','recipe-card-model','recipe-card-templates','packaging','packaging-ui','drafts','photo-viewer','photos','app'].map(name=>['/js/'+name+'.js','js/'+name+'.js'])
 ]);
 const server=createServer(async(req,res)=>{
   const pathname=new URL(req.url,'http://localhost').pathname;
@@ -26,7 +27,7 @@ const server=createServer(async(req,res)=>{
   if(req.method!=='GET' || !file){res.writeHead(404);res.end();return;}
   try {
     const body=await readFile(resolve(root,file));
-    const type=file.endsWith('.html')?'text/html':file.endsWith('.css')?'text/css':'text/javascript';
+    const type=file.endsWith('.html')?'text/html':file.endsWith('.css')?'text/css':file.endsWith('.svg')?'image/svg+xml':file.endsWith('.webp')?'image/webp':'text/javascript';
     res.writeHead(200,{'Content-Type':type+'; charset=utf-8','Cache-Control':'no-store'});res.end(body);
   } catch {res.writeHead(500);res.end('Cannot read test asset');}
 });
@@ -38,5 +39,9 @@ try {
   await run(['tests/browser.test.js'],{...process.env,KITCHEN_TEST_URL:testURL});
   await run(['tests/products-list.browser.test.js'],{...process.env,KITCHEN_TEST_URL:testURL});
   await run(['tests/library-lists.browser.test.js'],{...process.env,KITCHEN_TEST_URL:testURL});
+  await run(['tests/packaging.browser.test.js'],{...process.env,KITCHEN_TEST_URL:testURL});
+  await run(['tests/task8.browser.test.js'],{...process.env,KITCHEN_TEST_URL:testURL});
+  await run(['tests/two-photos.browser.test.js'],{...process.env,KITCHEN_TEST_URL:testURL});
+  await run(['tests/card-modes.browser.test.js'],{...process.env,KITCHEN_TEST_URL:testURL});
 } catch(error){console.error(error.message);process.exitCode=1;}
 finally {await new Promise(done=>server.close(done));}
