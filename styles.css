@@ -940,6 +940,16 @@ button:disabled { opacity:.55; cursor:default; }
 .card-text { white-space:pre-wrap; overflow-wrap:anywhere; }
 td .card-text { font-size:12px; }
 .card-cost { font-weight:700; }
+.selling-price-editor { max-width:460px; }
+.profitability-card { margin-top:24px;padding:18px;border:1px solid var(--line);border-radius:10px;background:var(--paper);overflow-wrap:anywhere; }
+.profitability-card h2 { margin-top:0;font-size:18px; }
+.profitability-grid { display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:14px 0; }
+.profitability-grid>div { padding:12px;background:#f5f7f2;border-radius:7px;min-width:0; }
+.profitability-grid dt { color:var(--muted);font-size:12px;line-height:1.5; }
+.profitability-grid dd { margin:4px 0 0;font-size:19px;font-weight:650;line-height:1.4; }
+.profitability-basis,.profitability-status,.profitability-note { font-size:12px;line-height:1.6;margin:10px 0 0; }
+.profitability-basis,.profitability-note { color:var(--muted); }
+.profitability-status { color:var(--amber); }
 @media(max-width:760px) {
   .recipe-card { padding:16px 10px; font-size:13px; }
   .recipe-card th,.recipe-card td { padding:7px 4px; }
@@ -947,6 +957,10 @@ td .card-text { font-size:12px; }
   .card-controls input,.card-controls select { font-size:16px; }
   .form-actions button { min-height:44px; font-size:12px; }
   .library-item { min-height:60px; }
+  .profitability-card { padding:14px 12px; }
+  .profitability-grid { gap:8px; }
+  .profitability-grid>div { padding:10px 8px; }
+  .profitability-grid dd { font-size:17px; }
 }
 @page { size:A4; margin:15mm; }
 @media print {
@@ -962,6 +976,11 @@ td .card-text { font-size:12px; }
   .recipe-card h1,.recipe-card h2 { break-after:avoid; }
   .card-text { orphans:3; widows:3; }
   .recipe-card th,.recipe-card td { border-color:#aaa; }
+  .profitability-card { border-color:#aaa;border-radius:0;padding:12px;margin-top:18px;break-inside:avoid; }
+  .profitability-card h2 { margin-top:0; }
+  .profitability-grid>div { background:none;padding:5px 0; }
+  .profitability-grid dd { font-size:12pt; }
+  .profitability-grid dt,.profitability-basis,.profitability-status,.profitability-note { font-size:9pt;color:black; }
   button,input,select,textarea { display:none !important; }
 }
 
