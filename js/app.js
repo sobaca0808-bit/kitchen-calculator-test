@@ -12,11 +12,12 @@
   let state = loaded.data || (loaded.error ? {version:1,products:[],recipes:[]} : KitchenSeed.create());
   let recoveryRequired = !!loaded.error;
   let section = 'dish', selectedId = state.recipes.find(r => r.type === 'dish')?.id || null;
-  let viewing = true, viewPortions = 1, showPrices = true;
+  let viewing = true, viewPortions = 1, cardMode = 'calculation';
+  const printPhotoChoices = {chef:'both',calculation:'both'};
   let draft = null, dirty = false, isNew = false, errors = new Map(), invalidValues = new Map(), storageBlocked = !!loaded.error;
   const editor = $('#editor');
   let packagingEditor = null;
-  let photoEditor = null, photoPreview = null, draftTimer = null, draftStatus = '', restoring = false, printPhoto = true;
+  let photoEditor = null, photoPreview = null, draftTimer = null, draftStatus = '', restoring = false;
   const unusedPhotos = new Set();
   const isCatalog = () => section === 'products' || section === 'packaging';
   const editingRecipe = () => draft && !isCatalog() && !(section === 'dish' && viewing);
@@ -203,45 +204,51 @@
     else if (section === 'products') renderProduct(); else if (section === 'packaging') renderPackaging(); else renderRecipe();
   }
   function renderCard() {
-    editor.innerHTML = `<div class="card-controls"><button id="back-list">← К списку</button><button id="edit-recipe">Изменить</button><button id="print-recipe">Печать</button><label>Количество порций<input id="view-portions" type="text" inputmode="decimal" value="${esc(num(viewPortions,8))}"></label><label>ПОКАЗЫВАТЬ ЦЕНЫ<select id="show-prices"><option value="yes" ${showPrices ? 'selected' : ''}>ДА</option><option value="no" ${!showPrices ? 'selected' : ''}>НЕТ</option></select></label>${Photos.ids(draft).some(Boolean)?`<label class="photo-print-toggle"><input id="print-photo" type="checkbox" ${printPhoto?'checked':''}> Печатать фотографии</label>`:''}<p id="view-error" role="status"></p></div><article id="recipe-card" class="recipe-card"></article>`;
+    editor.innerHTML = `<div class="card-controls"><button id="back-list">← К списку</button><button id="edit-recipe">Изменить</button><button id="print-recipe">Печать</button><label>Форма карты<select id="card-mode"><option value="calculation" ${cardMode==='calculation'?'selected':''}>Калькуляционная карта</option><option value="chef" ${cardMode==='chef'?'selected':''}>Карта повара</option></select></label><label>Количество порций<input id="view-portions" type="text" inputmode="decimal" value="${esc(num(viewPortions,8))}"></label><label>Фотографии при печати<select id="print-photos"><option value="none">Без фотографий</option><option value="first">Только первая</option><option value="second">Только вторая</option><option value="both">Обе фотографии</option></select></label><p id="view-error" role="status"></p></div><article id="recipe-card" class="recipe-card"></article>`;
     const card=$('#recipe-card');
-    let drawVersion=0;
+    let cardValid=false, readinessVersion=0;
+    function updatePrintReadiness() {
+      const version=++readinessVersion, selection=printPhotoChoices[cardMode];
+      const selected=Photos.printSlots(selection), photoIds=Photos.ids(draft);
+      card.dataset.printPhotos=selection;
+      card.dataset.printHasPhotos=selected.some(index=>photoIds[index])?'yes':'no';
+      $('#print-photos').value=selection;
+      $('#print-recipe').disabled=true;
+      if(!cardValid || !photoPreview)return;
+      const gallery=photoPreview;
+      $('#view-error').textContent='';
+      gallery.readyFor(selection).then(()=>{
+        if(version===readinessVersion && $('#recipe-card')===card && cardValid && photoPreview===gallery) $('#print-recipe').disabled=false;
+      }).catch(error=>{
+        if(version!==readinessVersion || $('#recipe-card')!==card || !cardValid)return;
+        $('#view-error').textContent='Не удалось подготовить выбранные фотографии: '+error.message+' Выберите другой снимок или печать без фотографий.';
+        $('#print-recipe').disabled=true;
+      });
+    }
     function draw() {
-      const version=++drawVersion;
-      photoPreview?.dispose();photoPreview=null;
+      readinessVersion++;cardValid=false;$('#print-recipe').disabled=true;
       try {
-        viewPortions = C.parseNumber($('#view-portions').value);
-        const view = KitchenRecipeView.scale(state,draft.id,viewPortions);
-        const result = view.result, recipe = view.recipe;
-        const packaging = P.calculate(state,recipe,viewPortions);
-        const total = result.knownCost + packaging.knownCost;
-        if (!Number.isFinite(total)) throw Error('Слишком большая полная себестоимость. Уменьшите количество порций.');
-        const complete = result.complete && packaging.complete;
-        $('#recipe-card').dataset.printPhoto=printPhoto?'yes':'no';
-        $('#recipe-card').innerHTML = `<p class="eyebrow">ТЕХНОЛОГИЧЕСКАЯ КАРТА</p><h1>${esc(recipe.name)}</h1><div id="card-photos"></div><p>Количество порций: ${esc(num(viewPortions,8))}</p>
-          <table class="food-ingredients"><thead><tr><th>Ингредиент</th><th>Кол-во</th><th>Выход, г</th>${showPrices ? '<th>Сумма</th>' : ''}</tr></thead><tbody>${recipe.ingredients.map((row,i) => `<tr><td>${esc(findRef(row.refId)?.name || 'Ингредиент не выбран')}${row.note ? `<div class="card-text">${esc(row.note)}</div>` : ''}</td><td>${row.quantity == null ? 'Не задано' : esc(num(row.quantity,8))+' '+esc(C.units[row.unit].label)}</td><td>${result.rows[i].massGrams == null ? 'Неизвестен' : esc(num(result.rows[i].massGrams))}</td>${showPrices ? `<td>${esc(money(result.rows[i].knownCost))}${result.rows[i].complete ? '' : ' (неполно)'}</td>` : ''}</tr>`).join('')}</tbody></table>
-          ${KitchenPackagingUI.renderCard(state,recipe,viewPortions,showPrices)}
-          <p>Общая масса ингредиентов: ${view.rawMass == null ? 'неизвестна — задайте коэффициенты массы' : esc(num(view.rawMass))+' г'}</p><p><strong>Выход готового блюда: ${view.yieldGrams == null ? 'неизвестен — уточните массу компонентов' : esc(num(view.yieldGrams))+' г'}</strong></p>
-          ${showPrices ? `${(recipe.packaging || []).length ? `<p class="food-cost">Себестоимость ингредиентов: ${esc(money(result.knownCost))}${result.complete ? '' : ' (неполно)'}</p>` : ''}<p class="card-cost">${complete ? 'Общая себестоимость' : 'Известная часть стоимости (расчёт неполный)'}: ${esc(money(total))}</p>${(recipe.packaging || []).length ? `<p class="portion-cost">На одну порцию: ${esc(money(total/viewPortions))}${complete ? '' : ' (неполно)'}</p>` : ''}` : ''}
-          ${recipe.technology?.trim() ? `<h2>Способ приготовления</h2><div class="card-text">${esc(recipe.technology)}</div>` : ''}${recipe.note?.trim() ? `<h2>Примечания</h2><div class="card-text">${esc(recipe.note)}</div>` : ''}`;
-        $('#view-error').textContent = '';$('#print-recipe').disabled = false;
-        {
-          $('#print-recipe').disabled=Photos.ids(recipe).some(Boolean);
-          photoPreview=Photos.mountGallery($('#card-photos'),recipe);
-          photoPreview.ready.then(()=>{if(version===drawVersion && $('#recipe-card')===card) $('#print-recipe').disabled=false;}).catch(e=>{
-            if(version!==drawVersion || $('#recipe-card')!==card)return;
-            $('#view-error').textContent='Фотография недоступна: '+e.message+' Для печати без фотографий снимите флажок «Печатать фотографии».';
-            $('#print-recipe').disabled=printPhoto;
-          });
+        viewPortions=C.parseNumber($('#view-portions').value);
+        const model=KitchenRecipeCardModel.create(state,draft.id,viewPortions,cardMode);
+        // Both forms share the saved recipe and the same gallery. Presentation changes
+        // neither recreate photo records nor alter their order or bytes.
+        const galleryElement=$('#card-photos',card);
+        card.innerHTML=KitchenRecipeCardTemplates.render(state,model);
+        card.dataset.mode=cardMode;
+        if(galleryElement && photoPreview) $('#card-photos',card).replaceWith(galleryElement);
+        else {
+          photoPreview=Photos.mountGallery($('#card-photos',card),model.view.recipe);
+          photoPreview.ready.catch(()=>{}); // Each slot shows its own error; printing checks only selected slots.
         }
-      } catch(e) {$('#view-error').textContent = e.message;$('#print-recipe').disabled = true;}
+        card.hidden=false;cardValid=true;updatePrintReadiness();
+      } catch(error) {card.hidden=true;$('#view-error').textContent=error.message;$('#print-recipe').disabled=true;}
     }
     $('#view-portions').addEventListener('input',draw);
-    $('#show-prices').addEventListener('change',e => {showPrices=e.target.value==='yes';draw();});
-    $('#print-photo')?.addEventListener('change',e=>{printPhoto=e.target.checked;draw();});
-    $('#edit-recipe').addEventListener('click',() => {viewing=false;renderEditor();});
-    $('#back-list').addEventListener('click',() => {selectedId=null;openSelected();$('#library-search').focus();});
-    $('#print-recipe').addEventListener('click',() => window.print());
+    $('#card-mode').addEventListener('change',event=>{cardMode=event.target.value;draw();});
+    $('#print-photos').addEventListener('change',event=>{printPhotoChoices[cardMode]=event.target.value;updatePrintReadiness();});
+    $('#edit-recipe').addEventListener('click',()=>{viewing=false;renderEditor();});
+    $('#back-list').addEventListener('click',()=>{selectedId=null;openSelected();$('#library-search').focus();});
+    $('#print-recipe').addEventListener('click',()=>window.print());
     draw();
   }
   function head(type, description) {

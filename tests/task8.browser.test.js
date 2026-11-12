@@ -321,7 +321,7 @@ async function test(name,fn,options={}) {
       await page.waitForFunction(()=>document.querySelector('#view-error')?.textContent.length>0);
       assert.equal(await page.locator('#print-recipe').isDisabled(),true,'Printing with a missing image is blocked explicitly');
       assert.match(await page.locator('.recipe-photo').innerText(),/недоступна|не найдена/i);
-      await page.locator('#print-photo').uncheck();await page.waitForFunction(()=>document.querySelector('#print-recipe')?.disabled===false);
+      await page.locator('#print-photos').selectOption('none');await page.waitForFunction(()=>document.querySelector('#print-recipe')?.disabled===false);
       await page.emulateMedia({media:'print'});assert.equal(await page.locator('.recipe-photo').isVisible(),false);await page.emulateMedia({media:'screen'});
       const before=await stored(page);await importJSON(page,{...before,recipes:before.recipes.map(recipe=>recipe.id==='dish-a'?{...recipe,photoIds:['missing-photo',null]}:recipe)});
       await page.waitForFunction(()=>document.querySelector('#message')?.textContent.includes('Импорт отменён'));assert.deepEqual(await stored(page),before);
@@ -330,7 +330,7 @@ async function test(name,fn,options={}) {
     await test('print photo and price controls work independently; screen photo stays visible',async page=>{
       await edit(page);await uploadPhoto(page,await imageFile(page));await page.locator('#save-item').click();await showCard(page);
       for(const withPhoto of [true,false])for(const withPrices of [true,false]) {
-        await page.locator('#print-photo').setChecked(withPhoto);await page.locator('#show-prices').selectOption(withPrices?'yes':'no');
+        await page.locator('#card-mode').selectOption(withPrices?'calculation':'chef');await page.locator('#print-photos').selectOption(withPhoto?'both':'none');
         await page.waitForFunction(()=>document.querySelector('#print-recipe')?.disabled===false);
         assert(await page.locator('.recipe-photo img').isVisible(),'The print option never hides the screen preview');
         await page.emulateMedia({media:'print'});assert.equal(await page.locator('.recipe-photo').isVisible(),withPhoto);

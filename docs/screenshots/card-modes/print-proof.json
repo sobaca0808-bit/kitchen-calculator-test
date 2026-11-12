@@ -1,0 +1,50 @@
+[
+  {
+    "form": "chef",
+    "selection": "none",
+    "pages": 1,
+    "images": 0
+  },
+  {
+    "form": "chef",
+    "selection": "first",
+    "pages": 2,
+    "images": 1
+  },
+  {
+    "form": "chef",
+    "selection": "second",
+    "pages": 2,
+    "images": 1
+  },
+  {
+    "form": "chef",
+    "selection": "both",
+    "pages": 2,
+    "images": 2
+  },
+  {
+    "form": "calculation",
+    "selection": "none",
+    "pages": 2,
+    "images": 0
+  },
+  {
+    "form": "calculation",
+    "selection": "first",
+    "pages": 2,
+    "images": 1
+  },
+  {
+    "form": "calculation",
+    "selection": "second",
+    "pages": 2,
+    "images": 1
+  },
+  {
+    "form": "calculation",
+    "selection": "both",
+    "pages": 2,
+    "images": 2
+  }
+]

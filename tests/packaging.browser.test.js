@@ -132,7 +132,7 @@ async function test(name,fn,{width=1366,data=fixture(false)}={}){
       const raw=await fs.readFile(await download.path(),'utf8');assert(!raw.includes('issue-7-protected-production-placeholder'));
       const backup=JSON.parse(raw);assert.deepEqual(backup.packaging,saved.packaging);assert.deepEqual(backup.recipes[0].packaging,saved.recipes[0].packaging);
       await importJSON(page,backup);assert.deepEqual(await stored(page),backup);
-      await page.locator('#show-prices').selectOption('no');
+      await page.locator('#card-mode').selectOption('chef');
       assert.equal(await page.locator('.packaging-card').count(),1);
       assert.equal(await page.locator('.packaging-card .packaging-finance').count(),0);
       assert.doesNotMatch(await page.locator('.packaging-card').innerText(),/₽|себестоимост|закупочн|сумма|стоимость/i);
@@ -151,7 +151,7 @@ async function test(name,fn,{width=1366,data=fixture(false)}={}){
       assert.equal(await page.locator('.packaging-card').isVisible(),true);
       assert.equal(await page.evaluate(()=>getComputedStyle(document.body).backgroundImage),'none','The decorative pattern is not printed');
       if(width===1366)await page.pdf({path:'/tmp/kitchen-packaging-chef.pdf',format:'A4'});
-      await page.emulateMedia({media:'screen'});await page.locator('#show-prices').selectOption('yes');
+      await page.emulateMedia({media:'screen'});await page.locator('#card-mode').selectOption('calculation');
       assert(await page.locator('.packaging-card .packaging-finance').count()>0);hasMoney(await page.locator('#recipe-card').innerText(),30);
       if(width===1366){await page.emulateMedia({media:'print'});await page.pdf({path:'/tmp/kitchen-packaging-manager.pdf',format:'A4'});await page.emulateMedia({media:'screen'});}
       await noOverflow(page);
@@ -184,10 +184,14 @@ async function test(name,fn,{width=1366,data=fixture(false)}={}){
       const data=fixture(false);data.packaging.push(material('pack-unknown','Пакет без цены',null,1,'pcs'));
       await importJSON(page,data);await editDish(page);const foil=await addRow(page,'pack-foil',60,'cm');
       await page.locator('#pack-qty-'+foil.id).fill('-1');assert.equal(await page.locator('#pack-qty-'+foil.id).getAttribute('aria-invalid'),'true');
-      await page.locator('#add-packaging-row').click();const blank=page.locator('[data-packaging-row]').last();
+      await page.locator('#add-packaging-row').click();
+      const blankId=await page.locator('[data-packaging-row]').last().getAttribute('data-packaging-row');
+      const blank=page.locator(`[data-packaging-row="${blankId}"]`);
       assert.equal(await page.locator('#pack-qty-'+foil.id).inputValue(),'-1','An added row does not destroy invalid raw input');
       const beforeSave=await stored(page);await page.locator('#save-item').click();assert.deepEqual(await stored(page),beforeSave,'Invalid quantities block persistence');
-      await blank.locator('.remove-packaging-row').click();await page.locator('#pack-qty-'+foil.id).fill('0');
+      await blank.locator('.remove-packaging-row').click();
+      assert.equal(await page.locator(`[data-packaging-row="${foil.id}"]`).count(),1,'Removing the blank row preserves the existing material row');
+      await page.locator('#pack-qty-'+foil.id).fill('0');
       assert.equal(await page.locator('#pack-qty-'+foil.id).getAttribute('aria-invalid'),'true');
       await page.locator('#pack-qty-'+foil.id).fill('60');assert.equal(await page.locator('#pack-qty-'+foil.id).getAttribute('aria-invalid'),null);
       await addRow(page,'pack-unknown',1,'pcs');assert.match(await page.locator('.packaging-panel').innerText(),/непол|нет цены|цен[аы].*не/i);
