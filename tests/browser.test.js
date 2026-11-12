@@ -122,7 +122,7 @@ async function importJSON(page,data,accept = true) {
     await page.locator('#view-portions').fill('10');
     assert.match(await page.locator('#recipe-card').innerText(),/Количество порций: 10/);
     assert.deepEqual(await stored(page),before);
-    await page.locator('#show-prices').selectOption('no');
+    await page.locator('#card-mode').selectOption('chef');
     assert.doesNotMatch(await page.locator('#recipe-card').innerText(),/₽|стоимост/i);
     await page.emulateMedia({media:'print'});
     assert.equal(await page.locator('.library').isVisible(),false);
@@ -142,6 +142,7 @@ async function importJSON(page,data,accept = true) {
     await page.locator('#view-recipe').click();
     assert.match(await page.locator('#recipe-card').innerText(),/Запечь <до готовности>/);
     await page.locator('#view-portions').fill('10');
+    await page.locator('#card-mode').selectOption('calculation');
     assert.match(await page.locator('#recipe-card').innerText(),/Выход готового блюда: 4500 г/);
     await page.locator('#back-list').click();assert.equal(await page.locator('#recipe-card').count(),0);
     await page.locator('#library-search').fill('Гиро');assert.equal(await page.locator('[data-open]').count(),1);
@@ -187,11 +188,12 @@ async function importJSON(page,data,accept = true) {
     await page.reload();
     assert.equal(await page.locator('#recipe-card tbody tr').count(),90);
     await page.pdf({path:'/tmp/kitchen-long-with-prices.pdf',format:'A4'});
-    await page.locator('#show-prices').selectOption('no');
+    await page.locator('#card-mode').selectOption('chef');
     await page.pdf({path:'/tmp/kitchen-long-no-prices.pdf',format:'A4'});
-    assert.equal(await page.locator('#recipe-card th').count(),3);
+    assert.equal(await page.locator('.food-ingredients th').count(),2,'Chef card has only ingredient and per-portion quantities');
+    assert.doesNotMatch(await page.locator('.food-ingredients thead').innerText(),/Выход|Сумма|сырья/i);
     await page.locator('#view-portions').fill('0');
-    await page.locator('#show-prices').selectOption('yes');
+    await page.locator('#card-mode').selectOption('calculation');
     assert(await page.locator('#print-recipe').isDisabled());
   },{card:true});
   await test('Corrupt browser data is never replaced by seed or a new save',async page => {

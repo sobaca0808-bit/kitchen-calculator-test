@@ -18,6 +18,15 @@
     const values=Array.isArray(recipe?.photoIds) ? recipe.photoIds : recipe?.photoId ? [recipe.photoId] : [];
     return [values[0] || null,values[1] || null];
   }
+  function printSlots(selection) {
+    switch(selection) {
+      case 'none': return [];
+      case 'first': return [0];
+      case 'second': return [1];
+      case 'both': return [0,1];
+      default: throw Error('Выберите фотографии для печати: без фотографий, первая, вторая или обе.');
+    }
+  }
   function setIds(recipe,values) {
     delete recipe.photoId;delete recipe.photo;delete recipe.photos;
     if(values.some(Boolean))recipe.photoIds=[values[0] || null,values[1] || null];
@@ -245,17 +254,25 @@
   }
   function mountGallery(host,recipe) {
     host.classList.add('recipe-photos');host.replaceChildren();
-    const previews=[];
+    const previews=new Map();
     ids(recipe).forEach((id,index)=>{
       const slot=document.createElement('div');slot.className='photo-slot';slot.dataset.photoSlot=String(index);slot.dataset.empty=id?'false':'true';
-      if(id) {const preview=document.createElement('div');slot.append(preview);previews.push(mountPreview(preview,id));}
+      if(id) {const preview=document.createElement('div');slot.append(preview);previews.set(index,mountPreview(preview,id));}
       else {const empty=document.createElement('span');empty.className='photo-empty';empty.textContent='Фотография '+(index+1);slot.append(empty);}
       host.append(slot);
     });
-    const ready=Promise.allSettled(previews.map(preview=>preview.ready)).then(results=>{
+    function checkResults(results) {
       const failed=results.find(result=>result.status==='rejected');if(failed)throw failed.reason;
-    });
-    return {ready,dispose(){previews.forEach(preview=>preview.dispose());}};
+    }
+    // Observe every preview immediately, including photos excluded from printing.
+    // The original ready remains available for callers that need the whole gallery.
+    const ready=Promise.allSettled([...previews.values()].map(preview=>preview.ready)).then(checkResults);
+    ready.catch(()=>{});
+    async function readyFor(selection) {
+      const selected=printSlots(selection).map(index=>previews.get(index)).filter(Boolean);
+      checkResults(await Promise.allSettled(selected.map(preview=>preview.ready)));
+    }
+    return {ready,readyFor,dispose(){previews.forEach(preview=>preview.dispose());}};
   }
   function mountEditor(host,{recipe,onChange=()=>{},onStatus=()=>{}}) {
     host.classList.add('photo-editor');
@@ -313,5 +330,5 @@
     const ready=Promise.all(slots.map((_,index)=>draw(index)));
     return {get busy(){return anyBusy();},ready,dispose(){disposed=true;slots.forEach(slot=>{slot.version++;if(slot.url)URL.revokeObjectURL(slot.url);});}};
   }
-  return {DB_NAME,MAX_SOURCE_BYTES,MAX_PIXELS,ids,compress,get,remove,exportData,prepareImport,rollback,mountEditor,mountPreview,mountGallery};
+  return {DB_NAME,MAX_SOURCE_BYTES,MAX_PIXELS,ids,printSlots,compress,get,remove,exportData,prepareImport,rollback,mountEditor,mountPreview,mountGallery};
 });
