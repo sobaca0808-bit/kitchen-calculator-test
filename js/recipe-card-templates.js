@@ -51,7 +51,7 @@
       `<p class="card-raw-mass">Общая масса ингредиентов: ${view.rawMass == null ? 'неизвестна — задайте коэффициенты массы' : esc(num(view.rawMass))+' г'}</p><p class="card-yield"><strong>Выход готового блюда: ${view.yieldGrams == null ? 'неизвестен — уточните массу компонентов' : esc(num(view.yieldGrams))+' г'}</strong></p>`+
       ((recipe.packaging || []).length ? `<p class="food-cost">Себестоимость ингредиентов: ${esc(money(result.knownCost))}${result.complete ? '' : ' (неполно)'}</p>` : '')+
       `<p class="card-cost">${complete ? 'Общая себестоимость' : 'Известная часть стоимости (расчёт неполный)'}: ${esc(money(total))}</p><p class="portion-cost">На одну порцию: ${esc(money(total/count))}${complete ? '' : ' (неполно)'}</p>`+
-      details(recipe);
+      root.KitchenProfitabilityView.render(state,recipe.id)+details(recipe);
   }
   const renderers = Object.freeze({chef,calculation});
   function render(state, model) {

@@ -117,6 +117,7 @@
       object(item, label);
       if (!['prep', 'dish'].includes(item.type)) fail(label + ': неизвестный тип рецепта.');
       if (!Array.isArray(item.ingredients)) fail(label + ': отсутствует список ингредиентов.');
+      if (item.sellingPrice !== undefined && item.type !== 'dish') fail(label + ': цена продажи задаётся только для блюда.');
       if (['photoId','photo','photoIds','photos'].filter(key=>item[key] !== undefined).length > 1) fail(label + ': разные форматы фотографий не могут присутствовать одновременно.');
       function photoSlots(value, embedded) {
         if (!Array.isArray(value) || value.length > 2) fail(label + ': допустимо не больше двух фотографий.');
@@ -127,6 +128,7 @@
         name: text(item.name, label + ', название', true, 500), note: text(item.note, label + ', заметка'),
         ...(item.portions !== undefined ? {portions: number(item.portions, label + ', порции', true) ?? 1} : {}),
         ...(item.technology !== undefined ? {technology: text(item.technology, label + ', технология')} : {}),
+        ...(item.sellingPrice !== undefined ? {sellingPrice: number(item.sellingPrice, label + ', цена продажи')} : {}),
         actualYield: number(item.actualYield, label + ', фактический выход', true),
         ...(item.photoId !== undefined ? {photoId: photoId(item.photoId, label + ', фотография')} : {}),
         ...(item.photo !== undefined ? {photo: photo(item.photo, label + ', фотография')} : {}),
