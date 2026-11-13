@@ -1,0 +1,69 @@
+[
+  {
+    "fixture": "test copy of seed gyro",
+    "foodRows": 9,
+    "packagingRows": 4,
+    "selection": "none",
+    "beforePages": 2,
+    "afterPages": 1,
+    "photoGeometry": [],
+    "images": 0
+  },
+  {
+    "fixture": "test copy of seed gyro",
+    "foodRows": 9,
+    "packagingRows": 4,
+    "selection": "first",
+    "beforePages": 2,
+    "afterPages": 1,
+    "photoGeometry": [
+      {
+        "width": 321.25,
+        "height": 188.96875,
+        "maxHeight": "188.976px",
+        "fit": "contain"
+      }
+    ],
+    "images": 1
+  },
+  {
+    "fixture": "test copy of seed gyro",
+    "foodRows": 9,
+    "packagingRows": 4,
+    "selection": "second",
+    "beforePages": 2,
+    "afterPages": 1,
+    "photoGeometry": [
+      {
+        "width": 321.25,
+        "height": 188.96875,
+        "maxHeight": "188.976px",
+        "fit": "contain"
+      }
+    ],
+    "images": 1
+  },
+  {
+    "fixture": "test copy of seed gyro",
+    "foodRows": 9,
+    "packagingRows": 4,
+    "selection": "both",
+    "beforePages": 2,
+    "afterPages": 1,
+    "photoGeometry": [
+      {
+        "width": 673.546875,
+        "height": 188.96875,
+        "maxHeight": "188.976px",
+        "fit": "contain"
+      },
+      {
+        "width": 673.5625,
+        "height": 188.96875,
+        "maxHeight": "188.976px",
+        "fit": "contain"
+      }
+    ],
+    "images": 2
+  }
+]
