@@ -23,6 +23,12 @@
     }
     return required ? value.trim() : value;
   }
+  function folderName(value, label = 'Название папки') {
+    if (typeof value !== 'string') fail(label + ': укажите непустое название.');
+    const result = value.normalize('NFKC').trim().replace(/\s+/gu, ' ');
+    if (!result || result.length > 120) fail(label + ': укажите название от 1 до 120 символов.');
+    return result;
+  }
   function number(value, label, positive = false, maximum = Infinity) {
     if (value == null) return null;
     if (typeof value !== 'number' || !Number.isFinite(value) || value < 0 ||
@@ -85,6 +91,21 @@
       ids.add(result);
       return result;
     }
+    let folders;
+    if (input.folders !== undefined) {
+      if (!Array.isArray(input.folders)) fail('Папки folders должны быть списком.');
+      const names = new Set();
+      folders = input.folders.map((item, index) => {
+        const label = 'Папка ' + (index + 1);
+        object(item, label);
+        const name = folderName(item.name, label + ', название');
+        const key = name.toLocaleLowerCase('ru');
+        if (names.has(key)) fail('Папка с названием «' + name + '» уже существует.');
+        names.add(key);
+        return {id: id(item.id, label + ', id'), name};
+      });
+    }
+    const folderIds = new Set((folders || []).map(item => item.id));
     const products = input.products.map((item, index) => {
       const label = 'Продукт ' + (index + 1);
       object(item, label);
@@ -117,6 +138,10 @@
       object(item, label);
       if (!['prep', 'dish'].includes(item.type)) fail(label + ': неизвестный тип рецепта.');
       if (!Array.isArray(item.ingredients)) fail(label + ': отсутствует список ингредиентов.');
+      if (item.folderId !== undefined) {
+        if (item.type !== 'dish') fail(label + ': папка задаётся только для блюда.');
+        if (typeof item.folderId !== 'string' || !folderIds.has(item.folderId)) fail(label + ': ссылка на отсутствующую папку.');
+      }
       if (item.sellingPrice !== undefined && item.type !== 'dish') fail(label + ': цена продажи задаётся только для блюда.');
       if (['photoId','photo','photoIds','photos'].filter(key=>item[key] !== undefined).length > 1) fail(label + ': разные форматы фотографий не могут присутствовать одновременно.');
       function photoSlots(value, embedded) {
@@ -126,6 +151,7 @@
       return {
         id: id(item.id, label + ', id'), type: item.type,
         name: text(item.name, label + ', название', true, 500), note: text(item.note, label + ', заметка'),
+        ...(item.folderId !== undefined ? {folderId: item.folderId} : {}),
         ...(item.portions !== undefined ? {portions: number(item.portions, label + ', порции', true) ?? 1} : {}),
         ...(item.technology !== undefined ? {technology: text(item.technology, label + ', технология')} : {}),
         ...(item.sellingPrice !== undefined ? {sellingPrice: number(item.sellingPrice, label + ', цена продажи')} : {}),
@@ -237,7 +263,7 @@
         for (const ref of refs) stack.push({ id: ref, exit: false });
       }
     }
-    return { version: 1, products, recipes, ...(packaging !== undefined ? {packaging} : {}) };
+    return { version: 1, products, recipes, ...(packaging !== undefined ? {packaging} : {}), ...(folders !== undefined ? {folders} : {}) };
   }
   function parseJSON(source) {
     if (typeof source !== 'string') fail('Резервная копия должна быть текстовым JSON-файлом.');
@@ -279,5 +305,5 @@
       return { ok: false, error: 'Не удалось сохранить данные: ' + error.message + ' Скачайте JSON, чтобы не потерять изменения.' };
     }
   }
-  return { KEY, MAX_IMPORT_BYTES, MAX_PHOTO_BYTES, MAX_PHOTO_SIDE, MAX_RECIPE_DEPTH, validate, parseJSON, stringify, load, save };
+  return { KEY, MAX_IMPORT_BYTES, MAX_PHOTO_BYTES, MAX_PHOTO_SIDE, MAX_RECIPE_DEPTH, folderName, validate, parseJSON, stringify, load, save };
 });
