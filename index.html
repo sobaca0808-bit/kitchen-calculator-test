@@ -10,6 +10,7 @@
   <script defer src="js/calculations.js"></script>
   <script defer src="js/seed.js"></script>
   <script defer src="js/storage.js"></script>
+  <script defer src="js/folders.js"></script>
   <script defer src="js/packaging.js"></script>
   <script defer src="js/packaging-ui.js"></script>
   <script defer src="js/recipe-view.js"></script>
@@ -35,6 +36,16 @@
     <aside class="library" aria-label="Справочник">
       <div class="library-title"><h1 id="section-title">Блюда</h1><span class="eyebrow">ВАША КУХНЯ</span></div>
       <label class="search-label"><span class="sr-only">Поиск в разделе</span><input id="library-search" type="search" placeholder="Найти в разделе…" autocomplete="off"></label>
+      <section id="folder-tools" class="folder-tools" aria-label="Папки блюд" hidden>
+        <label>Папка<select id="folder-filter" aria-label="Папка библиотеки"></select></label>
+        <div class="folder-actions"><button id="folder-create">+ Папка</button><button id="folder-rename" aria-label="Переименовать папку">Имя папки</button><button id="folder-delete" class="danger" aria-label="Удалить папку">Удалить</button></div>
+        <form id="folder-form" hidden>
+          <label>Название папки<input id="folder-name" type="text" maxlength="120" autocomplete="off" required></label>
+          <div class="folder-form-actions"><button id="folder-submit" class="primary" type="submit">Создать</button><button id="folder-cancel" type="button">Отмена</button></div>
+          <p id="folder-error" class="inline-error" role="status" hidden></p>
+        </form>
+        <p id="folder-search-status" class="folder-search-status" role="status" hidden></p>
+      </section>
       <button id="create" class="primary wide">+ Новое блюдо</button>
       <div id="library-list" class="library-list"></div>
       <p class="local-note">Данные хранятся в этом браузере.<br>Для переноса используйте JSON.<br>Автоматической синхронизации нет.</p>
