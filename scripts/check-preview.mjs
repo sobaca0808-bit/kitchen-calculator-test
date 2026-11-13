@@ -16,7 +16,7 @@ function run(args,env=process.env) {
   });
 }
 const runtimeFiles=new Map([
-  ['/','index.html'],['/index.html','index.html'],['/styles.css','styles.css'],['/assets/food-pattern.svg','assets/food-pattern.svg'],
+  ['/','index.html'],['/index.html','index.html'],['/styles.css','styles.css'],['/assets/folders.css','assets/folders.css'],['/assets/food-pattern.svg','assets/food-pattern.svg'],
   ['/assets/gastronomic-background.webp','assets/gastronomic-background.webp'],
   ...['calculations','seed','storage','folders','recipe-view','recipe-card-model','recipe-card-templates','profitability','profitability-view','packaging','packaging-ui','drafts','photo-viewer','photos','app'].map(name=>['/js/'+name+'.js','js/'+name+'.js'])
 ]);
