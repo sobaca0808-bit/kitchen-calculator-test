@@ -1228,3 +1228,36 @@ td .card-text { font-size:12px; }
   .photo-viewer-zoom button { font-size:12px; }
 }
 @media print { .photo-viewer,.photo-viewer::backdrop { display:none !important; } }
+
+/* Compact A4 calculation cards; screen layout and photo dimensions stay intact. */
+@media print {
+  .recipe-card[data-mode=calculation] { font-size:10.5pt;line-height:1.25; }
+  .recipe-card[data-mode=calculation] p { margin:0 0 2px; }
+  .recipe-card[data-mode=calculation] > .eyebrow { margin-bottom:2px; }
+  .recipe-card[data-mode=calculation] h1 { font-size:18pt;line-height:1.15;margin:0 0 2px; }
+  .recipe-card[data-mode=calculation] h2 { font-size:11.5pt;line-height:1.2;margin:4px 0 2px; }
+  .recipe-card[data-mode=calculation] table { font-size:9.5pt;line-height:1.2;margin:4px 0; }
+  .recipe-card[data-mode=calculation] th,
+  .recipe-card[data-mode=calculation] td { padding:1px 6px; }
+  .recipe-card[data-mode=calculation] td .card-text,
+  .recipe-card[data-mode=calculation] .packaging-card-note { font-size:9pt;line-height:1.2; }
+  .recipe-card[data-mode=calculation] .prep-label { margin-top:0;padding:0 4px;line-height:1.2; }
+  .recipe-card[data-mode=calculation] .recipe-photos { margin:3px 0; }
+  .recipe-card[data-mode=calculation] .packaging-card { margin-top:6px; }
+  .recipe-card[data-mode=calculation] .card-raw-mass,
+  .recipe-card[data-mode=calculation] .card-yield,
+  .recipe-card[data-mode=calculation] .food-cost,
+  .recipe-card[data-mode=calculation] .card-cost,
+  .recipe-card[data-mode=calculation] .portion-cost { display:inline-block;vertical-align:top;width:49%;margin-bottom:1px; }
+  .recipe-card[data-mode=calculation] .field-help { font-size:9pt;line-height:1.2;margin-bottom:3px; }
+  .recipe-card[data-mode=calculation] .profitability-card { padding:4px;margin-top:4px; }
+  .recipe-card[data-mode=calculation] .profitability-card h2 { margin-top:0; }
+  .recipe-card[data-mode=calculation] .profitability-grid { gap:2px 8px;margin:2px 0; }
+  .recipe-card[data-mode=calculation] .profitability-metrics { grid-template-columns:repeat(4,minmax(0,1fr)); }
+  .recipe-card[data-mode=calculation] .profitability-grid>div { padding:1px 0; }
+  .recipe-card[data-mode=calculation] .profitability-grid dd { font-size:10.5pt;line-height:1.2;margin-top:1px; }
+  .recipe-card[data-mode=calculation] .profitability-grid dt,
+  .recipe-card[data-mode=calculation] .profitability-basis,
+  .recipe-card[data-mode=calculation] .profitability-status,
+  .recipe-card[data-mode=calculation] .profitability-note { font-size:9pt;line-height:1.25; }
+}

@@ -44,5 +44,6 @@ try {
   await run(['tests/two-photos.browser.test.js'],{...process.env,KITCHEN_TEST_URL:testURL});
   await run(['tests/card-modes.browser.test.js'],{...process.env,KITCHEN_TEST_URL:testURL});
   await run(['tests/profitability.browser.test.js'],{...process.env,KITCHEN_TEST_URL:testURL});
+  await run(['tests/compact-print.browser.test.js'],{...process.env,KITCHEN_TEST_URL:testURL});
 } catch(error){console.error(error.message);process.exitCode=1;}
 finally {await new Promise(done=>server.close(done));}
