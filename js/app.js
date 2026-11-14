@@ -18,6 +18,7 @@
   const printPhotoChoices = {chef:'both',calculation:'both'};
   let draft = null, dirty = false, isNew = false, errors = new Map(), invalidValues = new Map(), storageBlocked = !!loaded.error;
   const editor = $('#editor');
+  KitchenEditorActions.mount(editor);
   let packagingEditor = null;
   let photoEditor = null, photoPreview = null, draftTimer = null, draftStatus = '', restoring = false;
   const unusedPhotos = new Set();

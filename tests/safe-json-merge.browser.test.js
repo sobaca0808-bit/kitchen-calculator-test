@@ -150,6 +150,9 @@ async function apply(page,{allowNoop=false}={}) {
   return true;
 }
 async function backupJSON(page) {
+  const toggle=page.locator('#toggle-import-backups');
+  await toggle.waitFor();
+  if(await toggle.getAttribute('aria-expanded')!=='true') await toggle.click();
   await page.locator('#download-import-backup').waitFor();
   await page.waitForFunction(()=>!document.querySelector('#download-import-backup')?.disabled);
   const waiting=page.waitForEvent('download');await page.locator('#download-import-backup').click();
