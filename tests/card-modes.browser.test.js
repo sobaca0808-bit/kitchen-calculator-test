@@ -1,5 +1,6 @@
 /* Two presentations of one recipe: fresh local contexts and fictional data only. */
 'use strict';
+const {replaceJSONFromFile}=require('./helpers/import-preview.js');
 const assert=require('node:assert/strict');
 const fs=require('node:fs/promises');
 const path=require('node:path');
@@ -82,7 +83,8 @@ async function addPhotos(page){
  await page.locator('#save-item').click();await page.locator('#view-recipe').click();await ready(page);
 }
 async function exportJSON(page){const waiting=page.waitForEvent('download');await page.locator('#export').click();const download=await waiting;return JSON.parse(await fs.readFile(await download.path(),'utf8'));}
-async function importJSON(page,data){await page.locator('#import-file').setInputFiles({name:'fictional-card-modes.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(data))});}
+async function importJSON(page,data){return replaceJSONFromFile(page,data,{name:'fictional-card-modes.json',waitForCompletion:false});}
+
 async function visibleSlots(page){return page.locator('#card-photos [data-photo-slot]').evaluateAll(nodes=>nodes.filter(el=>getComputedStyle(el).display!=='none'&&el.getBoundingClientRect().width>0&&el.getBoundingClientRect().height>0).map(el=>Number(el.dataset.photoSlot)));}
 function pdfDetails(file){
  const info=execFileSync('pdfinfo',[file],{encoding:'utf8'}),images=execFileSync('pdfimages',['-list',file],{encoding:'utf8'});
