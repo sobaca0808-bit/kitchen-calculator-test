@@ -370,9 +370,9 @@ async function test(name,fn,options={}) {
       assert.equal((await draftById(page,'dish-a')).data.name,'Экспорт не подтверждает рецепт');
     });
 
-    for(const width of [320,390,1366])await test(`photos, drafts and the white working surfaces fit ${width}px`,async page=>{
+    for(const width of [320,390,1366])await test(`photos, drafts and the warm readable working surfaces fit ${width}px`,async page=>{
       const info=await page.evaluate(()=>({background:getComputedStyle(document.body).backgroundImage,editor:getComputedStyle(document.querySelector('.editor')).backgroundColor,input:getComputedStyle(document.querySelector('#view-portions')).backgroundColor}));
-      assert.match(info.background,/gastronomic-background\.webp/);assert.equal(info.editor,'rgb(255, 255, 255)');assert.equal(info.input,'rgb(255, 255, 255)');
+      assert.doesNotMatch(info.background,/url\(/);assert.equal(info.editor,'rgb(245, 240, 231)');assert.equal(info.input,'rgb(252, 250, 246)');
       await edit(page);await uploadPhoto(page,await imageFile(page));await page.locator('#item-name').fill('Длинное название незавершённого блюда '.repeat(3));await draftSaved(page);await noOverflow(page);
       await page.locator('[data-tab="products"]').click();await noOverflow(page);await restore(page,'dish-a');await noOverflow(page);
       await page.locator('#save-item').click();await showCard(page);await noOverflow(page);

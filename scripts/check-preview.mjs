@@ -16,7 +16,7 @@ function run(args,env=process.env) {
   });
 }
 const runtimeFiles=new Map([
-  ['/','index.html'],['/index.html','index.html'],['/styles.css','styles.css'],['/assets/folders.css','assets/folders.css'],['/assets/import.css','assets/import.css'],['/assets/editor-actions.css','assets/editor-actions.css'],['/assets/food-pattern.svg','assets/food-pattern.svg'],
+  ['/','index.html'],['/index.html','index.html'],['/styles.css','styles.css'],['/assets/folders.css','assets/folders.css'],['/assets/import.css','assets/import.css'],['/assets/editor-actions.css','assets/editor-actions.css'],['/assets/warm-kitchen.css','assets/warm-kitchen.css'],['/assets/food-pattern.svg','assets/food-pattern.svg'],
   ['/assets/gastronomic-background.webp','assets/gastronomic-background.webp'],
   ...['calculations','seed','storage','folders','recipe-view','recipe-card-model','recipe-card-templates','profitability','profitability-view','packaging','packaging-ui','drafts','photo-viewer','photos','json-merge','import-transaction','import-ui','editor-actions','app'].map(name=>['/js/'+name+'.js','js/'+name+'.js'])
 ]);
@@ -49,5 +49,6 @@ try {
   await run(['tests/safe-json-merge.browser.test.js'],{...process.env,KITCHEN_TEST_URL:testURL});
   await run(['tests/import-transaction.browser.test.js'],{...process.env,KITCHEN_TEST_URL:testURL});
   await run(['tests/interface-controls.browser.test.js'],{...process.env,KITCHEN_TEST_URL:testURL});
+  await run(['tests/warm-theme.browser.test.js'],{...process.env,KITCHEN_TEST_URL:testURL});
 } catch(error){console.error(error.message);process.exitCode=1;}
 finally {await new Promise(done=>server.close(done));}
