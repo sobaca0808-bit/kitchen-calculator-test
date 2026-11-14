@@ -1,10 +1,11 @@
 (function (root, factory) {
   const node = typeof module === 'object' && module.exports;
   const api = factory(node ? require('./storage.js') : root.KitchenStorage,
+    node ? require('./packaging.js') : root.KitchenPackaging,
     node ? require('node:crypto').webcrypto : root.crypto);
   if (node) module.exports = api;
   else root.KitchenJSONMerge = api;
-})(typeof globalThis !== 'undefined' ? globalThis : this, function (Storage, crypto) {
+})(typeof globalThis !== 'undefined' ? globalThis : this, function (Storage, Packaging, crypto) {
   'use strict';
 
   // This module only plans. It never reads storage, stores photos or applies data.
@@ -96,7 +97,11 @@
     return values;
   }
   async function plan(current, imported, options = {}) {
-    const base = portable(Storage.validate(current)), incoming = portable(Storage.validate(imported));
+    // Existing imports materialize auto packaging-food identities before saving. Do
+    // the same on both sides before comparison so old files remain idempotent and
+    // copied ingredient names cannot accidentally trigger a second food charge.
+    const base = portable(Packaging.resolveLinks(Storage.validate(current)));
+    const incoming = portable(Packaging.resolveLinks(Storage.validate(imported)));
     Storage.stringify(base); Storage.stringify(incoming);
     const mode = options.mode || 'merge';
     if (!['merge', 'replace'].includes(mode)) throw Error('Выберите «Объединить» или «Заменить базу».');

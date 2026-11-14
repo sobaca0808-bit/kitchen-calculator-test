@@ -4,6 +4,7 @@ const assert = require('node:assert/strict');
 const Merge = require('../js/json-merge.js');
 const Storage = require('../js/storage.js');
 const Calc = require('../js/calculations.js');
+const Packaging = require('../js/packaging.js');
 const clone = value => JSON.parse(JSON.stringify(value));
 const empty = () => ({version: 1, products: [], recipes: []});
 const product = (id = 'raw', name = 'Тестовое сырьё', price = 100) => ({id, name, aliases: '', price, packQuantity: 1,
@@ -161,6 +162,36 @@ test('row ID collisions are remapped independently and remain stable on repeated
   const added = byId(plan.data, 'new-prep');assert.notEqual(added.ingredients[0].id, 'dish-row');assert.match(added.ingredients[0].id, /^merge-row-/);
   assert.deepEqual(byId(plan.data, 'dish'), byId(base, 'dish'));assert.doesNotThrow(() => Storage.validate(plan.data));
   assert.deepEqual((await Merge.plan(plan.data, incoming)).data, plan.data);
+});
+
+test('old files materialize automatic packaging-food identities and remain idempotent after save', async () => {
+  const incoming = fixture();incoming.packaging[0].name = incoming.products[0].name;
+  delete incoming.recipes[1].packaging[0].ingredientRefId;
+  const literal = clone(incoming), first = await Merge.plan(empty(), incoming);
+  assert.equal(first.ready, true);
+  assert.equal(byId(first.data, 'dish').packaging[0].ingredientRefId, 'raw');
+  assert.equal(Packaging.calculate(first.data, byId(first.data, 'dish')).knownCost, 0);
+  const stored = Storage.parseJSON(Storage.stringify(first.data));
+  const repeated = await Merge.plan(stored, incoming);
+  assert.equal(repeated.ready, true);assert.equal(repeated.changes.added, 0);assert.deepEqual(repeated.conflicts, []);
+  assert.deepEqual(repeated.data, stored);assert.deepEqual(incoming, literal);
+});
+
+test('keep-both maps materialized automatic packaging identity to the copied food graph', async () => {
+  const base = fixture();base.packaging[0].name = base.products[0].name;
+  delete base.recipes[1].packaging[0].ingredientRefId;
+  const incoming = clone(base);incoming.products[0].price = 500;
+  const plan = await resolve(base, incoming);
+  assert.equal(plan.ready, true);
+  const importedDish = byId(plan.data, plan.idMap.dish);
+  assert.equal(importedDish.packaging[0].ingredientRefId, plan.idMap.raw);
+  assert.notEqual(plan.idMap.raw, 'raw');assert.match(byId(plan.data, plan.idMap.raw).name, /импорт/);
+  assert.equal(Packaging.calculate(plan.data, importedDish).knownCost, 0);
+  assert.equal(Packaging.calculate(plan.data, importedDish).rows[0].included, true);
+  assert.equal(Calc.calcRecipe(plan.data, importedDish.id).knownCost, 125);
+  const repeated = await Merge.plan(plan.data, incoming);
+  assert.equal(repeated.ready, true);assert.equal(repeated.changes.added, 0);assert.deepEqual(repeated.conflicts, []);
+  assert.deepEqual(repeated.data, plan.data);
 });
 
 test('edited deterministic copies are not silently reused or overwritten on next keep-both import', async () => {

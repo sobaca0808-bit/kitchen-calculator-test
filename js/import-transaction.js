@@ -1,9 +1,10 @@
 (function (root, factory) {
   const api = factory(typeof module === 'object' && module.exports ? require('./storage.js') : root.KitchenStorage,
-    typeof module === 'object' && module.exports ? require('./photos.js') : root.KitchenPhotos);
+    typeof module === 'object' && module.exports ? require('./photos.js') : root.KitchenPhotos,
+    typeof module === 'object' && module.exports ? require('./packaging.js') : root.KitchenPackaging);
   if (typeof module === 'object' && module.exports) module.exports = api;
   else root.KitchenImportTransaction = api;
-})(typeof globalThis !== 'undefined' ? globalThis : this, function (S, defaultPhotos) {
+})(typeof globalThis !== 'undefined' ? globalThis : this, function (S, defaultPhotos, P) {
   'use strict';
 
   const DB_NAME = 'kitchen-calculator-test-import-backups-v1';
@@ -25,11 +26,14 @@
     return {id: record.id, createdAt: record.createdAt, mode: record.mode, bytes: record.bytes,
       products: record.products, recipes: record.recipes, folders: record.folders};
   }
-  function backupStore(indexedDB = globalThis.indexedDB) {
+  function backupStore(explicitIndexedDB) {
     let connection;
     function open() {
       if (connection) return connection;
       connection = new Promise((resolve, reject) => {
+        let indexedDB;
+        try {indexedDB=explicitIndexedDB !== undefined ? explicitIndexedDB : globalThis.indexedDB;}
+        catch(error) {reject(error);return;}
         if (!indexedDB) {reject(Error('Хранилище резервных копий IndexedDB недоступно. Импорт не выполнен.'));return;}
         let request, settled = false;
         try {request = indexedDB.open(DB_NAME, 1);} catch (error) {reject(error);return;}
@@ -232,12 +236,15 @@
       return locked(async()=>{
         if (!['merge','replace'].includes(mode)) fail('Выберите режим объединения или замены базы.');
         const snapshot = await portableCurrent(currentState,expectedSource);
-        const validated = S.validate(candidate);checkPhotoExtensions(validated);
+        // Preserve the original import/persist behavior: automatic packaging
+        // matches become stored ingredient identities before a real write.
+        // The backup itself must remain the literal old data, not this projection.
+        const validated = P.resolveLinks(S.validate(candidate));checkPhotoExtensions(validated);
         // Resolve local snapshots only on the device that actually owns them.
         const incomingPortable = await photos.exportData(validated);
         checkPhotoExtensions(incomingPortable);S.stringify(incomingPortable);
         currentSnapshot(currentState,expectedSource);
-        if (comparablePortable(incomingPortable) === comparablePortable(snapshot.portable)) {
+        if (comparablePortable(incomingPortable) === comparablePortable(P.resolveLinks(snapshot.portable))) {
           return {data:snapshot.current,backup:null,noOp:true};
         }
         let backup;

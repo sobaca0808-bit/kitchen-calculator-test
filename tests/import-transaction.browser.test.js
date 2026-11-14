@@ -14,7 +14,7 @@ const launch={executablePath:process.env.CHROMIUM_PATH||'/usr/bin/chromium',head
 const SENTINEL='{"fictional":"protected transaction test placeholder"}';
 let browser,passed=0;const failures=[];
 async function inject(page){
-  for(const name of ['storage','photos','import-transaction'])await page.addScriptTag({path:path.join(root,'js',name+'.js')});
+  for(const name of ['storage','packaging','photos','import-transaction'])await page.addScriptTag({path:path.join(root,'js',name+'.js')});
   await page.evaluate(({key,draft,production,sentinel})=>{
     const get=Storage.prototype.getItem,set=Storage.prototype.setItem;
     set.call(localStorage,production,sentinel);

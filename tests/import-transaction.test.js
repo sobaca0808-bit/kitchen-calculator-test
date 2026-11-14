@@ -3,6 +3,7 @@ const test=require('node:test');
 const assert=require('node:assert/strict');
 const S=require('../js/storage.js');
 const T=require('../js/import-transaction.js');
+const P=require('../js/packaging.js');
 const KEY=S.KEY,DRAFT='kitchen-calculator-pr2-browser-drafts-v1',PRODUCTION='kitchen-calculator-v1';
 const copy=value=>JSON.parse(JSON.stringify(value));
 const image=(variant=0)=>({dataUrl:'data:image/jpeg;base64,'+Buffer.from([255,216,255,variant,255,217]).toString('base64'),width:1,height:1,mime:'image/jpeg'});
@@ -61,6 +62,16 @@ test('a denied default localStorage getter cannot break service construction or 
     assert.equal(attempts,1);
   } finally {if(descriptor)Object.defineProperty(globalThis,'localStorage',descriptor);else delete globalThis.localStorage;}
 });
+test('a denied default IndexedDB getter is resolved only by a backup operation, without breaking construction',async()=>{
+  const descriptor=Object.getOwnPropertyDescriptor(globalThis,'indexedDB'),h=harness();let attempts=0,service,store;
+  Object.defineProperty(globalThis,'indexedDB',{configurable:true,get(){attempts++;throw Error('SecurityError: fictional denied IndexedDB getter');}});
+  try {
+    assert.doesNotThrow(()=>{store=T.backupStore();service=T.create({storage:h.storage,locks:null});});
+    assert.equal(attempts,0);
+    await assert.rejects(service.listBackups(),/SecurityError/);assert.equal(attempts,1);
+    await assert.rejects(store.list(),/SecurityError/);assert.equal(attempts,2);untouched(h);
+  } finally {if(descriptor)Object.defineProperty(globalThis,'indexedDB',descriptor);else delete globalThis.indexedDB;}
+});
 test('durable backup includes portable photos, exact source and independent draft attachment before any apply',async()=>{
   const data=fixture();data.recipes[0].photoIds=['existing-one','existing-two'];const h=harness(data);
   h.records.set('existing-one',image(1));h.records.set('existing-two',image(2));
@@ -81,6 +92,20 @@ test('apply creates and verifies backup before one atomic main write and preserv
 test('an identical repeat import creates no backup, no photos and no main write',async()=>{
   const h=harness();const result=await h.service.apply({candidate:copy(h.state),currentState:h.state,expectedSource:h.source});
   assert.equal(result.noOp,true);assert.equal(result.backup,null);assert.equal(h.storedBackups.size,0);assert.equal(h.prepares,0);assert(!h.events.some(entry=>entry[0]==='write'));untouched(h);
+});
+test('actual imports store resolved packaging identities while backup keeps the exact unresolved previous data',async()=>{
+  const data=fixture();data.products=[{id:'food',name:'Кетчуп',aliases:'',price:200,packQuantity:1,unit:'kg',massPerPiece:null,gramsPerMl:null,note:''}];
+  data.packaging=[{id:'material',name:'Кетчуп',price:200,packQuantity:1,unit:'kg',note:''}];
+  data.recipes[0].ingredients=[{id:'food-row',refId:'food',quantity:100,unit:'g',lossPercent:null,outputGrams:null,note:''}];
+  data.recipes[0].packaging=[{id:'pack-row',refId:'material',quantity:20,unit:'g',freeForGuest:false,costMode:'auto'}];
+  const h=harness(data),candidate=h.changed();
+  const result=await h.service.apply({candidate,currentState:h.state,expectedSource:h.source});
+  assert.equal(result.data.recipes[0].packaging[0].ingredientRefId,'food');assert.equal(S.load(h.storage).data.recipes[0].packaging[0].ingredientRefId,'food');
+  assert(!Object.hasOwn(result.backup.data.recipes[0].packaging[0],'ingredientRefId'));assert.equal(result.backup.source,h.source);assert.deepEqual(result.backup.data,h.state);
+  const renamed=copy(result.data);renamed.products[0].name='Другое пищевое название';renamed.packaging[0].name='Другое имя добавки';assert.equal(P.calculate(renamed,renamed.recipes[0]).knownCost,0,'Persisted identity prevents charging the same ingredient after renames');
+  const replay=copy(candidate),source=h.values.get(KEY),backups=h.storedBackups.size,photoCount=h.records.size,writes=h.events.filter(entry=>entry[0]==='write').length;
+  const repeated=await h.service.apply({candidate:replay,currentState:result.data,expectedSource:source});
+  assert.equal(repeated.noOp,true);assert.equal(h.values.get(KEY),source);assert.equal(h.storedBackups.size,backups);assert.equal(h.records.size,photoCount);assert.equal(h.events.filter(entry=>entry[0]==='write').length,writes);
 });
 test('portable photo-only representation changes do not duplicate photos or rewrite an unchanged recipe',async()=>{
   const data=fixture();data.recipes[0].photoId='legacy-photo';const h=harness(data);h.records.set('legacy-photo',image());
