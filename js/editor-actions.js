@@ -22,7 +22,9 @@
     function focusAbovePanel(top,bottom) {
       const active=document.activeElement;
       if(!active || !editor.contains(active) || bar?.contains(active) || !active.matches('input,textarea,select,[contenteditable]'))return;
+      if(active.matches('input[type="hidden"],input[type="file"]') || !active.getClientRects().length)return;
       const rect=active.getBoundingClientRect(),available=bottom-top;
+      if(!rect.width || !rect.height || getComputedStyle(active).visibility!=='visible')return;
       // Oversized textareas scroll internally; keep their start reachable rather
       // than bouncing between two edges which cannot both fit the viewport.
       const delta=rect.height>available ? rect.top-top
@@ -53,7 +55,9 @@
       const small=viewHeight-height<96;
       editor.classList.toggle('actions-small-viewport',small);
       setStyle(editor,'--editor-actions-height',(small?0:height)+'px');
-      const visible=rect.top<bottom && rect.bottom>top && rect.width>0 && !workspace?.inert;
+      // Photo loading and folding content above the editor can move it outside
+      // the viewport. Its existing actions still belong to the open editor.
+      const visible=rect.width>0 && !!editor.getClientRects().length && !workspace?.inert;
       editor.classList.toggle('actions-visible',visible&&!small);
       setStyle(document.documentElement,'--editor-actions-gap',(visible&&!small?height:0)+'px');
       bar.dataset.fixed=visible&&!small?'true':'false';
