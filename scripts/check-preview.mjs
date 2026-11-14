@@ -17,7 +17,7 @@ function run(args,env=process.env) {
 }
 const runtimeFiles=new Map([
   ['/','index.html'],['/index.html','index.html'],['/styles.css','styles.css'],['/assets/folders.css','assets/folders.css'],['/assets/import.css','assets/import.css'],['/assets/editor-actions.css','assets/editor-actions.css'],['/assets/warm-kitchen.css','assets/warm-kitchen.css'],['/assets/food-pattern.svg','assets/food-pattern.svg'],
-  ['/assets/gastronomic-background.webp','assets/gastronomic-background.webp'],
+  ['/assets/gastronomic-background.webp','assets/gastronomic-background.webp'],['/assets/watercolor-kitchen.webp','assets/watercolor-kitchen.webp'],
   ...['calculations','seed','storage','folders','recipe-view','recipe-card-model','recipe-card-templates','profitability','profitability-view','packaging','packaging-ui','drafts','photo-viewer','photos','json-merge','import-transaction','import-ui','editor-actions','app'].map(name=>['/js/'+name+'.js','js/'+name+'.js'])
 ]);
 const server=createServer(async(req,res)=>{

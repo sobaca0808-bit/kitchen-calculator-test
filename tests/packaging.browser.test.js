@@ -139,10 +139,10 @@ async function test(name,fn,{width=1366,data=fixture(false)}={}){
         return {image:body.backgroundImage,repeat:body.backgroundRepeat,status:response.status,type:response.headers.get('content-type'),bytes:(await response.arrayBuffer()).byteLength,
           editor:getComputedStyle(document.querySelector('.editor')).backgroundColor,input:getComputedStyle(document.querySelector('#view-portions')).backgroundColor};
       });
-      assert.doesNotMatch(background.image,/url\(/);assert.equal(background.status,200);assert.match(background.type,/text\/css/);
+      assert.match(background.image,/watercolor-kitchen\.webp/);assert.equal(background.status,200);assert.match(background.type,/text\/css/);
       assert(background.repeat.split(',').every(value=>value.trim()==='no-repeat'),'The continuous CSS surround has no tiled images');
       assert(background.bytes>0&&background.bytes<16*1024,'The local screen theme remains lightweight');
-      assert.equal(background.editor,'rgb(245, 240, 231)');assert.equal(background.input,'rgb(252, 250, 246)');
+      assert.equal(background.editor,'rgb(255, 253, 249)');assert.equal(background.input,'rgb(255, 254, 253)');
       await page.emulateMedia({media:'print'});
       assert.equal(await page.locator('.library').isVisible(),false);assert.equal(await page.locator('.card-controls').isVisible(),false);
       assert.equal(await page.locator('.packaging-card').isVisible(),true);

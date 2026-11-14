@@ -1,4 +1,4 @@
-/* Warm screen theme: fictional data, disposable loopback contexts, unchanged A4. */
+/* Fresh berry screen theme: fictional data, disposable contexts, unchanged A4. */
 'use strict';
 const assert=require('node:assert/strict');
 const fs=require('node:fs/promises');
@@ -11,7 +11,7 @@ if(!url||!['localhost','127.0.0.1','[::1]'].includes(new URL(url).hostname))thro
 const KEY='kitchen-calculator-pr2-browser-test-v1',DRAFT='kitchen-calculator-pr2-browser-drafts-v1',LIVE='kitchen-calculator-v1';
 const SENTINEL='{"fictional":"warm-theme-protected-placeholder"}';
 const output=process.env.KITCHEN_TEST_ARTIFACT_DIR||path.join(os.tmpdir(),'kitchen-warm-theme-artifacts');
-const theme='link[href="assets/warm-kitchen.css"]';
+const theme='link[href^="assets/warm-kitchen.css"]';
 let browser,passed=0;const failures=[],proof=[];
 function fixture(long=false){
  const product=(id,name,price,packQuantity=1,unit='kg',massPerPiece=null)=>({id,name,price,packQuantity,unit,massPerPiece,gramsPerMl:null,aliases:'',note:'Вымышленные данные для проверки оформления.'});
@@ -24,7 +24,7 @@ function fixture(long=false){
 async function open({width=1366,before=false,long=false}={}){
  const context=await browser.newContext({viewport:{width,height:900},isMobile:width<768,hasTouch:width<=768,acceptDownloads:true});
  await context.route('**/favicon.ico',route=>route.fulfill({status:204,body:''}));
- if(before)await context.route('**/assets/warm-kitchen.css',route=>route.fulfill({contentType:'text/css',body:''}));
+ if(before)await context.route('**/assets/warm-kitchen.css*',route=>route.fulfill({contentType:'text/css',body:''}));
  await context.addInitScript(({key,live,sentinel,data})=>{
   if(!['http:','https:'].includes(location.protocol))return;
   const get=Storage.prototype.getItem,set=Storage.prototype.setItem;
@@ -75,7 +75,7 @@ function pdf(file){const info=execFileSync('pdfinfo',[file],{encoding:'utf8'});r
   browser=await chromium.launch({executablePath:process.env.CHROMIUM_PATH||'/usr/bin/chromium',headless:true,args:['--no-sandbox']});await fs.mkdir(output,{recursive:true});
   for(const width of [320,390,768,1366])await test(`main editors remain readable and usable at ${width}px`,async page=>{
    const values={};for(const name of ['products','prep','dish','packaging']){
-    await section(page,name);assert.equal(await page.locator('.editor').evaluate(el=>getComputedStyle(el).backgroundColor),'rgb(245, 240, 231)');
+    await section(page,name);assert.equal(await page.locator('.editor').evaluate(el=>getComputedStyle(el).backgroundColor),'rgb(255, 253, 249)');
     for(const selector of ['#item-name','.intro','#save-item','#delete-item'])values[name+selector]=await contrast(page,selector);
     values[name+'label']=await contrast(page,'#editor label:has(input)');values[name+'field']=await contrast(page,'#editor input:not([type=file])');
     await guard(page);assert((await page.locator('#save-item').boundingBox()).height>=44);
@@ -92,8 +92,21 @@ function pdf(file){const info=execFileSync('pdfinfo',[file],{encoding:'utf8'});r
    assert((await page.locator('#save-item').evaluate(el=>parseFloat(getComputedStyle(el).outlineWidth)))>=2);
    const before=await page.locator('#save-item').evaluate(el=>getComputedStyle(el).backgroundColor);await page.locator('#save-item').hover();const hovered=await page.locator('#save-item').evaluate(el=>getComputedStyle(el).backgroundColor);assert.notEqual(hovered,before);
    await page.mouse.down();assert.notEqual(await page.locator('#save-item').evaluate(el=>getComputedStyle(el).backgroundColor),hovered);await page.mouse.move(1,1);await page.mouse.up();
-   const body=await page.evaluate(()=>{const s=getComputedStyle(document.body);return {image:s.backgroundImage,repeat:s.backgroundRepeat,attachment:s.backgroundAttachment};});assert.doesNotMatch(body.image,/url\(/);assert(body.repeat.split(',').every(s=>s.trim()==='no-repeat'));assert(body.attachment.split(',').every(s=>s.trim()==='fixed'));
+   const body=await page.evaluate(()=>{const s=getComputedStyle(document.body);return {image:s.backgroundImage,repeat:s.backgroundRepeat,attachment:s.backgroundAttachment};});assert.match(body.image,/watercolor-kitchen\.webp/);assert(body.repeat.split(',').every(s=>s.trim()==='no-repeat'));assert(body.attachment.split(',').every(s=>s.trim()==='fixed'));
+   const artwork=await page.request.get(new URL('assets/watercolor-kitchen.webp',url).href);assert.equal(artwork.status(),200);assert.match(artwork.headers()['content-type'],/image\/webp/);assert((await artwork.body()).length<220*1024,'The original watercolor stays lightweight and local');
   });
+  for(const width of [320,390,1366])await test(`empty photo areas stay compact and loaded photographs keep their proportions at ${width}px`,async page=>{
+   const saved=await snapshot(page);assert.equal(await page.locator('#card-photos img').count(),0);
+   for(const slot of await page.locator('#card-photos [data-empty=true]').all()){const r=await slot.boundingBox();assert(r.height>=44&&r.height<=96,'Empty view slots are small placeholders');}
+   await page.locator('#edit-recipe').click();for(const button of await page.locator('.photo-frame-button').all()){const r=await button.boundingBox();assert(r.height>=44&&r.height<=112,'Empty editor frames do not reserve a large photo');}
+   if(width<768)for(const button of await page.locator('.photo-pick,.photo-camera-pick').all())assert((await button.boundingBox()).height>=44);
+   await page.locator('#photo-file').setInputFiles(path.join(__dirname,'fixtures/berry-galette.webp'));
+   await page.waitForFunction(()=>document.querySelector('.photo-frame-button img')?.naturalWidth>0&&!document.querySelector('#photo-file').disabled);
+   assert.equal(await page.locator('.photo-frame-button img').evaluate(el=>getComputedStyle(el).objectFit),'contain');
+   assert((await page.locator('.photo-frame-button').first().boundingBox()).height>112);assert((await page.locator('.photo-frame-button').nth(1).boundingBox()).height<=112);
+   assert.equal((await snapshot(page)).raw,saved.raw,'A photo in a draft never overwrites the saved recipe');
+   await page.locator('#remove-photo').click();await page.waitForFunction(()=>!document.querySelector('.photo-frame-button img'));assert((await page.locator('.photo-frame-button').first().boundingBox()).height<=112);assert.equal((await snapshot(page)).raw,saved.raw);
+  },{width});
   await test('long recipe, fixed actions and both photographs keep their data and proportions',async page=>{
    await pictures(page);await page.locator('#edit-recipe').click();const field=page.locator('#qty-long-39');await field.focus();await field.scrollIntoViewIfNeeded();await page.waitForFunction(()=>{const f=document.querySelector('#qty-long-39').getBoundingClientRect(),b=document.querySelector('.form-actions').getBoundingClientRect();return f.bottom<=b.top+1;});
    assert.equal(await page.locator('.form-actions').getAttribute('data-fixed'),'true');await page.locator('#view-recipe').click();
@@ -120,7 +133,13 @@ function pdf(file){const info=execFileSync('pdfinfo',[file],{encoding:'utf8'});r
      await ready(p);await p.screenshot({path:path.join(output,(width===390?'mobile-':'desktop-')+label+'.png')});await guard(p);
     }
     assert.equal(await old.page.locator('.editor').evaluate(el=>getComputedStyle(el).backgroundColor),'rgb(255, 255, 255)');
-    assert.equal(await page.locator('.editor').evaluate(el=>getComputedStyle(el).backgroundColor),'rgb(245, 240, 231)');assert.deepEqual(old.errors,[]);
+    assert.equal(await page.locator('.editor').evaluate(el=>getComputedStyle(el).backgroundColor),'rgb(255, 253, 249)');assert.deepEqual(old.errors,[]);
+    await page.locator('[data-tab="dish"]').click();await page.locator('[data-open="pie"]').click();await page.waitForFunction(()=>!document.querySelector('#print-recipe').disabled);await page.evaluate(()=>scrollTo(0,0));
+    const name=width===390?'mobile':'desktop';await page.screenshot({path:path.join(output,'home-'+name+'-full.png'),fullPage:true});
+    await page.locator('#edit-recipe').click();await page.locator('#photo-file').setInputFiles(path.join(__dirname,'fixtures/berry-galette.webp'));await page.waitForFunction(()=>document.querySelector('.photo-frame-button img')?.naturalWidth>0&&!document.querySelector('#photo-file').disabled);
+    await page.locator('#save-item').click();await page.locator('#view-recipe').click();await page.waitForFunction(()=>!document.querySelector('#print-recipe').disabled&&document.querySelector('#card-photos img')?.naturalWidth>0);
+    assert(await page.locator('#card-photos [data-empty=true]').isHidden());assert((await page.locator('#card-photos [data-empty=false]').boundingBox()).width<=560);
+    await page.evaluate(()=>scrollTo(0,0));await page.screenshot({path:path.join(output,'recipe-'+name+'-full.png'),fullPage:true});
    }finally{await old.context.close();}
   },{width});
   await test('both A4 forms and all four photo choices print identically with and without the screen theme',async page=>{
