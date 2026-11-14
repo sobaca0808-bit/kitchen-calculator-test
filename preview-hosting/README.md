@@ -3,6 +3,19 @@
 Адрес после успешной публикации:
 https://sobaca0808-bit.github.io/kitchen-calculator-test/preview/
 
+**Сейчас публикация заблокирована GitHub, рабочая ссылка ещё не подтверждена.**
+Первый запуск остановлен до выдачи runner и выполнения кода:
+`Branch "preview/browser" is not allowed to deploy to github-pages due to environment protection rules.`
+[Остановленный запуск](https://github.com/sobaca0808-bit/kitchen-calculator-test/actions/runs/43643938235).
+Действующая публикация не менялась. Правила окружения автоматически не менялись.
+
+Для завершения владелец репозитория должен открыть **Settings → Environments →
+github-pages → Deployment branches and tags** и добавить разрешение для ветки
+`preview/browser`, сохранив существующие правила main. Затем в указанном запуске
+выбрать **Re-run all jobs**, либо сообщить о готовности для повторного запуска.
+Если менять разрешения действующего окружения нельзя, нужен отдельный репозиторий
+Pages; создать его через текущее подключение GitHub невозможно.
+
 Публикация выполняется только веткой `preview/browser` и отдельным workflow
 `Publish isolated browser preview`. PR №20 и main не объединяются и не меняются.
 Исходник предпросмотра закреплён на коммите
