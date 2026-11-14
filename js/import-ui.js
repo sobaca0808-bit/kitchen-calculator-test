@@ -6,6 +6,12 @@
   function mount({getState,canStart,setBusy,onApplied,message,getDraftSource=()=>null}) {
     const $=selector=>document.querySelector(selector), service=root.KitchenImportTransaction.create();
     const panel=$('#import-panel');let preview=null,version=0,applying=false,planning=false;
+    function setBackupsExpanded(expanded) {
+      $('#import-backups-content').hidden=!expanded;
+      $('#toggle-import-backups').setAttribute('aria-expanded',String(expanded));
+      $('.backup-toggle-icon').textContent=expanded?'−':'+';
+    }
+    $('#toggle-import-backups').addEventListener('click',()=>setBackupsExpanded($('#import-backups-content').hidden));
     function source(){return localStorage.getItem(S.KEY);}
     function download(text,name) {
       const url=URL.createObjectURL(new Blob([text],{type:'application/json;charset=utf-8'}));
@@ -15,6 +21,8 @@
       try {
         const items=await service.listBackups();
         $('#import-backups').hidden=!items.length;
+        $('#import-backups-count').textContent='('+items.length+')';
+        if(!items.length)setBackupsExpanded(false);
         $('#import-backup-select').innerHTML=items.map(item=>`<option value="${esc(item.id)}">${esc(new Date(item.createdAt).toLocaleString('ru-RU'))} · ${item.mode==='replace'?'до замены':'до объединения'}</option>`).join('');
         $('#download-import-backup').disabled=!items.length;
         if(items.length)$('#import-backup-status').textContent='Копия содержит сохранённую базу и фотографии до применения. Здесь хранятся до трёх последних копий; скачайте нужную на устройство.';
@@ -119,7 +127,7 @@
         appliedResult=result;
         onApplied(result.data);
         preview=null;panel.hidden=true;
-        message(result.noOp?'Объединение выполнено: новых изменений нет, база не перезаписывалась.':current.mode==='replace'?'База заменена. Резервная копия до замены доступна ниже. Черновики сохранены отдельно.':'Объединение выполнено. Резервная копия до импорта доступна ниже. Черновики сохранены отдельно.');
+        message(result.noOp?'Объединение выполнено: новых изменений нет.':current.mode==='replace'?'База заменена. Резервная копия сохранена.':'Объединение выполнено. Резервная копия сохранена.');
       } catch(error) {
         $('#import-error').textContent=error.message;$('#import-progress').textContent='Применение отменено. Исходная база не перезаписана. Отмените просмотр и выберите файл заново.';
         current.plan=null;preview=null;panel.hidden=true;
@@ -127,6 +135,7 @@
         else message('Импорт отменён: '+error.message+' Исходная база не перезаписана.',true);
       } finally {
         applying=false;panel.setAttribute('aria-busy','false');$('#import-cancel').disabled=false;$('#import-mode').disabled=false;
+        if(appliedResult)setBackupsExpanded(false);
         if(!preview)setBusy(false);
         await refreshBackups(true);
       }

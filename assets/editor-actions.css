@@ -1,0 +1,40 @@
+/* The original editor buttons stay in their form; only their screen position changes. */
+@media screen {
+  #editor.actions-managed {
+    padding-bottom:var(--editor-actions-height,0px);
+  }
+  #editor.actions-managed > .form-actions {
+    position:fixed;
+    left:var(--editor-actions-left);
+    width:var(--editor-actions-width);
+    bottom:var(--editor-actions-bottom,0px);
+    margin:0;
+    visibility:hidden;
+    pointer-events:none;
+    flex-wrap:wrap;
+  }
+  #editor.actions-managed.actions-visible > .form-actions {
+    visibility:visible;
+    pointer-events:auto;
+  }
+  #editor.actions-managed.actions-small-viewport {
+    padding-bottom:0;
+  }
+  #editor.actions-managed.actions-small-viewport > .form-actions {
+    position:static;
+    width:auto;
+    visibility:visible;
+    pointer-events:auto;
+  }
+  .workspace[inert] #editor.actions-managed > .form-actions {
+    visibility:hidden;
+    pointer-events:none;
+  }
+  #editor.actions-managed :is(input,textarea,select,[contenteditable]) {
+    scroll-margin-top:12px;
+    scroll-margin-bottom:calc(var(--editor-actions-height,0px) + 12px);
+  }
+  html:has(#editor.actions-visible) {
+    scroll-padding-bottom:calc(var(--editor-actions-gap,0px) + 12px);
+  }
+}

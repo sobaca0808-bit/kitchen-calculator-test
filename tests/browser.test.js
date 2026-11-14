@@ -307,13 +307,17 @@ async function importJSON(page,data,accept=true){return replaceJSONFromFile(page
       await page.setViewportSize({width,height:844});
       assert(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth),`No overflow at ${width}`);
       const last=page.locator('#note-gyro-bun');await last.focus();await last.scrollIntoViewIfNeeded();
+      await page.waitForFunction(()=>{
+        const field=document.querySelector('#note-gyro-bun').getBoundingClientRect(),actions=document.querySelector('.form-actions').getBoundingClientRect();
+        return field.y>=0&&field.bottom<=innerHeight+1&&(field.bottom<=actions.top+1||field.top>=actions.bottom-1);
+      });
       const rect=await last.boundingBox();assert(rect.y>=0 && rect.y+rect.height<=844,`Last field visible at ${width}`);
-      assert.equal(await page.locator('.form-actions').evaluate(el=>getComputedStyle(el).position),'static','Actions do not cover focused fields');
+      const focusedBar=await page.locator('.form-actions').boundingBox();assert(rect.y+rect.height<=focusedBar.y+1||rect.y>=focusedBar.y+focusedBar.height-1,'Actions do not cover focused fields');
     }
     await page.locator('#search-gyro-onion').fill('томаты');
     await page.locator('#options-gyro-onion .suggestion').tap();assert.equal(await page.locator('#search-gyro-onion').inputValue(),'Помидоры');
     await page.reload();await editIfCard(page);await page.evaluate(()=>{document.activeElement.blur();document.querySelector(".editor").scrollIntoView({block:"start"});});
-    assert.equal(await page.locator('.form-actions').evaluate(el=>getComputedStyle(el).position),'sticky');
+    await page.waitForFunction(()=>{const bar=document.querySelector('.form-actions').getBoundingClientRect();return bar.y>=0&&bar.bottom<=innerHeight+1;});
     assert.match(await page.locator('#mobile-summary').innerText(),/Известная часть.*неполно/s);
     const bar=await page.locator('.form-actions').boundingBox();
     assert(bar.y>=0 && bar.y+bar.height<=844,'Compact total and add action stay inside mobile viewport');
