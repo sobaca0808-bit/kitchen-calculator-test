@@ -1,0 +1,84 @@
+name: Publish isolated browser preview
+
+on:
+  push:
+    branches: [preview/browser]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Share the existing Pages lock; do not cancel an existing main deployment.
+concurrency:
+  group: github-pages
+  cancel-in-progress: false
+
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}preview/
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify main has not moved
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: test "$(gh api repos/${{ github.repository }}/git/ref/heads/main --jq .object.sha)" = 63443c53d2c7a99060584d54eae0e9c779475405
+      - name: Build preview without changing any existing base file
+        run: python3 preview-hosting/prepare-pages.py --output "$RUNNER_TEMP/pages-combined" --proof "$RUNNER_TEMP/pages-proof.json"
+      - name: Verify current live site matches the preserved base
+        run: python3 preview-hosting/verify-pages.py "$RUNNER_TEMP/pages-proof.json" --phase before
+      - name: Upload unchanged base with the isolated preview directory
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ${{ runner.temp }}/pages-combined
+      - name: Check main again immediately before publishing
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: test "$(gh api repos/${{ github.repository }}/git/ref/heads/main --jq .object.sha)" = 63443c53d2c7a99060584d54eae0e9c779475405
+      - name: Publish isolated preview alongside unchanged base
+        id: deploy
+        uses: actions/deploy-pages@v4
+      - name: Verify HTTPS preview and unchanged live base
+        run: python3 preview-hosting/verify-pages.py "$RUNNER_TEMP/pages-proof.json" --phase after
+      - name: Prepare disposable browser checks
+        run: |
+          python3 preview-hosting/prepare-validation.py > "$RUNNER_TEMP/preview-validation.json"
+          npm install --prefix "$RUNNER_TEMP/preview-qa" --ignore-scripts --no-audit --no-fund playwright@1.62.1
+      - name: Run 20 existing UI checks against the published HTTPS preview
+        env:
+          NODE_PATH: ${{ runner.temp }}/preview-qa/node_modules
+          KITCHEN_TEST_URL: https://sobaca0808-bit.github.io/kitchen-calculator-test/preview/
+          CHROMIUM_PATH: /usr/bin/google-chrome
+        run: |
+          QA_DIR="$(python3 -c 'import json,os;print(json.load(open(os.environ["RUNNER_TEMP"]+"/preview-validation.json"))["validation_directory"])')"
+          node "$QA_DIR/tests/browser.test.js"
+      - name: Verify separate storage and capture desktop and mobile
+        env:
+          NODE_PATH: ${{ runner.temp }}/preview-qa/node_modules
+          KITCHEN_PREVIEW_URL: https://sobaca0808-bit.github.io/kitchen-calculator-test/preview/
+          CHROMIUM_PATH: /usr/bin/google-chrome
+          KITCHEN_PREVIEW_ARTIFACTS: ${{ runner.temp }}/preview-proof
+        run: node preview-hosting/check-published.cjs
+      - name: Save browser evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: browser-preview-proof
+          path: |
+            ${{ runner.temp }}/pages-proof.json
+            ${{ runner.temp }}/preview-proof
+      - name: Report verified preview URL
+        run: |
+          cat >> "$GITHUB_STEP_SUMMARY" <<'REPORT'
+          ## Isolated PR 20 browser preview
+          https://sobaca0808-bit.github.io/kitchen-calculator-test/preview/
+
+          HTTPS file hashes and desktop/mobile Chrome checks passed.
+          Main and existing live files were preserved; PR 20 was not merged.
+          REPORT
