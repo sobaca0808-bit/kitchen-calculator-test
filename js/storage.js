@@ -10,9 +10,63 @@
   const MAX_PHOTO_BYTES = 500 * 1024;
   const MAX_PHOTO_SIDE = 1920;
   const MAX_RECIPE_DEPTH = 100;
+  const MAX_JSON_DEPTH = 100;
+  const MAX_JSON_NODES = 500000;
   const UNITS = ['g', 'kg', 'ml', 'l', 'pcs'];
   const PACKAGING_UNITS = [...UNITS, 'm', 'cm'];
   const fail = message => { throw new Error(message); };
+  // Extensions are ordinary JSON data. Copy descriptors before touching known
+  // fields so accessors, toJSON hooks and prototype setters are never executed.
+  function copyJSON(value, allowUndefined = false) {
+    let nodes = 0, budget = 0;
+    const ancestors = new Set();
+    function addBytes(source) {
+      budget += typeof TextEncoder === 'function' ? new TextEncoder().encode(source).length : source.length * 2;
+      if (budget > MAX_IMPORT_BYTES) fail('Данные больше 50 МБ. Дополнительные поля не удалены: операция отменена.');
+    }
+    function visit(item, depth) {
+      if (++nodes > MAX_JSON_NODES || depth > MAX_JSON_DEPTH) fail('Данные слишком сложные: превышена глубина или число JSON-значений.');
+      if (item === undefined && allowUndefined) return undefined;
+      if (item === null || typeof item === 'boolean' || typeof item === 'string' || typeof item === 'number' && (allowUndefined || Number.isFinite(item))) {
+        addBytes(JSON.stringify(item));return item;
+      }
+      if (!item || typeof item !== 'object') fail('Дополнительные поля должны содержать только конечные JSON-значения.');
+      if (ancestors.has(item)) fail('Обнаружена циклическая ссылка в JSON-данных.');
+      ancestors.add(item);
+      let result;
+      if (Array.isArray(item)) {
+        if (Reflect.ownKeys(item).some(key => key !== 'length' && (typeof key !== 'string' || !/^(0|[1-9][0-9]*)$/.test(key) || Number(key) >= item.length))) {
+          fail('JSON-список содержит неподдерживаемое дополнительное поле.');
+        }
+        result = [];addBytes('[]');
+        for (let index = 0; index < item.length; index++) {
+          const descriptor = Object.getOwnPropertyDescriptor(item, String(index));
+          if (!descriptor || !descriptor.enumerable || !Object.hasOwn(descriptor,'value')) fail('JSON-список содержит пропуск или вычисляемое значение.');
+          if (index) addBytes(',');
+          result.push(visit(descriptor.value,depth+1));
+        }
+      } else {
+        const prototype = Object.getPrototypeOf(item);
+        if (prototype !== Object.prototype && prototype !== null) fail('JSON-данные должны состоять из обычных объектов.');
+        result = {};addBytes('{}');let count = 0;
+        for (const key of Reflect.ownKeys(item)) {
+          if (typeof key !== 'string' || ['__proto__','prototype','constructor'].includes(key)) fail('JSON-данные содержат недопустимое служебное поле.');
+          const descriptor = Object.getOwnPropertyDescriptor(item,key);
+          if (!descriptor?.enumerable || !Object.hasOwn(descriptor,'value')) fail('JSON-данные содержат вычисляемое или скрытое поле.');
+          addBytes((count++ ? ',' : '') + JSON.stringify(key) + ':');
+          result[key] = visit(descriptor.value,depth+1);
+        }
+      }
+      ancestors.delete(item);
+      return result;
+    }
+    return visit(value,0);
+  }
+  function extensions(source, known, normalized) {
+    const keys = new Set(known), extra = {};
+    for (const key of Object.keys(source)) if (!keys.has(key)) extra[key] = copyJSON(source[key]);
+    return {...extra,...normalized};
+  }
   const object = (value, label) => {
     if (!value || typeof value !== 'object' || Array.isArray(value)) fail(label + ': ожидался объект.');
   };
@@ -58,6 +112,9 @@
   }
   function photo(value, label) {
     object(value, label);
+    if (Object.keys(value).some(key => !['dataUrl','width','height','mime'].includes(key))) {
+      fail(label + ': неподдерживаемые поля фотографии. Импорт отменён, чтобы не потерять метаданные снимка.');
+    }
     if (!['image/jpeg', 'image/png', 'image/webp'].includes(value.mime)) fail(label + ': допустимы только JPEG, PNG и WebP.');
     for (const key of ['width', 'height']) {
       if (!Number.isInteger(value[key]) || value[key] <= 0 || value[key] > MAX_PHOTO_SIDE) {
@@ -78,6 +135,7 @@
   const dimension = value => value === 'pcs' ? 'count' : ['g', 'kg'].includes(value) ? 'mass' : 'volume';
   const packagingDimension = value => ['m', 'cm'].includes(value) ? 'length' : dimension(value);
   function validate(input) {
+    input = copyJSON(input,true);
     object(input, 'Данные');
     if (input.version !== 1) fail('Неподдерживаемая версия данных. Ожидается версия 1.');
     if (!Array.isArray(input.products) || !Array.isArray(input.recipes)) fail('В файле должны быть списки products и recipes.');
@@ -102,14 +160,14 @@
         const key = name.toLocaleLowerCase('ru');
         if (names.has(key)) fail('Папка с названием «' + name + '» уже существует.');
         names.add(key);
-        return {id: id(item.id, label + ', id'), name};
+        return extensions(item,['id','name'],{id: id(item.id, label + ', id'), name});
       });
     }
     const folderIds = new Set((folders || []).map(item => item.id));
     const products = input.products.map((item, index) => {
       const label = 'Продукт ' + (index + 1);
       object(item, label);
-      return {
+      return extensions(item,['id','name','aliases','price','packQuantity','unit','massPerPiece','gramsPerMl','note'],{
         id: id(item.id, label + ', id'), name: text(item.name, label + ', название', true, 500),
         aliases: text(item.aliases, label + ', слова для поиска'),
         price: number(item.price, label + ', цена'),
@@ -117,7 +175,7 @@
         unit: unit(item.unit, label), massPerPiece: number(item.massPerPiece, label + ', масса штуки', true),
         gramsPerMl: number(item.gramsPerMl, label + ', граммов в миллилитре', true),
         note: text(item.note, label + ', заметка')
-      };
+      });
     });
     let packaging;
     if (input.packaging !== undefined) {
@@ -125,12 +183,12 @@
       packaging = input.packaging.map((item, index) => {
         const label = 'Упаковка ' + (index + 1);
         object(item, label);
-        return {
+        return extensions(item,['id','name','price','packQuantity','unit','note'],{
           id: id(item.id, label + ', id'), name: text(item.name, label + ', название', true, 500),
           price: number(item.price, label + ', цена'),
           packQuantity: number(item.packQuantity, label + ', закупленное количество', true),
           unit: packagingUnit(item.unit, label), note: text(item.note, label + ', заметка')
-        };
+        });
       });
     }
     const recipes = input.recipes.map((item, index) => {
@@ -148,7 +206,7 @@
         if (!Array.isArray(value) || value.length > 2) fail(label + ': допустимо не больше двух фотографий.');
         return Array.from(value, (entry, slot)=>entry === null ? null : embedded ? photo(entry,label+', фото '+(slot+1)) : photoId(entry,label+', фото '+(slot+1)));
       }
-      return {
+      return extensions(item,['id','type','name','note','folderId','portions','technology','sellingPrice','actualYield','photoId','photo','photoIds','photos','packaging','ingredients'],{
         id: id(item.id, label + ', id'), type: item.type,
         name: text(item.name, label + ', название', true, 500), note: text(item.note, label + ', заметка'),
         ...(item.folderId !== undefined ? {folderId: item.folderId} : {}),
@@ -168,28 +226,28 @@
             object(row, prefix);
             const costMode = row.costMode ?? 'auto';
             if (!['auto', 'additional', 'included'].includes(costMode)) fail(prefix + ': неизвестный способ учёта стоимости.');
-            return {
+            return extensions(row,['id','refId','ingredientRefId','quantity','unit','freeForGuest','costMode'],{
               id: id(row.id, prefix + ', id'),
               refId: row.refId == null ? null : text(row.refId, prefix + ', ссылка', true, 200),
               ...(row.ingredientRefId !== undefined ? {ingredientRefId: text(row.ingredientRefId, prefix + ', ссылка для защиты от двойного учёта', true, 200)} : {}),
               quantity: number(row.quantity, prefix + ', расход на порцию', true),
               unit: packagingUnit(row.unit, prefix),
               freeForGuest: boolean(row.freeForGuest, prefix + ', бесплатная выдача'), costMode
-            };
+            });
           });
         })()} : {}),
         ingredients: item.ingredients.map((row, rowIndex) => {
           const prefix = label + ', строка ' + (rowIndex + 1);
           object(row, prefix);
-          return {
+          return extensions(row,['id','refId','quantity','unit','lossPercent','outputGrams','note'],{
             id: id(row.id, prefix + ', id'),
             refId: row.refId == null ? null : text(row.refId, prefix + ', ссылка', true, 200),
             quantity: number(row.quantity, prefix + ', количество'), unit: unit(row.unit, prefix),
             lossPercent: number(row.lossPercent, prefix + ', потери', false, 100),
             outputGrams: number(row.outputGrams, prefix + ', расчётный выход'), note: text(row.note, prefix + ', заметка')
-          };
+          });
         })
-      };
+      });
     });
     const productMap = new Map(products.map(item => [item.id, item]));
     const recipeMap = new Map(recipes.map(item => [item.id, item]));
@@ -263,7 +321,7 @@
         for (const ref of refs) stack.push({ id: ref, exit: false });
       }
     }
-    return { version: 1, products, recipes, ...(packaging !== undefined ? {packaging} : {}), ...(folders !== undefined ? {folders} : {}) };
+    return extensions(input,['version','products','recipes','packaging','folders'],{ version: 1, products, recipes, ...(packaging !== undefined ? {packaging} : {}), ...(folders !== undefined ? {folders} : {}) });
   }
   function parseJSON(source) {
     if (typeof source !== 'string') fail('Резервная копия должна быть текстовым JSON-файлом.');

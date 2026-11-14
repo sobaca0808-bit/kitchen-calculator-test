@@ -150,6 +150,11 @@
     if (!canLeave()) return;
     const result = D.load(), record = result.items.find(r=>r.id===id && r.type===type);
     if (result.error || !record) { message('Черновик недоступен. '+(result.error||''),true);return; }
+    const owner=[...state.products,...(state.packaging||[]),...(state.folders||[]),...state.recipes,...state.recipes.flatMap(recipe=>[...recipe.ingredients,...(recipe.packaging||[])])].find(item=>item.id===id);
+    if(owner && (!state.recipes.includes(owner) || owner.type!==type)) {
+      message('Черновик не открыт: после переноса его ID занят записью другого типа. Черновик и сохранённая база не изменены. Для восстановления используйте копию базы до импорта.',true);return;
+    }
+    if(owner && record.isNew && !confirm('Этот черновик создавался как новый рецепт, но в базе уже есть запись с тем же ID. Восстановить для редактирования? Последующее нажатие «Сохранить» заменит её содержимое.'))return;
     try {
       clearTimeout(draftTimer); section=type;selectedId=id;viewing=false;
       draft=clone(record.data);isNew=record.isNew || !state.recipes.some(r=>r.id===id);dirty=true;
@@ -669,32 +674,35 @@
     } catch(e) {message('Экспорт не выполнен: '+e.message,true);}
     finally {backupBusy=false;$('#export').disabled=false;}
   });
-  $('#import').addEventListener('click',() => {$('#import-file').value = '';$('#import-file').click();});
-  $('#import-file').addEventListener('change',async e => {
-    const file = e.target.files[0];if(!file) return;
-    if(backupBusy || photoEditor?.busy) {message('Дождитесь завершения обработки фотографии или резервной копии.',true);return;}
-    let prepared=null;
+  KitchenImportUI.mount({
+    getState:()=>state,
+    getDraftSource:()=>localStorage.getItem(D.KEY),
+    canStart:()=>{
+      if(backupBusy || photoEditor?.busy) {message('Дождитесь завершения обработки фотографии или резервной копии.',true);return false;}
+      if(recoveryRequired || storageBlocked) {message('Импорт заблокирован: текущую базу не удалось прочитать или сохранить. Скачайте исходные данные или экспорт и сохраните черновик перед восстановлением.',true);return false;}
+      if(dirty && !editingRecipe()) {message('Сначала сохраните изменения справочника или выйдите из редактора с подтверждением. Введённые поля сохранены на экране.',true);return false;}
+      if(editingRecipe() && dirty && !flushDraft()) {message('Не удалось сохранить черновик перед импортом. Основная база не изменена.',true);return false;}
+      return true;
+    },
+    setBusy:value=>{
+      backupBusy=value;$('#import').disabled=value;$('#export').disabled=value;
+      $('.workspace').inert=value;$('#drafts-panel').inert=value;$('.tabs').inert=value;
+    },
+    onApplied:data=>{
+      state=data;storageBlocked=false;recoveryRequired=false;
+      $('#folder-form').hidden=true;folderFormId=null;
+      selectedId=collection()[0]?.id || null;openSelected();
+    },message
+  });
+  $('#damaged-source').hidden=!recoveryRequired;
+  $('#download-damaged-source').addEventListener('click',()=>{
     try {
-      if(file.size > S.MAX_IMPORT_BYTES) throw Error('Файл больше 50 МБ.');
-      const candidate = S.parseJSON(await file.text());
-      if(editingRecipe() && dirty && !flushDraft()) throw Error('Не удалось сохранить текущий черновик перед импортом.');
-      if(!confirm(`Заменить все текущие данные данными из файла? Продуктов: ${candidate.products.length}, рецептов: ${candidate.recipes.length}, позиций упаковки: ${(candidate.packaging || []).length}, папок: ${(candidate.folders || []).length}. Черновики рецептов останутся отдельно. Рекомендуем сначала сделать экспорт.`)) return;
-      backupBusy=true;$('#import').disabled=true;$('#export').disabled=true;
-      $('.workspace').inert=true;$('#drafts-panel').inert=true;
-      prepared=await Photos.prepareImport(candidate);
-      const oldPhotoIds=state.recipes.flatMap(r=>Photos.ids(r)).filter(Boolean);
-      if(persist(prepared.data,'Данные импортированы. Сохранённые карточки заменены. Черновики остались отдельно.',true)) {
-        prepared=null;
-        $('#folder-form').hidden = true;folderFormId = null;
-        if(!storageBlocked)oldPhotoIds.forEach(id=>unusedPhotos.add(id));
-        selectedId = collection()[0]?.id || null;openSelected();
-      }
-    } catch(e) {message('Импорт отменён: '+e.message+' Текущие данные не изменены.',true);}
-    finally {
-      if(prepared)await Photos.rollback(prepared.createdIds).catch(()=>{});
-      backupBusy=false;$('#import').disabled=false;$('#export').disabled=false;
-      $('.workspace').inert=false;$('#drafts-panel').inert=false;
-    }
+      const original=localStorage.getItem(S.KEY);
+      if(original===null)throw Error('Исходная запись отсутствует.');
+      const url=URL.createObjectURL(new Blob([original],{type:'application/json;charset=utf-8'}));
+      const link=document.createElement('a');link.href=url;link.download='kitchen-test-original-recovery.json';link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+      message('Исходная запись подготовлена к скачиванию без изменений. Фотографии и черновики не удалены.');
+    } catch(error) {message('Не удалось скачать исходную запись: '+error.message,true);}
   });
   window.addEventListener('beforeunload',e => {
     const safe=editingRecipe() && dirty ? flushDraft() : !dirty;
@@ -703,7 +711,7 @@
   window.addEventListener('pagehide',()=>flushDraft());
   document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')flushDraft();});
   openSelected();
-  if(loaded.error) message('Не удалось прочитать сохранённые данные: '+loaded.error+' Исходная запись не перезаписана. Автоматическая запись заблокирована; восстановите данные через импорт резервной копии JSON.',true);
+  if(loaded.error) message('Не удалось прочитать сохранённые данные: '+loaded.error+' Исходная запись не перезаписана. Автоматическая запись и импорт заблокированы. Скачайте исходную запись для восстановления; фотографии и черновики остаются в браузере.',true);
   else if(!loaded.data) {
     const saved = S.save(state);
     if(!saved.ok) {storageBlocked = true;if($('#save-state')) $('#save-state').textContent = 'В памяти · скачайте JSON';message('Браузер не разрешил сохранение: '+saved.error+' Скачивайте JSON перед закрытием страницы.',true);}

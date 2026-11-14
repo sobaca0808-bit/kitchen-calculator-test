@@ -1,0 +1,105 @@
+{
+  "version": 1,
+  "products": [
+    {
+      "demoSource": "fictional",
+      "id": "issue16-demo-rice",
+      "name": "Учебный рис — JSON16",
+      "aliases": "",
+      "price": 100,
+      "packQuantity": 1,
+      "unit": "kg",
+      "massPerPiece": null,
+      "gramsPerMl": null,
+      "note": "Вымышленная цена для проверки."
+    }
+  ],
+  "recipes": [
+    {
+      "id": "issue16-demo-base",
+      "type": "prep",
+      "name": "Учебная основа — JSON16",
+      "note": "",
+      "technology": "Учебный пример, не рабочая рецептура.",
+      "actualYield": 800,
+      "ingredients": [
+        {
+          "id": "issue16-demo-base-row",
+          "refId": "issue16-demo-rice",
+          "quantity": 1000,
+          "unit": "g",
+          "lossPercent": null,
+          "outputGrams": null,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "id": "issue16-demo-mix",
+      "type": "prep",
+      "name": "Учебная смесь — JSON16",
+      "note": "",
+      "technology": "Взять готовую основу.",
+      "actualYield": 200,
+      "ingredients": [
+        {
+          "id": "issue16-demo-mix-row",
+          "refId": "issue16-demo-base",
+          "quantity": 200,
+          "unit": "g",
+          "lossPercent": null,
+          "outputGrams": null,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "id": "issue16-demo-dish",
+      "type": "dish",
+      "name": "Учебное блюдо — JSON16",
+      "note": "Только вымышленные данные. Не использовать как производственную рецептуру.",
+      "folderId": "issue16-demo-folder",
+      "portions": 1,
+      "technology": "1. Взять готовую смесь.\n2. Упаковать.",
+      "sellingPrice": 300,
+      "actualYield": 200,
+      "packaging": [
+        {
+          "id": "issue16-demo-pack-row",
+          "refId": "issue16-demo-box",
+          "quantity": 1,
+          "unit": "pcs",
+          "freeForGuest": false,
+          "costMode": "auto"
+        }
+      ],
+      "ingredients": [
+        {
+          "id": "issue16-demo-dish-row",
+          "refId": "issue16-demo-mix",
+          "quantity": 200,
+          "unit": "g",
+          "lossPercent": null,
+          "outputGrams": null,
+          "note": ""
+        }
+      ]
+    }
+  ],
+  "packaging": [
+    {
+      "id": "issue16-demo-box",
+      "name": "Учебный контейнер — JSON16",
+      "price": 5,
+      "packQuantity": 1,
+      "unit": "pcs",
+      "note": ""
+    }
+  ],
+  "folders": [
+    {
+      "id": "issue16-demo-folder",
+      "name": "Учебные JSON No16"
+    }
+  ]
+}

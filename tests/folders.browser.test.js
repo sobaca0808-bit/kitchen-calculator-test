@@ -1,5 +1,6 @@
 /* Task #14: fictional folder library, loopback server and disposable profiles only. */
 'use strict';
+const {replaceJSONFromFile}=require('./helpers/import-preview.js');
 const assert=require('node:assert/strict');
 const fs=require('node:fs/promises');
 const path=require('node:path');
@@ -43,7 +44,8 @@ async function selectFolder(page,id='all'){await page.locator('#folder-filter').
 async function createFolder(page,name){const before=(await stored(page)).folders||[];await page.locator('#folder-create').click();await page.locator('#folder-name').fill(name);await page.locator('#folder-submit').click();const folder=(await stored(page)).folders.find(item=>!before.some(old=>old.id===item.id));assert(folder,'Folder is persisted by explicit create');return folder;}
 async function move(page,id){await page.locator('#move-folder').selectOption(id);await page.locator('#move-recipe').click();}
 async function exportJSON(page){const waiting=page.waitForEvent('download');await page.locator('#export').click();const download=await waiting;return JSON.parse(await fs.readFile(await download.path(),'utf8'));}
-async function importJSON(page,data){await page.locator('#message').evaluate(el=>el.textContent='');await page.locator('#import-file').setInputFiles({name:'fictional-folders.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(data))});await page.waitForFunction(()=>/Данные импортированы|Импорт отменён/.test(document.querySelector('#message')?.textContent||''));}
+async function importJSON(page,data){return replaceJSONFromFile(page,data,{name:'fictional-folders.json',waitForCompletion:true});}
+
 async function uploadPhotos(page){for(const [index,color]of ['#45633c','#71432e'].entries()){const image=await page.evaluate(color=>{const canvas=document.createElement('canvas');canvas.width=1200;canvas.height=800;const x=canvas.getContext('2d');x.fillStyle=color;x.fillRect(0,0,1200,800);x.fillStyle='#eee6ce';x.beginPath();x.ellipse(600,400,420,280,0,0,Math.PI*2);x.fill();x.fillStyle='#549745';for(let i=0;i<50;i++)x.fillRect(330+i%10*55,250+Math.floor(i/10)*55,30,22);return canvas.toDataURL('image/jpeg',.9);},color);await page.locator(index?'#photo-file-2':'#photo-file').setInputFiles({name:'fictional-task14.jpg',mimeType:'image/jpeg',buffer:Buffer.from(image.split(',')[1],'base64')});await page.waitForFunction(index=>{const img=document.querySelector(`.photo-editor [data-photo-slot="${index}"] img`);return img?.naturalWidth>0&&!document.querySelector(index?'#photo-file-2':'#photo-file')?.disabled;},index);}}
 async function openDish(page,id='dish'){await selectFolder(page,'all');await page.locator(`[data-open="${id}"]`).click();await ready(page);}
 async function count(page,value,expected){const text=await page.locator('#folder-filter option').evaluateAll((nodes,value)=>nodes.find(node=>node.value===value)?.textContent,filterValue(value));assert(text&&new RegExp('(?:^|\\D)'+expected+'(?:\\D|$)').test(text),'Folder count '+value+': '+text);}

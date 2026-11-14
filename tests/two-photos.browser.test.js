@@ -1,5 +1,6 @@
 /* PR #10 supplement: two local photos, disposable localhost contexts only. */
 'use strict';
+const {replaceJSONFromFile}=require('./helpers/import-preview.js');
 const assert=require('node:assert/strict');
 const fs=require('node:fs/promises');
 const path=require('node:path');
@@ -38,6 +39,7 @@ async function guard(page){
  assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'No horizontal page overflow');
 }
 async function test(name,fn,options={}){
+ if(process.env.KITCHEN_TWO_PHOTO_TEST_FILTER&&!name.includes(process.env.KITCHEN_TWO_PHOTO_TEST_FILTER))return;
  const context=await contextFor(options),errors=[];
  context.on('page',page=>{page.setDefaultTimeout(12000);page.on('pageerror',error=>errors.push(error.message));page.on('dialog',dialog=>dialog.accept());});
  const page=await context.newPage();
@@ -65,7 +67,12 @@ async function picture(page,{color='#42583a',width=2304,height=1536,mime='image/
  return {name:'fictional-dish.'+(mime==='image/png'?'png':mime==='image/webp'?'webp':'jpg'),mimeType:mime,buffer:Buffer.from(data.split(',')[1],'base64')};
 }
 async function exportJSON(page){const waiting=page.waitForEvent('download');await page.locator('#export').click();const download=await waiting;return JSON.parse(await fs.readFile(await download.path(),'utf8'));}
-async function importJSON(page,data){await page.locator('#import-file').setInputFiles({name:'fictional-two-photos.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(data))});}
+async function newPortablePhoto(page,color){
+ const width=1280,height=853,mime='image/jpeg',file=await picture(page,{color,width,height,mime});
+ return {dataUrl:'data:'+mime+';base64,'+file.buffer.toString('base64'),width,height,mime};
+}
+async function importJSON(page,data){return replaceJSONFromFile(page,data,{name:'fictional-two-photos.json',waitForCompletion:false});}
+
 async function idbCount(page){return page.evaluate(()=>new Promise((resolve,reject)=>{const request=indexedDB.open(KitchenPhotos.DB_NAME,1);request.onerror=()=>reject(request.error);request.onsuccess=()=>{const db=request.result,tx=db.transaction('photos','readonly'),count=tx.objectStore('photos').count();count.onsuccess=()=>{resolve(count.result);db.close();};count.onerror=()=>reject(count.error);};}));}
 async function photoInfo(page,id){return page.evaluate(async id=>{const p=await KitchenPhotos.get(id);return {width:p.width,height:p.height,mime:p.mime,bytes:p.blob.size};},id);}
 (async()=>{
@@ -136,15 +143,15 @@ async function photoInfo(page,id){return page.evaluate(async id=>{const p=await 
    const other=await contextFor(),second=await other.newPage();second.setDefaultTimeout(12000);second.on('dialog',dialog=>dialog.accept());try{await second.goto(testURL);await importJSON(second,backup);await second.waitForFunction(()=>KitchenStorage.load().data.recipes[0].photoIds?.filter(Boolean).length===2);const restored=await ids(second);assert(restored.every(id=>!source.recipes[0].photoIds.includes(id)));assert.deepEqual(await exportJSON(second),backup);await guard(second);}finally{await other.close();}
   });
   await test('bad second imported photo rolls back new first photo without touching old data',async page=>{
-   await edit(page);await upload(page,0,await picture(page));await upload(page,1,await picture(page,{color:'#643829'}));await save(page);const before=await stored(page),backup=await exportJSON(page),count=await idbCount(page);backup.recipes[0].photos[1].width=1;
+   await edit(page);await upload(page,0,await picture(page));await upload(page,1,await picture(page,{color:'#643829'}));await save(page);const before=await stored(page),backup=await exportJSON(page),count=await idbCount(page);backup.recipes[0].photos[0]=await newPortablePhoto(page,'#325d78');backup.recipes[0].photos[1].width=1;
    await importJSON(page,backup);await page.waitForFunction(()=>document.querySelector('#message')?.textContent.includes('Импорт отменён'));assert.deepEqual(await stored(page),before);assert.equal(await idbCount(page),count,'No staged first image leaks after the second image fails');for(const id of before.recipes[0].photoIds)assert((await photoInfo(page,id)).bytes>0);
   });
   await test('quota during second imported photo rolls back only staged IDs',async page=>{
-   await edit(page);await upload(page,0,await picture(page));await upload(page,1,await picture(page,{color:'#643829'}));await save(page);const before=await stored(page),backup=await exportJSON(page),count=await idbCount(page);
+   await edit(page);await upload(page,0,await picture(page));await upload(page,1,await picture(page,{color:'#643829'}));await save(page);const before=await stored(page),backup=await exportJSON(page),count=await idbCount(page);backup.recipes[0].photos=[await newPortablePhoto(page,'#315c78'),await newPortablePhoto(page,'#7a4a62')];
    await page.evaluate(()=>{const original=IDBObjectStore.prototype.add;let writes=0;IDBObjectStore.prototype.add=function(...args){if(this.name==='photos'&&++writes===2)throw new DOMException('Fictional second image quota','QuotaExceededError');return original.apply(this,args);};});await importJSON(page,backup);await page.waitForFunction(()=>document.querySelector('#message')?.textContent.includes('Импорт отменён'));assert.deepEqual(await stored(page),before);assert.equal(await idbCount(page),count);for(const id of before.recipes[0].photoIds)assert((await photoInfo(page,id)).bytes>0);
   });
   await test('old one-photo JSON and local recipes remain readable without eager migration',async page=>{
-   await edit(page);await upload(page,0,await picture(page));await save(page);const modern=await exportJSON(page),legacy=fixture();legacy.recipes[0].photo=modern.recipes[0].photos[0];await importJSON(page,legacy);await page.waitForFunction(()=>!!KitchenStorage.load().data.recipes[0].photoId);
+   await edit(page);await upload(page,0,await picture(page));await save(page);const modern=await exportJSON(page),legacy=fixture();legacy.recipes[0].name='Старая карточка с одним снимком · импорт';legacy.recipes[0].photo=modern.recipes[0].photos[0];await importJSON(page,legacy);await page.waitForFunction(()=>!!KitchenStorage.load().data.recipes[0].photoId);
    const oldSaved=await stored(page);assert(oldSaved.recipes[0].photoId);assert.equal(oldSaved.recipes[0].photoIds,undefined);assert.equal(await page.locator('#card-photos [data-photo-slot]').count(),2);assert.equal(await page.locator('#card-photos img').count(),1);assert.deepEqual(await exportJSON(page),legacy);await page.reload();assert.deepEqual(await stored(page),oldSaved);
    await edit(page);await page.locator('#item-name').fill('Старая карточка, новое название');await save(page);assert.equal((await stored(page)).recipes[0].photoId,oldSaved.recipes[0].photoId,'A non-photo edit leaves the legacy reference intact');
    await upload(page,1,await picture(page,{color:'#643829'}));await save(page);assert.equal((await ids(page)).filter(Boolean).length,2);assert.equal((await stored(page)).recipes[0].photoId,undefined,'Only explicit photo edit adopts two-slot representation');

@@ -1,5 +1,6 @@
 /* Task #12: selling price and food profitability, fictional disposable data only. */
 'use strict';
+const {replaceJSONFromFile}=require('./helpers/import-preview.js');
 const assert=require('node:assert/strict');
 const fs=require('node:fs/promises');
 const path=require('node:path');
@@ -57,7 +58,8 @@ async function numberValue(scope,key){const text=await scope.locator(`[data-prof
 async function near(scope,key,expected){const actual=await numberValue(scope,key);if(expected===null)assert.equal(actual,null,`${key} must not fabricate a value`);else assert(actual!==null&&Math.abs(actual-expected)<.011,`${key}: expected ${expected}, got ${actual}`);}
 async function metrics(scope,{price,food,profit,markup,margin,foodcost}){for(const [key,value]of Object.entries({'selling-price':price,'food-cost':food,'gross-profit':profit,markup,'gross-margin':margin,'food-cost-percent':foodcost}))await near(scope,key,value);assert.match(await scope.innerText(),new RegExp(NOTE.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')));assert.doesNotMatch(await scope.innerText(),/NaN|Infinity/);}
 async function exportJSON(page){const waiting=page.waitForEvent('download');await page.locator('#export').click();const download=await waiting;return JSON.parse(await fs.readFile(await download.path(),'utf8'));}
-async function importJSON(page,data){await page.locator('#message').evaluate(el=>el.textContent='');await page.locator('#import-file').setInputFiles({name:'fictional-profitability.json',mimeType:'application/json',buffer:Buffer.from(typeof data==='string'?data:JSON.stringify(data))});await page.waitForFunction(()=>/Данные импортированы|Импорт отменён/.test(document.querySelector('#message')?.textContent||''));}
+async function importJSON(page,data){return replaceJSONFromFile(page,data,{name:'fictional-profitability.json',waitForCompletion:true});}
+
 async function image(page,color){const data=await page.evaluate(color=>{const c=document.createElement('canvas');c.width=1400;c.height=950;const x=c.getContext('2d');x.fillStyle=color;x.fillRect(0,0,1400,950);x.fillStyle='#efe2bd';x.beginPath();x.ellipse(700,475,500,320,0,0,Math.PI*2);x.fill();x.fillStyle='#a43825';for(let i=0;i<45;i++)x.fillRect(450+i%9*56,320+Math.floor(i/9)*60,18,12);return c.toDataURL('image/jpeg',.9);},color);return {name:'fictional-task12.jpg',mimeType:'image/jpeg',buffer:Buffer.from(data.split(',')[1],'base64')};}
 async function uploadPhotos(page){for(const [index,color]of ['#445e36','#63352c'].entries()){await page.locator(index?'#photo-file-2':'#photo-file').setInputFiles(await image(page,color));await page.waitForFunction(index=>{const img=document.querySelector(`.photo-editor [data-photo-slot="${index}"] img`);return img?.naturalWidth>0&&!document.querySelector(index?'#photo-file-2':'#photo-file')?.disabled;},index);}}
 function pdfDetails(file){const info=execFileSync('pdfinfo',[file],{encoding:'utf8'}),text=execFileSync('pdftotext',['-layout',file,'-'],{encoding:'utf8'}),images=execFileSync('pdfimages',['-list',file],{encoding:'utf8'});return {info,text,images:images.split('\n').filter(line=>/^\s*\d+\s+\d+\s+image\s/.test(line)).length,pages:Number(info.match(/^Pages:\s+(\d+)/m)?.[1])};}

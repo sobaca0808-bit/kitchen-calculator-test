@@ -90,13 +90,13 @@ test('import validates loss/output agreement, prep ready mass and dimensional co
   assert.doesNotThrow(() => Storage.validate(volume));
 });
 
-test('malicious markup remains plain data and unknown fields are not copied', () => {
+test('malicious markup remains plain data and legitimate extension fields are preserved', () => {
   const state = Seed.create();
   state.products[0].name = '<img src=x onerror=alert(1)>';
-  state.products[0].unknown = 'ignored';
+  state.products[0].unknown = 'preserved';
   const result = Storage.validate(state);
   assert.equal(result.products[0].name, state.products[0].name);
-  assert.equal(Object.hasOwn(result.products[0], 'unknown'), false);
+  assert.equal(result.products[0].unknown, 'preserved');
 });
 
 test('import rejects IDs with spaces, quotes, selector punctuation, and non-Latin letters', () => {
