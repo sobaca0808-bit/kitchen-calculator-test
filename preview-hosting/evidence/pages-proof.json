@@ -1,6 +1,6 @@
 {
   "base_commit": "63443c53d2c7a99060584d54eae0e9c779475405",
-  "source_commit": "08a9452c9b11e0c0f4671bf788f5f4ae504c08ba",
+  "source_commit": "19afef52c9fb0b80488fbd1352a3c5c430ab7601",
   "unchanged_base_files": 149,
   "base_runtime": {
     "assets/editor-actions.css": "9ef8045bd68604bf0afa8c695a52a57e74c3d63d63a75d3145a40fee30aa4b3a",
@@ -34,8 +34,9 @@
     "assets/folders.css": "2d4e05d922b416390290b2dc9b2ac4b0fe11fbf908f27468025d54e16eb7ff51",
     "assets/gastronomic-background.webp": "b098bc25fdfe85e4c242b08f13cb3e2cb31ba5063fec42eac8410ca82f1ce03e",
     "assets/import.css": "ae4a884000c5a9b534bf831a27d0f3d034635eaf44e24dc179c3db918e21dd67",
-    "assets/warm-kitchen.css": "c2c92533864bb8f1305dcdb8763f36df204089a285c9e7c13e76a87591653c70",
-    "index.html": "4ccc94704cde8cabbec457d112e99d8e346e40189128534d6533e0f373eb107b",
+    "assets/warm-kitchen.css": "f3e073c418d12c81619dc09130ecba0c6cdad46cf6214b23ae9e6466a7739002",
+    "assets/watercolor-kitchen.webp": "2ae2b7c5b48a90554f687e1d3f3326ff7fc22b6cce23861ab31762345711e6ec",
+    "index.html": "1338a9414b255e203c86575dc0dd8ababd2a0b35d3adc625a4b003173f4834f1",
     "js/app.js": "49b9b7ce918ad7cbfd73bb35f2f6e48d80cb042483f4fe2af6932459817f57bf",
     "js/calculations.js": "86f10f10f2bf50d72b34471baa05f1e9431edfd44767b0f65593cf8674acc99a",
     "js/drafts.js": "c277845a04a04fbba3354bbc298e0ea007e3965447a51eed971b58eed2bc961a",
@@ -57,5 +58,5 @@
     "js/storage.js": "534ce53a7870aea4ac24893689fb48cb43868ad1b89503793e1679e33855ad55",
     "styles.css": "99a75564b834aae581fc03819fb2be7d5da5662241b1c49b7df70834196c8250"
   },
-  "preview_version_sha256": "f5dabfb7db606c2ae7736c5635f27211f0de888b3489f1885f2462020c2fbf4b"
+  "preview_version_sha256": "0c86fb954ecf548f64d5470c30ac244b1e675ca7e0d67169714fed313feaf6e2"
 }
