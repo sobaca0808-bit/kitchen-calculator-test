@@ -103,7 +103,9 @@
     return canonical(copy);
   }
   function create(options = {}) {
-    const storage = options.storage !== undefined ? options.storage : globalThis.localStorage;
+    // A privacy setting can make the localStorage getter itself throw. Creating
+    // the backup service or listing independent IDB backups must stay available.
+    const storageTarget = () => options.storage !== undefined ? options.storage : globalThis.localStorage;
     const photos = options.photos || defaultPhotos;
     const backups = options.backups || backupStore(options.indexedDB);
     const locks = options.locks !== undefined ? options.locks : globalThis.navigator?.locks;
@@ -114,6 +116,7 @@
     }
     function currentSnapshot(currentState, expectedSource) {
       if (expectedSource !== null && typeof expectedSource !== 'string') fail('Не указан исходный снимок базы. Откройте предварительный просмотр заново.');
+      const storage = storageTarget();
       if (!storage || storage.getItem(S.KEY) !== expectedSource) fail('База изменилась в другой вкладке. Импорт отменён. Откройте предварительный просмотр заново.');
       const clean = S.validate(currentState);
       if (expectedSource !== null && canonical(S.parseJSON(expectedSource)) !== canonical(clean)) {
@@ -249,7 +252,7 @@
         try {
           const data=await localCandidate(incomingPortable,snapshot.current,snapshot.portable,createdIds);
           currentSnapshot(currentState,expectedSource);
-          const result=S.save(data,storage);
+          const result=S.save(data,storageTarget());
           if (!result.ok) fail('Импорт не сохранён: '+result.error+' Исходная база осталась без изменений.');
           // Commit point: no async work, cleanup or fallible reads after this.
           // Existing image IDs stay available for independent saved drafts.

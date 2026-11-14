@@ -3,6 +3,7 @@
  * Serve the repository first: python3 -m http.server 8765 --bind 127.0.0.1
  * Override KITCHEN_TEST_URL / CHROMIUM_PATH if needed. No build is required. */
 'use strict';
+const {replaceJSONFromFile}=require('./helpers/import-preview.js');
 const assert = require('node:assert/strict');
 const fs = require('node:fs/promises');
 const { chromium } = require('playwright');
@@ -44,13 +45,8 @@ const stored = page => page.evaluate(() => JSON.parse(localStorage.getItem(Kitch
 async function tab(page,key) { await page.locator(`[data-tab="${key}"]`).click(); }
 async function editIfCard(page) {if(await page.locator('#edit-recipe').count()) await page.locator('#edit-recipe').click();}
 async function open(page,id) {await page.locator(`[data-open="${id}"]`).click();await editIfCard(page);}
-async function importJSON(page,data,accept = true) {
-  page.removeAllListeners('dialog');
-  page.once('dialog',dialog => accept ? dialog.accept() : dialog.dismiss());
-  await page.locator('#import-file').setInputFiles({name:'backup.json',mimeType:'application/json',buffer:Buffer.from(typeof data === 'string' ? data : JSON.stringify(data))});
-  await page.waitForTimeout(120);
-  page.removeAllListeners('dialog');page.on('dialog',dialog=>dialog.accept());
-}
+async function importJSON(page,data,accept=true){return replaceJSONFromFile(page,data,{name:'backup.json',accept,waitForCompletion:true});}
+
 (async () => {
   browser = await chromium.launch({executablePath:process.env.CHROMIUM_PATH || '/usr/bin/chromium',headless:true,args:['--no-sandbox']});
   for (const width of [1366,360,390,430]) {

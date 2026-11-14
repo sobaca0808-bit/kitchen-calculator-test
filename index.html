@@ -8,6 +8,7 @@
   <meta name="robots" content="noindex, nofollow">
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="assets/folders.css">
+  <link rel="stylesheet" href="assets/import.css">
   <script defer src="js/calculations.js"></script>
   <script defer src="js/seed.js"></script>
   <script defer src="js/storage.js"></script>
@@ -22,6 +23,9 @@
   <script defer src="js/drafts.js"></script>
   <script defer src="js/photo-viewer.js"></script>
   <script defer src="js/photos.js"></script>
+  <script defer src="js/json-merge.js"></script>
+  <script defer src="js/import-transaction.js"></script>
+  <script defer src="js/import-ui.js"></script>
   <script defer src="js/app.js"></script>
 </head>
 <body>
@@ -32,6 +36,22 @@
   </header>
   <div id="message" role="status" aria-live="polite" hidden></div>
   <nav class="tabs" aria-label="Разделы"><button data-tab="dish">Мои рецепты <span id="count-dish"></span></button><button data-tab="prep">Полуфабрикаты <span id="count-prep"></span></button><button data-tab="products">Продукты <span id="count-products"></span></button><button data-tab="packaging">Упаковка и фасовка <span id="count-packaging"></span></button></nav>
+  <section id="import-panel" class="import-panel" aria-label="Предварительный просмотр импорта" aria-busy="false" hidden>
+    <h2>Проверка перед импортом</h2><p id="import-file-name" class="import-file-name"></p>
+    <p>Это ручной перенос JSON, без автоматической синхронизации. Сохранённые данные изменятся только после применения.</p>
+    <label class="import-mode-label">Действие с базой<select id="import-mode"><option value="merge">Объединить · ничего не удалять</option><option value="replace">Заменить базу целиком</option></select></label>
+    <p id="import-replace-warning" class="import-warning" hidden>Замена удалит из основной базы записи, которых нет в файле. Перед записью обязательна резервная копия с фотографиями. Незавершённые черновики остаются отдельно.</p>
+    <div id="import-summary" class="import-summary" aria-live="polite"></div>
+    <ul id="import-warnings" class="import-warning" hidden></ul><p id="import-error" class="inline-error" role="alert"></p>
+    <div id="import-conflicts"></div>
+    <details class="import-change-details"><summary>Список изменений</summary><ul id="import-details"></ul></details>
+    <div class="import-actions"><p id="import-progress" role="status"></p><button id="import-cancel">Отмена</button><button id="import-apply" class="primary" disabled>Применить изменения</button></div>
+  </section>
+  <section id="import-backups" class="import-backups" aria-label="Резервные копии до импорта" hidden>
+    <h2>Копии перед импортом</h2><p id="import-backup-status"></p>
+    <div class="import-backup-actions"><label>Сохранённая копия<select id="import-backup-select"></select></label><button id="download-import-backup" disabled>↓ Скачать копию JSON</button></div>
+  </section>
+  <section id="damaged-source" class="import-backups" hidden><p>Исходная база не читается. Автоматический импорт заблокирован, чтобы не заменить данные неполной копией. Скачайте исходную запись для восстановления; фотографии и черновики остаются в браузере.</p><button id="download-damaged-source">↓ Скачать исходную запись</button></section>
   <section id="drafts-panel" class="drafts-panel" aria-label="Восстановление черновиков" hidden></section>
   <main class="workspace">
     <aside class="library" aria-label="Справочник">

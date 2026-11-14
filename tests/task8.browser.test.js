@@ -1,5 +1,6 @@
 /* Task #8 runs exclusively on a disposable loopback origin with fictional data. */
 'use strict';
+const {replaceJSONFromFile}=require('./helpers/import-preview.js');
 const assert = require('node:assert/strict');
 const fs = require('node:fs/promises');
 const {chromium} = require('playwright');
@@ -100,9 +101,8 @@ async function exportJSON(page) {
   const waiting=page.waitForEvent('download');await page.locator('#export').click();
   const download=await waiting;return JSON.parse(await fs.readFile(await download.path(),'utf8'));
 }
-async function importJSON(page,data) {
-  await page.locator('#import-file').setInputFiles({name:'fictional-task8.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(data))});
-}
+async function importJSON(page,data){return replaceJSONFromFile(page,data,{name:'fictional-task8.json',waitForCompletion:false});}
+
 let browser,passed=0;
 const failures=[];
 async function test(name,fn,options={}) {

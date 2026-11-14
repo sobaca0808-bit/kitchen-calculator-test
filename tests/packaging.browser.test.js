@@ -1,6 +1,7 @@
 /* Issue #7: packaging materials are tested only with fictional data in fresh,
  * disposable browser contexts against the runner's local HTTP server. */
 'use strict';
+const {replaceJSONFromFile}=require('./helpers/import-preview.js');
 const assert=require('node:assert/strict');
 const fs=require('node:fs/promises');
 const {chromium}=require('playwright');
@@ -57,12 +58,8 @@ async function installData(page,data){
   },{key:TEST_KEY,productionKey:PRODUCTION_KEY,sentinel:SENTINEL,data});
   await page.reload();await guard(page);
 }
-async function importJSON(page,data,accept=true){
-  page.removeAllListeners('dialog');page.once('dialog',dialog=>accept?dialog.accept():dialog.dismiss());
-  await page.locator('#import-file').setInputFiles({name:'fictional-packaging.json',mimeType:'application/json',buffer:Buffer.from(typeof data==='string'?data:JSON.stringify(data))});
-  await page.waitForTimeout(150);
-  page.removeAllListeners('dialog');page.on('dialog',dialog=>dialog.accept());
-}
+async function importJSON(page,data,accept=true){return replaceJSONFromFile(page,data,{name:'fictional-packaging.json',accept,waitForCompletion:true});}
+
 async function editDish(page){
   if(await page.locator('#edit-recipe').count())await page.locator('#edit-recipe').click();
 }

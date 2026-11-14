@@ -51,6 +51,16 @@ function onlyTestKey(h){assert(h.events.filter(entry=>['read','write'].includes(
 test('backup uses a dedicated test IndexedDB and lock namespace, without changing main schema',()=>{
   assert.equal(T.DB_NAME,'kitchen-calculator-test-import-backups-v1');assert.equal(T.LOCK_NAME,KEY+':import');assert.equal(T.KEEP_BACKUPS,3);
 });
+test('a denied default localStorage getter cannot break service construction or independent backup listing',async()=>{
+  const descriptor=Object.getOwnPropertyDescriptor(globalThis,'localStorage');let attempts=0,service;
+  Object.defineProperty(globalThis,'localStorage',{configurable:true,get(){attempts++;throw Error('SecurityError: fictional denied getter');}});
+  try {
+    assert.doesNotThrow(()=>{service=T.create({backups:{list:async()=>[]},locks:null});});
+    assert.equal(attempts,0);assert.deepEqual(await service.listBackups(),[]);assert.equal(attempts,0);
+    await assert.rejects(service.apply({candidate:fixture(),currentState:fixture(),expectedSource:null}),/SecurityError/);
+    assert.equal(attempts,1);
+  } finally {if(descriptor)Object.defineProperty(globalThis,'localStorage',descriptor);else delete globalThis.localStorage;}
+});
 test('durable backup includes portable photos, exact source and independent draft attachment before any apply',async()=>{
   const data=fixture();data.recipes[0].photoIds=['existing-one','existing-two'];const h=harness(data);
   h.records.set('existing-one',image(1));h.records.set('existing-two',image(2));
