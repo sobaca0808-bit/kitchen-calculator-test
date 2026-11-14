@@ -2,6 +2,7 @@
 const assert=require('node:assert/strict');
 const fs=require('node:fs/promises');
 const path=require('node:path');
+const {execFileSync}=require('node:child_process');
 const {chromium}=require('playwright');
 const target=new URL(process.env.KITCHEN_PREVIEW_URL||'');
 if(!['localhost','127.0.0.1','[::1]'].includes(target.hostname)&&target.href!=='https://sobaca0808-bit.github.io/kitchen-calculator-test/preview/')throw Error('Only the isolated preview may be checked.');
@@ -27,15 +28,18 @@ const output=process.env.KITCHEN_PREVIEW_ARTIFACTS||'/tmp/kitchen-published-prev
   try{
    const response=await page.goto(target.href);assert.equal(response.status(),200);await page.waitForFunction(()=>window.KitchenStorage&&window.KitchenPhotos&&window.KitchenImportTransaction);
    assert.equal(await page.evaluate(()=>KitchenStorage.KEY),KEY);assert.equal(await page.evaluate(()=>KitchenDrafts.KEY),DRAFT);assert.equal(await page.evaluate(()=>KitchenPhotos.DB_NAME),PHOTO);assert.equal(await page.evaluate(()=>KitchenImportTransaction.DB_NAME),BACKUP);
-   assert.match(await page.locator('.test-notice').innerText(),/PR №20/);assert.equal(await page.locator('#editor').evaluate(el=>getComputedStyle(el).backgroundColor),'rgb(245, 240, 231)');
+   assert.match(await page.locator('.test-notice').innerText(),/PR №20/);assert.equal(await page.locator('#editor').evaluate(el=>getComputedStyle(el).backgroundColor),'rgb(255, 253, 249)');
+   assert.match(await page.evaluate(()=>getComputedStyle(document.body).backgroundImage),/watercolor-kitchen\.webp/);
+   for(const slot of await page.locator('#card-photos [data-empty=true]').all())assert((await slot.boundingBox()).height<=96);
    const initial=await page.evaluate(()=>KitchenStorage.load().data);assert(initial.products.every(p=>p.price===null),'No real prices were published');
    await page.locator('[data-tab="dish"]').click();await page.locator('#create').click();await page.locator('#item-name').fill('Проверка предпросмотра');await page.locator('#technology').fill('Вымышленная карточка, только для проверки.');
    await page.waitForFunction(()=>KitchenDrafts.load().items.some(r=>r.data.name==='Проверка предпросмотра'));
    const id=await page.evaluate(()=>KitchenDrafts.load().items.find(r=>r.data.name==='Проверка предпросмотра').id);
    await page.reload();await page.locator(`[data-restore-draft="${id}"]`).click();assert.equal(await page.locator('#item-name').inputValue(),'Проверка предпросмотра');
-   const image=await page.evaluate(()=>{const c=document.createElement('canvas');c.width=160;c.height=120;const x=c.getContext('2d');x.fillStyle='#e8dfd1';x.fillRect(0,0,160,120);x.fillStyle='#805631';x.fillRect(20,25,120,70);return c.toDataURL('image/png');});
+   const sourceCommit=JSON.parse(await fs.readFile(path.join(__dirname,'dist/preview-version.json'),'utf8')).source_commit;
+   assert.match(sourceCommit,/^[a-f0-9]{40}$/);const image=execFileSync('git',['show',sourceCommit+':tests/fixtures/berry-galette.webp']);
    for(const [i,selector]of ['#photo-file','#photo-file-2'].entries()){
-    await page.locator(selector).setInputFiles({name:'fictional-preview.png',mimeType:'image/png',buffer:Buffer.from(image.split(',')[1],'base64')});
+    await page.locator(selector).setInputFiles({name:'fictional-preview.webp',mimeType:'image/webp',buffer:image});
     await page.waitForFunction(i=>document.querySelector(`.photo-editor [data-photo-slot="${i}"] img`)?.naturalWidth>0&&!document.querySelector(i?'#photo-file-2':'#photo-file').disabled,i);
    }
    await page.locator('#save-item').click();await page.locator('#save-item').click();assert.equal(await page.evaluate(id=>KitchenStorage.load().data.recipes.filter(r=>r.id===id).length,id),1);
@@ -51,8 +55,8 @@ const output=process.env.KITCHEN_PREVIEW_ARTIFACTS||'/tmp/kitchen-published-prev
    assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
    const guard=await page.evaluate(keys=>({protected:keys.map(k=>window.__previewRead(k)),storage:window.__previewStorage,db:window.__previewDB}),protectedKeys);
    assert(guard.protected.every(value=>value===sentinel));assert(guard.storage.every(op=>op.method!=='clear'&&[KEY,DRAFT].includes(op.key)));assert(guard.db.every(op=>op.method!=='deleteDatabase'&&[PHOTO,BACKUP].includes(op.name)));assert.deepEqual(errors,[]);
-   await page.locator('#recipe-card').evaluate(el=>el.scrollIntoView({block:'start'}));await page.screenshot({path:path.join(output,width===390?'mobile.png':'desktop.png')});
-   proof.push({url:target.href,width,httpStatus:response.status(),theme:'warm',draftRestored:true,photosPersisted:2,jsonMerged:true,protectedStorageUnchanged:true,storageAccess:guard.storage,indexedDBAccess:guard.db,consoleErrors:errors});console.log('PASS isolated published preview at '+width+'px');
+   await page.evaluate(()=>scrollTo(0,0));await page.screenshot({path:path.join(output,width===390?'mobile.png':'desktop.png'),fullPage:true});
+   proof.push({url:target.href,width,httpStatus:response.status(),theme:'fresh-berry-watercolor',draftRestored:true,photosPersisted:2,jsonMerged:true,protectedStorageUnchanged:true,storageAccess:guard.storage,indexedDBAccess:guard.db,consoleErrors:errors});console.log('PASS isolated published preview at '+width+'px');
   }finally{await context.close();}
  }
  await fs.writeFile(path.join(output,'browser-proof.json'),JSON.stringify(proof,null,2)+'\n');

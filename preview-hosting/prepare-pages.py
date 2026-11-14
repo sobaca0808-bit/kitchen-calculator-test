@@ -11,7 +11,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 BASE = '63443c53d2c7a99060584d54eae0e9c779475405'
-SOURCE = '08a9452c9b11e0c0f4671bf788f5f4ae504c08ba'
+SOURCE = '19afef52c9fb0b80488fbd1352a3c5c430ab7601'
 
 def read(ref, name):
     return subprocess.check_output(['git', '-C', str(ROOT), 'show', ref + ':' + name])

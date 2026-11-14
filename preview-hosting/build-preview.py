@@ -9,6 +9,7 @@ import json
 import re
 import subprocess
 from pathlib import Path
+from urllib.parse import urlsplit
 
 ROOT = Path(__file__).resolve().parent
 NAMESPACE = {
@@ -30,7 +31,9 @@ def build(repository, commit, pr):
         raise ValueError('Use an exact full Git commit SHA.')
     html = read('index.html').decode()
     linked = re.findall(r'<(?:script|link)\b[^>]*\b(?:src|href)=["\']([^"\']+)', html, re.I)
-    files = {'index.html', *linked}
+    if any(urlsplit(reference).scheme or urlsplit(reference).netloc or reference.startswith('/') for reference in linked):
+        raise ValueError('Runtime dependencies must remain local relative files.')
+    files = {'index.html', *(urlsplit(reference).path for reference in linked)}
     for css in [file for file in files if file.endswith('.css')]:
         for asset in re.findall(r'url\(["\']?([^"\')]+)', read(css).decode()):
             if '://' in asset or asset.startswith(('data:', '/')):
