@@ -1,5 +1,6 @@
 /* Fresh berry screen theme: fictional data, disposable contexts, unchanged A4. */
 'use strict';
+const APPEARANCE_KEY=require('./helpers/theme-context.js').KEY;
 const assert=require('node:assert/strict');
 const fs=require('node:fs/promises');
 const path=require('node:path');
@@ -13,17 +14,12 @@ const SENTINEL='{"fictional":"warm-theme-protected-placeholder"}';
 const output=process.env.KITCHEN_TEST_ARTIFACT_DIR||path.join(os.tmpdir(),'kitchen-warm-theme-artifacts');
 const theme='link[href^="assets/warm-kitchen.css"]';
 let browser,passed=0;const failures=[],proof=[];
-function fixture(long=false){
- const product=(id,name,price,packQuantity=1,unit='kg',massPerPiece=null)=>({id,name,price,packQuantity,unit,massPerPiece,gramsPerMl:null,aliases:'',note:'Вымышленные данные для проверки оформления.'});
- const row=(id,refId,quantity,unit='g')=>({id,refId,quantity,unit,lossPercent:null,outputGrams:null,note:''});
- return {version:1,folders:[{id:'baking',name:'Выпечка'},{id:'menu',name:'Основное меню'}],products:[product('flour','Пшеничная мука',75),product('apple','Яблоки',140),product('butter','Сливочное масло',210,180,'g'),product('egg','Яйцо куриное',110,10,'pcs',55),product('sugar','Сахар',70),product('spice','Корица',160,20,'g')],packaging:[{id:'box',name:'Коробка для пирога',price:50,packQuantity:10,unit:'pcs',note:''}],recipes:[
- {id:'dough',type:'prep',name:'Песочное тесто',actualYield:900,note:'Охладить перед раскаткой.',technology:'1. Соединить компоненты.\n2. Охладить.',ingredients:[row('d-flour','flour',500),row('d-butter','butter',180),row('d-egg','egg',1,'pcs'),row('d-sugar','sugar',120)]},
- {id:'pie',type:'dish',name:'Яблочный пирог с корицей',folderId:'baking',portions:8,actualYield:1400,sellingPrice:190,note:'Вымышленный рецепт. Перед подачей остудить.',technology:'1. Подготовить яблоки.\n2. Раскатать тесто и выложить начинку.\n3. Выпечь и разделить на порции.',ingredients:[row('p-dough','dough',700),row('p-apple','apple',600),row('p-sugar','sugar',60),row('p-spice','spice',3),...(long?Array.from({length:40},(_,i)=>row('long-'+i,'apple',1)):[])],packaging:[{id:'p-box',refId:'box',quantity:1,unit:'pcs',freeForGuest:false,costMode:'additional'}]},
- {id:'tart',type:'dish',name:'Яблочная тарталетка',folderId:'menu',portions:1,actualYield:150,sellingPrice:230,note:'',technology:'Собрать и выпечь.',ingredients:[row('t-dough','dough',80),row('t-apple','apple',70)]}]};
-}
+const fixture=require('./helpers/design-fixture.js');
+const skin=require('./helpers/theme-context.js').spec;
 async function open({width=1366,before=false,long=false}={}){
  const context=await browser.newContext({viewport:{width,height:900},isMobile:width<768,hasTouch:width<=768,acceptDownloads:true});
  await context.route('**/favicon.ico',route=>route.fulfill({status:204,body:''}));
+ if(before)await context.addInitScript(key=>{try{localStorage.setItem(key,'berry');}catch(_){}},APPEARANCE_KEY);
  if(before)await context.route('**/assets/warm-kitchen.css*',route=>route.fulfill({contentType:'text/css',body:''}));
  await context.addInitScript(({key,live,sentinel,data})=>{
   if(!['http:','https:'].includes(location.protocol))return;
@@ -38,7 +34,7 @@ async function open({width=1366,before=false,long=false}={}){
 async function ready(page){await page.evaluate(()=>document.fonts.ready);}
 async function guard(page){
  const p=await page.evaluate(key=>({live:window.__warmRead(key),ops:window.__warmOps}),LIVE);
- assert.equal(p.live,SENTINEL);assert(p.ops.every(op=>op.method!=='clear'&&[KEY,DRAFT].includes(op.key)));
+ assert.equal(p.live,SENTINEL);assert(p.ops.every(op=>op.method!=='clear'&&[KEY,DRAFT,APPEARANCE_KEY].includes(op.key)));
  assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'No horizontal page overflow');
 }
 async function section(page,name){await page.locator(`[data-tab="${name}"]`).click();if(name==='dish'&&await page.locator('#edit-recipe').count())await page.locator('#edit-recipe').click();await ready(page);}
@@ -75,7 +71,7 @@ function pdf(file){const info=execFileSync('pdfinfo',[file],{encoding:'utf8'});r
   browser=await chromium.launch({executablePath:process.env.CHROMIUM_PATH||'/usr/bin/chromium',headless:true,args:['--no-sandbox']});await fs.mkdir(output,{recursive:true});
   for(const width of [320,390,768,1366])await test(`main editors remain readable and usable at ${width}px`,async page=>{
    const values={};for(const name of ['products','prep','dish','packaging']){
-    await section(page,name);assert.equal(await page.locator('.editor').evaluate(el=>getComputedStyle(el).backgroundColor),'rgb(255, 253, 249)');
+    await section(page,name);assert.equal(await page.locator('.editor').evaluate(el=>getComputedStyle(el).backgroundColor),skin.paper);
     for(const selector of ['#item-name','.intro','#save-item','#delete-item'])values[name+selector]=await contrast(page,selector);
     values[name+'label']=await contrast(page,'#editor label:has(input)');values[name+'field']=await contrast(page,'#editor input:not([type=file])');
     await guard(page);assert((await page.locator('#save-item').boundingBox()).height>=44);
@@ -92,8 +88,8 @@ function pdf(file){const info=execFileSync('pdfinfo',[file],{encoding:'utf8'});r
    assert((await page.locator('#save-item').evaluate(el=>parseFloat(getComputedStyle(el).outlineWidth)))>=2);
    const before=await page.locator('#save-item').evaluate(el=>getComputedStyle(el).backgroundColor);await page.locator('#save-item').hover();const hovered=await page.locator('#save-item').evaluate(el=>getComputedStyle(el).backgroundColor);assert.notEqual(hovered,before);
    await page.mouse.down();assert.notEqual(await page.locator('#save-item').evaluate(el=>getComputedStyle(el).backgroundColor),hovered);await page.mouse.move(1,1);await page.mouse.up();
-   const body=await page.evaluate(()=>{const s=getComputedStyle(document.body);return {image:s.backgroundImage,repeat:s.backgroundRepeat,attachment:s.backgroundAttachment};});assert.match(body.image,/watercolor-kitchen\.webp/);assert(body.repeat.split(',').every(s=>s.trim()==='no-repeat'));assert(body.attachment.split(',').every(s=>s.trim()==='fixed'));
-   const artwork=await page.request.get(new URL('assets/watercolor-kitchen.webp',url).href);assert.equal(artwork.status(),200);assert.match(artwork.headers()['content-type'],/image\/webp/);assert((await artwork.body()).length<220*1024,'The original watercolor stays lightweight and local');
+   const body=await page.evaluate(()=>{const s=getComputedStyle(document.body);return {image:s.backgroundImage,repeat:s.backgroundRepeat,attachment:s.backgroundAttachment};});assert.match(body.image,new RegExp(skin.art.replaceAll('.','\\.')));assert(body.repeat.split(',').every(s=>s.trim()==='no-repeat'));assert(body.attachment.split(',').every(s=>s.trim()==='fixed'));
+   const artwork=await page.request.get(new URL('assets/'+skin.art,url).href);assert.equal(artwork.status(),200);assert.match(artwork.headers()['content-type'],/image\/webp/);assert((await artwork.body()).length<220*1024,'The original watercolor stays lightweight and local');
   });
   for(const width of [320,390,1366])await test(`empty photo areas stay compact and loaded photographs keep their proportions at ${width}px`,async page=>{
    const saved=await snapshot(page);assert.equal(await page.locator('#card-photos img').count(),0);
@@ -133,7 +129,7 @@ function pdf(file){const info=execFileSync('pdfinfo',[file],{encoding:'utf8'});r
      await ready(p);await p.screenshot({path:path.join(output,(width===390?'mobile-':'desktop-')+label+'.png')});await guard(p);
     }
     assert.equal(await old.page.locator('.editor').evaluate(el=>getComputedStyle(el).backgroundColor),'rgb(255, 255, 255)');
-    assert.equal(await page.locator('.editor').evaluate(el=>getComputedStyle(el).backgroundColor),'rgb(255, 253, 249)');assert.deepEqual(old.errors,[]);
+    assert.equal(await page.locator('.editor').evaluate(el=>getComputedStyle(el).backgroundColor),skin.paper);assert.deepEqual(old.errors,[]);
     await page.locator('[data-tab="dish"]').click();await page.locator('[data-open="pie"]').click();await page.waitForFunction(()=>!document.querySelector('#print-recipe').disabled);await page.evaluate(()=>scrollTo(0,0));
     const name=width===390?'mobile':'desktop';await page.screenshot({path:path.join(output,'home-'+name+'-full.png'),fullPage:true});
     await page.locator('#edit-recipe').click();await page.locator('#photo-file').setInputFiles(path.join(__dirname,'fixtures/berry-galette.webp'));await page.waitForFunction(()=>document.querySelector('.photo-frame-button img')?.naturalWidth>0&&!document.querySelector('#photo-file').disabled);

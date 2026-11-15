@@ -1,5 +1,7 @@
 /* Task #8 runs exclusively on a disposable loopback origin with fictional data. */
 'use strict';
+const APPEARANCE_KEY=require('./helpers/theme-context.js').KEY;
+const skin=require('./helpers/theme-context.js').spec;
 const {replaceJSONFromFile}=require('./helpers/import-preview.js');
 const assert = require('node:assert/strict');
 const fs = require('node:fs/promises');
@@ -52,7 +54,7 @@ async function guard(page) {
   assert.equal(await page.evaluate(()=>KitchenDrafts.KEY),DRAFT_KEY);
   const proof = await page.evaluate(key=>({sentinel:window.__task8NativeRead(key),ops:window.__task8Ops}),PRODUCTION_KEY);
   assert.equal(proof.sentinel,SENTINEL);
-  assert(proof.ops.length && proof.ops.every(op=>op.method!=='clear' && [TEST_KEY,DRAFT_KEY].includes(op.key)),'App touches only the exact test/draft localStorage keys');
+  assert(proof.ops.length && proof.ops.every(op=>op.method!=='clear' && [TEST_KEY,DRAFT_KEY,APPEARANCE_KEY].includes(op.key)),'App touches only the exact test/draft localStorage keys');
   await noOverflow(page);
 }
 async function makeContext(browser,{width=1366,data=fixture()}={}) {
@@ -337,8 +339,8 @@ async function test(name,fn,options={}) {
         assert.equal(await page.locator('.card-controls').isVisible(),false);assert.equal(await page.locator('#drafts-panel').isVisible(),false);
         assert.equal(await page.locator('.card-cost').count()>0,withPrices);
         if(!withPrices)assert.doesNotMatch(await page.locator('#recipe-card').innerText(),/₽|себестоимост/i);
-        if(withPhoto && withPrices)await page.pdf({path:'/tmp/kitchen-task8-manager-photo.pdf',format:'A4'});
-        if(!withPhoto && !withPrices)await page.pdf({path:'/tmp/kitchen-task8-chef-no-photo.pdf',format:'A4'});
+        if(withPhoto && withPrices)await page.pdf({path:require('node:path').join(require('node:os').tmpdir(),'kitchen-task8-manager-photo.pdf'),format:'A4'});
+        if(!withPhoto && !withPrices)await page.pdf({path:require('node:path').join(require('node:os').tmpdir(),'kitchen-task8-chef-no-photo.pdf'),format:'A4'});
         await page.emulateMedia({media:'screen'});
       }
     });
@@ -372,7 +374,7 @@ async function test(name,fn,options={}) {
 
     for(const width of [320,390,1366])await test(`photos, drafts and the warm readable working surfaces fit ${width}px`,async page=>{
       const info=await page.evaluate(()=>({background:getComputedStyle(document.body).backgroundImage,editor:getComputedStyle(document.querySelector('.editor')).backgroundColor,input:getComputedStyle(document.querySelector('#view-portions')).backgroundColor}));
-      assert.match(info.background,/watercolor-kitchen\.webp/);assert.equal(info.editor,'rgb(255, 253, 249)');assert.equal(info.input,'rgb(255, 254, 253)');
+      assert.match(info.background,new RegExp(skin.art.replaceAll('.','\\.')));assert.equal(info.editor,skin.paper);assert.equal(info.input,skin.field);
       await edit(page);await uploadPhoto(page,await imageFile(page));await page.locator('#item-name').fill('Длинное название незавершённого блюда '.repeat(3));await draftSaved(page);await noOverflow(page);
       await page.locator('[data-tab="products"]').click();await noOverflow(page);await restore(page,'dish-a');await noOverflow(page);
       await page.locator('#save-item').click();await showCard(page);await noOverflow(page);

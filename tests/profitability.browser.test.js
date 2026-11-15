@@ -1,5 +1,6 @@
 /* Task #12: selling price and food profitability, fictional disposable data only. */
 'use strict';
+const APPEARANCE_KEY=require('./helpers/theme-context.js').KEY;
 const {replaceJSONFromFile}=require('./helpers/import-preview.js');
 const assert=require('node:assert/strict');
 const fs=require('node:fs/promises');
@@ -39,7 +40,7 @@ async function initialize(context,data=fixture()){
 function watch(context,errors){context.on('page',page=>{page.setDefaultTimeout(12000);page.on('pageerror',error=>errors.push(error.message));page.on('dialog',dialog=>dialog.accept());});}
 async function guard(page){
  const proof=await page.evaluate(key=>({sentinel:window.__profitRead(key),ops:window.__profitOps}),PRODUCTION);
- assert.equal(proof.sentinel,SENTINEL);assert(proof.ops.length&&proof.ops.every(op=>op.method!=='clear'&&[KEY,DRAFT].includes(op.key)),'Only exact test and draft keys are touched');
+ assert.equal(proof.sentinel,SENTINEL);assert(proof.ops.length&&proof.ops.every(op=>op.method!=='clear'&&[KEY,DRAFT,APPEARANCE_KEY].includes(op.key)),'Only exact test and draft keys are touched');
  assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'No horizontal page overflow');
 }
 async function test(name,fn,{data=fixture(),width=1366}={}){

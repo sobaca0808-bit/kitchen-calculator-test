@@ -3,6 +3,7 @@
  * Serve the repository first: python3 -m http.server 8765 --bind 127.0.0.1
  * Override KITCHEN_TEST_URL / CHROMIUM_PATH if needed. No build is required. */
 'use strict';
+const APPEARANCE_KEY=require('./helpers/theme-context.js').KEY;
 const {replaceJSONFromFile}=require('./helpers/import-preview.js');
 const assert = require('node:assert/strict');
 const fs = require('node:fs/promises');
@@ -10,7 +11,7 @@ const { chromium } = require('playwright');
 const URL = process.env.KITCHEN_TEST_URL || 'http://127.0.0.1:8765';
 const PREVIEW_KEY = 'kitchen-calculator-pr2-browser-test-v1';
 const DRAFT_KEY = 'kitchen-calculator-pr2-browser-drafts-v1';
-const previewOperation = op => op.method !== 'clear' && [PREVIEW_KEY,DRAFT_KEY].includes(op.key);
+const previewOperation = op => op.method !== 'clear' && [PREVIEW_KEY,DRAFT_KEY,APPEARANCE_KEY].includes(op.key);
 const target = new globalThis.URL(URL);
 const local = ['localhost','127.0.0.1','[::1]'].includes(target.hostname);
 const publishedTest = target.protocol === 'https:' && target.hostname === 'sobaca0808-bit.github.io' && target.pathname.startsWith('/kitchen-calculator-test/');

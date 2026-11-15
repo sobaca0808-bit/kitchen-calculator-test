@@ -1,5 +1,6 @@
 /* UI controls: isolated fictional fixtures, loopback only, no real kitchen data. */
 'use strict';
+const APPEARANCE_KEY=require('./helpers/theme-context.js').KEY;
 const assert=require('node:assert/strict');
 const fs=require('node:fs/promises');
 const path=require('node:path');
@@ -35,7 +36,7 @@ async function initialize(context,data){
 }
 async function guard(page){
   const proof=await page.evaluate(production=>({sentinel:window.__controlRead(production),ops:window.__controlOps,writes:window.__controlIDBWrites}),PRODUCTION);
-  assert.equal(proof.sentinel,SENTINEL);assert(proof.ops.length>0&&proof.ops.every(op=>op.method!=='clear'&&[KEY,DRAFT].includes(op.key)),'Only isolated main/draft localStorage is used');
+  assert.equal(proof.sentinel,SENTINEL);assert(proof.ops.length>0&&proof.ops.every(op=>op.method!=='clear'&&[KEY,DRAFT,APPEARANCE_KEY].includes(op.key)),'Only isolated main/draft localStorage is used');
   assert(proof.writes.every(op=>['kitchen-calculator-test-photos-v1','kitchen-calculator-test-import-backups-v1'].includes(op.db)),'Only isolated image/backup databases are written');
   assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'No horizontal page overflow');
 }

@@ -6,11 +6,13 @@
   <meta name="theme-color" content="#fff9f4">
   <title>ТЕСТ PR №2 — Кухонный калькулятор</title>
   <meta name="robots" content="noindex, nofollow">
+  <script src="js/appearance.js"></script>
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="assets/folders.css">
   <link rel="stylesheet" href="assets/import.css">
   <link rel="stylesheet" href="assets/editor-actions.css">
   <link rel="stylesheet" href="assets/warm-kitchen.css?v=berry-2">
+  <link rel="stylesheet" href="assets/appearance.css?v=three-themes-1">
   <script defer src="js/calculations.js"></script>
   <script defer src="js/seed.js"></script>
   <script defer src="js/storage.js"></script>
@@ -35,7 +37,21 @@
   <p class="test-notice" role="note">ТЕСТ PR №2 · Отдельное хранилище. Рабочие продукты и рецепты здесь не используются.</p>
   <header class="app-header">
     <a class="brand" href="index.html" aria-label="Кухонный калькулятор, главная"><span class="brand-icon" aria-hidden="true">К</span><span>Кухонный <b>калькулятор</b><small>Себестоимость начинается с продуктов</small></span></a>
-    <div class="backup-actions"><button id="export" class="quiet">↓ Экспорт JSON</button><button id="import" class="quiet">↑ Импорт JSON</button><input id="import-file" type="file" accept=".json,application/json" hidden></div>
+    <div class="backup-actions">
+      <div id="appearance-control" class="appearance-control">
+        <button id="appearance-toggle" class="quiet appearance-toggle" type="button" aria-expanded="false" aria-controls="appearance-panel" aria-haspopup="dialog"><svg aria-hidden="true" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 3a9 9 0 1 0 0 18h1a2 2 0 0 0 1.7-3.1 1.7 1.7 0 0 1 1.4-2.6H18a3 3 0 0 0 3-3.1A9 9 0 0 0 12 3Z"/><circle cx="7.5" cy="10" r=".8"/><circle cx="11" cy="6.8" r=".8"/><circle cx="15.5" cy="8" r=".8"/><circle cx="6.8" cy="14.5" r=".8"/></svg><span>Оформление</span></button>
+        <section id="appearance-panel" class="appearance-panel" role="dialog" aria-label="Оформление калькулятора" hidden>
+          <h2>Оформление</h2><p class="appearance-intro">Три настроения одной кухни</p>
+          <fieldset class="appearance-options"><legend class="sr-only">Выберите тему</legend>
+            <label class="appearance-option"><span class="appearance-preview" data-theme="berry" aria-hidden="true"></span><span class="appearance-name"><input type="radio" name="kitchen-appearance" value="berry" checked><span>Ягодная кухня</span></span></label>
+            <label class="appearance-option"><span class="appearance-preview" data-theme="graphite" aria-hidden="true"></span><span class="appearance-name"><input type="radio" name="kitchen-appearance" value="graphite"><span>Графит</span></span></label>
+            <label class="appearance-option"><span class="appearance-preview" data-theme="sage" aria-hidden="true"></span><span class="appearance-name"><input type="radio" name="kitchen-appearance" value="sage"><span>Шалфей</span></span></label>
+          </fieldset>
+          <p id="appearance-status" class="appearance-status" role="status" aria-live="polite">Меняется только оформление. Рецепты остаются прежними.</p>
+        </section>
+      </div>
+      <button id="export" class="quiet">↓ Экспорт JSON</button><button id="import" class="quiet">↑ Импорт JSON</button><input id="import-file" type="file" accept=".json,application/json" hidden>
+    </div>
   </header>
   <div id="message" role="status" aria-live="polite" hidden></div>
   <nav class="tabs" aria-label="Разделы"><button data-tab="dish">Мои рецепты <span id="count-dish"></span></button><button data-tab="prep">Полуфабрикаты <span id="count-prep"></span></button><button data-tab="products">Продукты <span id="count-products"></span></button><button data-tab="packaging">Упаковка и фасовка <span id="count-packaging"></span></button></nav>

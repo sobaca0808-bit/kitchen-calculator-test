@@ -1,5 +1,6 @@
 /* Issue #16: manual JSON transfers, fictional data and disposable loopback profiles. */
 'use strict';
+const APPEARANCE_KEY=require('./helpers/theme-context.js').KEY;
 const assert = require('node:assert/strict');
 const fs = require('node:fs/promises');
 const path = require('node:path');
@@ -98,7 +99,7 @@ function watch(context,errors) {
 async function guard(page) {
   const result=await page.evaluate(key=>({sentinel:window.__mergeRead(key),ops:window.__mergeOps,dbs:window.__mergeDBs}),PRODUCTION);
   assert.equal(result.sentinel,SENTINEL);
-  assert(result.ops.length && result.ops.every(op=>op.method!=='clear' && [KEY,DRAFT].includes(op.key)),'Only exact test/draft localStorage namespaces are used');
+  assert(result.ops.length && result.ops.every(op=>op.method!=='clear' && [KEY,DRAFT,APPEARANCE_KEY].includes(op.key)),'Only exact test/draft localStorage namespaces are used');
   assert(result.dbs.every(name=>[PHOTO_DB,BACKUP_DB].includes(name)),'Only isolated photo and import-backup databases are opened');
   assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'No horizontal page overflow');
 }
