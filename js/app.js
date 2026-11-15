@@ -674,8 +674,9 @@
     if(backupBusy)return;
     if(photoEditor?.busy) {message('Дождитесь обработки фотографии перед экспортом.',true);return;}
     const hasUnfinishedRecipe=editingRecipe() && dirty;
-    const emergency=dirty&&!editingRecipe()&&(storageBlocked||recoveryRequired);
+    const emergency=dirty&&(storageBlocked||recoveryRequired);
     if(emergency&&(!draft?.name?.trim()||errors.size)){message('Исправьте название и числа перед экспортом введённой записи.',true);return;}
+    if(emergency&&hasUnfinishedRecipe)flushDraft();
     if(!emergency&&dirty && (hasUnfinishedRecipe ? !flushDraft() : !saveDraft())) return;
     backupBusy=true;$('#export').disabled=true;
     try {
@@ -683,7 +684,7 @@
       const text = S.stringify(portable), url = URL.createObjectURL(new Blob([text],{type:'application/json;charset=utf-8'}));
       const link = document.createElement('a');link.href = url;link.download = 'kitchen-calculator-PR2-TEST-'+new Date().toISOString().slice(0,10)+'.json';link.click();setTimeout(() => URL.revokeObjectURL(url),1000);
       message('JSON с сохранёнными карточками и фотографиями подготовлен к скачиванию.'+(hasUnfinishedRecipe?' Незавершённый черновик хранится отдельно: сначала нажмите «Сохранить», чтобы включить изменения в резервную копию.':''));
-      if(emergency)message('Введённые изменения включены только в скачиваемый JSON. База браузера не перезаписана.');
+      if(emergency)message('Введённые изменения включены в скачиваемый JSON. Экспорт не выполняет новую запись в базу браузера.');
     } catch(e) {message('Экспорт не выполнен: '+e.message,true);}
     finally {backupBusy=false;$('#export').disabled=false;}
   });

@@ -30,3 +30,25 @@ jobs:
         with:
           name: issue21-live-audit
           path: ${{ runner.temp }}/issue21-evidence
+  candidate-only:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Install disposable browser tooling
+        run: npm install --prefix "$RUNNER_TEMP/issue21-tools" --ignore-scripts --no-audit --no-fund playwright@1.62.1
+      - name: Verify corrected candidate in temporary browser responses without deploying it
+        env:
+          NODE_PATH: ${{ runner.temp }}/issue21-tools/node_modules
+          CHROMIUM_PATH: /usr/bin/google-chrome
+          KITCHEN_TEST_ARTIFACT_DIR: ${{ runner.temp }}/issue21-candidate
+          KITCHEN_ROUTED_HTTPS_AUDIT: '1'
+        run: node tests/preview-persistence.browser.test.js
+      - name: Save candidate evidence separately from published baseline
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue21-candidate-checks
+          path: ${{ runner.temp }}/issue21-candidate
