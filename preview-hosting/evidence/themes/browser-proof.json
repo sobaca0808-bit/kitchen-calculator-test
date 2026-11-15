@@ -1,0 +1,74 @@
+[
+  {
+    "url": "https://sobaca0808-bit.github.io/kitchen-calculator-test/preview/",
+    "width": 1366,
+    "httpStatus": 200,
+    "themes": [
+      "berry",
+      "graphite",
+      "sage"
+    ],
+    "preferencePersisted": true,
+    "draftRestored": true,
+    "photosPersisted": 2,
+    "jsonMerged": true,
+    "protectedStorageUnchanged": true,
+    "storageAccess": [
+      {
+        "method": "getItem",
+        "key": "kitchen-calculator-appearance-preview-v1"
+      },
+      {
+        "method": "getItem",
+        "key": "kitchen-calculator-preview-v1"
+      },
+      {
+        "method": "getItem",
+        "key": "kitchen-calculator-preview-drafts-v1"
+      }
+    ],
+    "indexedDBAccess": [
+      {
+        "method": "open",
+        "name": "kitchen-calculator-preview-import-backups-v1"
+      }
+    ],
+    "consoleErrors": []
+  },
+  {
+    "url": "https://sobaca0808-bit.github.io/kitchen-calculator-test/preview/",
+    "width": 390,
+    "httpStatus": 200,
+    "themes": [
+      "berry",
+      "graphite",
+      "sage"
+    ],
+    "preferencePersisted": true,
+    "draftRestored": true,
+    "photosPersisted": 2,
+    "jsonMerged": true,
+    "protectedStorageUnchanged": true,
+    "storageAccess": [
+      {
+        "method": "getItem",
+        "key": "kitchen-calculator-appearance-preview-v1"
+      },
+      {
+        "method": "getItem",
+        "key": "kitchen-calculator-preview-v1"
+      },
+      {
+        "method": "getItem",
+        "key": "kitchen-calculator-preview-drafts-v1"
+      }
+    ],
+    "indexedDBAccess": [
+      {
+        "method": "open",
+        "name": "kitchen-calculator-preview-import-backups-v1"
+      }
+    ],
+    "consoleErrors": []
+  }
+]
