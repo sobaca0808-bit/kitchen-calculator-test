@@ -50,14 +50,16 @@ jobs:
         run: |
           python3 preview-hosting/prepare-validation.py > "$RUNNER_TEMP/preview-validation.json"
           npm install --prefix "$RUNNER_TEMP/preview-qa" --ignore-scripts --no-audit --no-fund playwright@1.62.1
-      - name: Run 20 existing UI checks against the published HTTPS preview
+      - name: Run 60 existing UI checks in three themes against the published preview
         env:
           NODE_PATH: ${{ runner.temp }}/preview-qa/node_modules
           KITCHEN_TEST_URL: https://sobaca0808-bit.github.io/kitchen-calculator-test/preview/
           CHROMIUM_PATH: /usr/bin/google-chrome
         run: |
           QA_DIR="$(python3 -c 'import json,os;print(json.load(open(os.environ["RUNNER_TEMP"]+"/preview-validation.json"))["validation_directory"])')"
-          node "$QA_DIR/tests/browser.test.js"
+          for PREVIEW_THEME in berry graphite sage; do
+            KITCHEN_TEST_THEME="$PREVIEW_THEME" node "$QA_DIR/tests/browser.test.js"
+          done
       - name: Verify separate storage and capture desktop and mobile
         env:
           NODE_PATH: ${{ runner.temp }}/preview-qa/node_modules

@@ -13,6 +13,7 @@ mapping = {
     'kitchen-calculator-pr2-browser-drafts-v1': 'kitchen-calculator-preview-drafts-v1',
     'kitchen-calculator-test-photos-v1': 'kitchen-calculator-preview-photos-v1',
     'kitchen-calculator-test-import-backups-v1': 'kitchen-calculator-preview-import-backups-v1',
+    'kitchen-calculator-appearance-test-v1': 'kitchen-calculator-appearance-preview-v1',
 }
 out = Path(tempfile.mkdtemp(prefix='kitchen-pr20-preview-check-'))
 shutil.copytree(project / 'dist', out, dirs_exist_ok=True)
@@ -27,4 +28,4 @@ for name in files:
             text = text.replace(old, new)
         content = text.encode()
     target.write_bytes(content)
-print(json.dumps({'validation_directory': str(out), 'source_commit': sha, 'test_edits': 'Only four storage-name substitutions in disposable test copies.'}))
+print(json.dumps({'validation_directory': str(out), 'source_commit': sha, 'test_edits': 'Only five storage-name substitutions in disposable test copies.'}))

@@ -17,9 +17,10 @@ NAMESPACE = {
     'kitchen-calculator-pr2-browser-drafts-v1': 'kitchen-calculator-preview-drafts-v1',
     'kitchen-calculator-test-photos-v1': 'kitchen-calculator-preview-photos-v1',
     'kitchen-calculator-test-import-backups-v1': 'kitchen-calculator-preview-import-backups-v1',
+    'kitchen-calculator-appearance-test-v1': 'kitchen-calculator-appearance-preview-v1',
 }
 CHANGES = dict(zip(
-    ['js/storage.js', 'js/drafts.js', 'js/photos.js', 'js/import-transaction.js'],
+    ['js/storage.js', 'js/drafts.js', 'js/photos.js', 'js/import-transaction.js', 'js/appearance.js'],
     NAMESPACE.items(),
 ))
 
