@@ -1,0 +1,32 @@
+name: Issue 21 read-only published persistence audit
+
+on:
+  push:
+    branches: [fix/issue-21-preview-persistence]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  published-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Install disposable browser test tooling
+        run: npm install --prefix "$RUNNER_TEMP/issue21-tools" --ignore-scripts --no-audit --no-fund playwright@1.62.1
+      - name: Verify exact published versions and restart Chrome three times
+        env:
+          NODE_PATH: ${{ runner.temp }}/issue21-tools/node_modules
+          CHROMIUM_PATH: /usr/bin/google-chrome
+          KITCHEN_AUDIT_OUTPUT: ${{ runner.temp }}/issue21-evidence
+        run: node scripts/audit-issue21-live.cjs
+      - name: Save version and browser evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue21-live-audit
+          path: ${{ runner.temp }}/issue21-evidence
