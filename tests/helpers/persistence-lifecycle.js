@@ -34,7 +34,7 @@ async function createThroughUI(page){
  const prep=await page.evaluate(name=>KitchenStorage.load().data.recipes.find(r=>r.name===name).id,names.prep);
  await tab(page,'dish');await page.locator('#folder-create').click();await page.locator('#folder-name').fill(names.folder);await page.locator('#folder-submit').click();
  const folder=await page.evaluate(name=>KitchenStorage.load().data.folders.find(f=>f.name===name).id,names.folder);
- await page.locator('#create').click();await page.locator('#item-name').fill(names.dish);await page.locator('#recipe-folder').selectOption(folder);await ingredient(page,names.prep,400);await page.locator('#recipe-portions').fill('2');await page.locator('#dish-yield').fill('400');await page.locator('#selling-price').fill('249');await page.locator('#technology').fill('1. Взвесить готовый рис.\n2. Разделить на две порции.');await page.locator('#recipe-note').fill('Данные вымышленные, создано проверкой Issue 21.');
+ await page.locator('#create').click();await page.locator('#item-name').fill(names.dish);await page.locator('#recipe-folder').selectOption(folder);await ingredient(page,names.prep,400);await page.locator('#recipe-portions').fill('2');await page.locator('#dish-yield').fill('400');await page.locator('#selling-price').fill('249');await page.locator('#technology').fill('1. Взвесить готовый рис.\n2. Разделить на две порции.');await page.locator('details:has(#recipe-note) summary').click();await page.locator('#recipe-note').fill('Данные вымышленные, создано проверкой Issue 21.');
  await page.locator('#add-packaging-row').click();await page.locator('select[id^="pack-ref-"]').selectOption(material);await page.locator('input[id^="pack-qty-"]').fill('1');
  await upload(page,0);await upload(page,1);await save(page);await page.locator('#view-recipe').click();await page.waitForFunction(()=>!document.querySelector('#print-recipe').disabled);
  const dish=await page.evaluate(name=>KitchenStorage.load().data.recipes.find(r=>r.name===name).id,names.dish);
@@ -51,7 +51,7 @@ async function checkContents(page,ids,price){
  },{ids,price,names});
  assert.equal(result.price,price);assert.equal(result.name,names.dish);assert.equal(result.folderId,ids.folder);assert.equal(result.folderName,names.folder);assert.equal(result.prep,names.prep);assert.equal(result.photoCount,2);assert.equal(result.sellingPrice,249);assert(Math.abs(result.cost-price*.2)<1e-9);assert.equal(result.packaging,6);assert(result.draft);return result;
 }
-async function lifecycle({chromium,url,rootURL,keys=PREVIEW,width=390,cycles=3,output,launch,theme}){
+async function lifecycle({chromium,url,rootURL,keys=PREVIEW,width=390,cycles=3,output,launch,theme,expectInitialEmpty=false,expectStaleProtection=false}){
  const target=new URL(url);assert(['127.0.0.1','localhost','[::1]'].includes(target.hostname)||target.href==='https://sobaca0808-bit.github.io/kitchen-calculator-test/preview/');
  const profile=await fs.mkdtemp(path.join(os.tmpdir(),'kitchen-issue21-profile-'));let context,expected,ids,price=137.5;const report={url,width,theme:theme||'berry',cycles:[],errors:[],profileSeeded:false};
  try{
@@ -64,6 +64,7 @@ async function lifecycle({chromium,url,rootURL,keys=PREVIEW,width=390,cycles=3,o
    const namespaces=await page.evaluate(()=>({book:KitchenStorage.KEY,drafts:KitchenDrafts.KEY,photos:KitchenPhotos.DB_NAME,backups:KitchenImportTransaction.DB_NAME,appearance:KitchenAppearance.KEY}));assert.deepEqual(namespaces,keys);
    if(cycle===0){
     const before=await page.evaluate(()=>window.__beforeCalculator),after=await snapshot(page);report.initialRecordPresent=before!==null;report.wroteInitialDatabase=before===null&&after.raw!==null;report.initialProducts=after.data?.products.length||0;report.initialRecipes=after.data?.recipes.length||0;
+    if(expectInitialEmpty){assert.equal(after.raw,null);assert.equal(report.initialProducts,0);assert.equal(report.initialRecipes,0);}
     ids=await createThroughUI(page);
     if(theme&&theme!=='berry'){await page.locator('#appearance-toggle').click();await page.locator(`input[name=kitchen-appearance][value=${theme}]`).check();await page.keyboard.press('Escape');}
    }else{
@@ -83,6 +84,14 @@ async function lifecycle({chromium,url,rootURL,keys=PREVIEW,width=390,cycles=3,o
    }
    await tab(page,'dish');await page.locator('#folder-filter').selectOption('all');await page.locator(`[data-open="${ids.dish}"]`).click();await page.waitForFunction(()=>!document.querySelector('#print-recipe').disabled);await page.screenshot({path:path.join(output,`lifecycle-${width}-${cycle+1}.png`),fullPage:true});
    report.cycles.push({cycle:cycle+1,contents,rawSha256:sha(expected.raw),photoHashes:expected.photos.map(p=>p.sha256),draftCount:expected.drafts.length,rootNamespaces,closedChromeProcess:true});
+   if(cycle===cycles-1){
+    const stale=await context.newPage();stale.setDefaultTimeout(25000);await stale.goto(url);await stale.waitForFunction(()=>window.KitchenStorage);
+    const markerName='Проверка 21 · Новая запись другой вкладки';await createCatalog(page,'products',markerName,51,1);
+    await tab(stale,'products');await stale.locator(`[data-open="${ids.product}"]`).click();await stale.locator('#price').fill('999.25');await stale.locator('#save-item').click();
+    const latest=await stale.evaluate(()=>KitchenStorage.load().data);report.staleOverwriteObserved=!latest.products.some(p=>p.name===markerName);report.staleSaveMessage=await stale.locator('#message').innerText();
+    if(expectStaleProtection){assert.equal(report.staleOverwriteObserved,false,'A stale tab must not erase a newer saved record');assert.equal(latest.products.find(p=>p.id===ids.product).price,price);assert.equal(await stale.locator('#price').inputValue(),'999.25');}
+    await stale.close();
+   }
    await context.close();context=null;
   }
   assert.deepEqual(report.errors,[]);report.namespaces=keys;report.passed=true;return report;
