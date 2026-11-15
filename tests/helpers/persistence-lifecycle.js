@@ -54,9 +54,10 @@ async function checkContents(page,ids,price){
 async function lifecycle({chromium,url,rootURL,keys=PREVIEW,width=390,cycles=3,output,launch,theme,expectInitialEmpty=false,expectStaleProtection=false}){
  const target=new URL(url);assert(['127.0.0.1','localhost','[::1]'].includes(target.hostname)||target.href==='https://sobaca0808-bit.github.io/kitchen-calculator-test/preview/');
  const profile=await fs.mkdtemp(path.join(os.tmpdir(),'kitchen-issue21-profile-'));let context,expected,ids,price=137.5;const report={url,width,theme:theme||'berry',cycles:[],errors:[],profileSeeded:false};
+ await fs.mkdir(path.join(profile,'downloads'),{recursive:true});
  try{
   for(let cycle=0;cycle<cycles;cycle++){
-   context=await chromium.launchPersistentContext(profile,{...launch,viewport:{width,height:900},isMobile:width<768,hasTouch:width<768,acceptDownloads:true,timezoneId:'Europe/Moscow'});
+   context=await chromium.launchPersistentContext(profile,{...launch,viewport:{width,height:900},isMobile:width<768,hasTouch:width<768,acceptDownloads:true,downloadsPath:path.join(profile,'downloads'),timezoneId:'Europe/Moscow'});
    await context.route('**/favicon.ico',route=>route.fulfill({status:204,body:''}));
    context.on('page',page=>{page.on('pageerror',e=>report.errors.push(e.message));page.on('console',m=>{if(m.type()==='error')report.errors.push(m.text());});});
    await context.addInitScript(key=>{try{window.__beforeCalculator=localStorage.getItem(key);}catch(error){window.__beforeCalculatorError=error.message;}},keys.book);
@@ -75,7 +76,7 @@ async function lifecycle({chromium,url,rootURL,keys=PREVIEW,width=390,cycles=3,o
    const contents=await checkContents(page,ids,price);expected=await snapshot(page);
    // The ordinary JSON export includes saved cards, folders and both photos;
    // unfinished draft changes intentionally remain separate.
-   const event=page.waitForEvent('download');await page.locator('#export').click();const download=await event,portable=JSON.parse(await fs.readFile(await download.path(),'utf8'));
+   const event=page.waitForEvent('download');await page.locator('#export').click();const download=await event;assert.equal(await download.failure(),null,'The portable JSON download completes before browser shutdown');const portable=JSON.parse(await fs.readFile(await download.path(),'utf8'));
    const exported=portable.recipes.find(r=>r.id===ids.dish);assert.equal(exported.name,names.dish);assert.equal(exported.photos.filter(Boolean).length,2);assert.equal(portable.folders.find(f=>f.id===ids.folder).name,names.folder);assert.equal(portable.products.find(p=>p.id===ids.product).price,price);
    let rootNamespaces;
    if(rootURL&&cycle===0){
@@ -95,6 +96,6 @@ async function lifecycle({chromium,url,rootURL,keys=PREVIEW,width=390,cycles=3,o
    await context.close();context=null;
   }
   assert.deepEqual(report.errors,[]);report.namespaces=keys;report.passed=true;return report;
- }finally{await context?.close();await fs.rm(profile,{recursive:true,force:true});}
+ }finally{await context?.close();await fs.rm(profile,{recursive:true,force:true,maxRetries:3,retryDelay:100});}
 }
 module.exports={PREVIEW,TEST,names,snapshot,lifecycle};
