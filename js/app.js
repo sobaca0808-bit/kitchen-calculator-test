@@ -30,6 +30,9 @@
   function message(text, error = false) {
     const el = $('#message'); el.textContent = text; el.className = error ? 'error' : ''; el.hidden = false;
   }
+  function clearMissingStorageHelp(){
+    const help=$('#storage-help');if(help&&location.hash!=='#storage-diagnostics')help.hidden=true;
+  }
   function persist(candidate, success, restore = false) {
     if (recoveryRequired && !restore) {message('Сохранение заблокировано: исходное хранилище не удалось прочитать. Восстановите резервную копию через импорт JSON. Исходные данные не изменены.',true);return false;}
     let clean;
@@ -39,7 +42,7 @@
       storageBlocked = true;
       message(result.commitUncertain?result.error+' Поля остаются на экране. После экспорта проверьте базу при повторном открытии.':'Не удалось сохранить в браузере: ' + result.error + ' Изменения пока в памяти. Скачайте экспорт JSON до закрытия страницы.', true);
       return false;
-    } else { state=clean;persistedSource=S.stringify(clean);recoveryRequired = false; storageBlocked = false; message(success || 'Данные сохранены в этом браузере.'); }
+    } else { state=clean;persistedSource=S.stringify(clean);recoveryRequired = false; storageBlocked = false;clearMissingStorageHelp();message(success || 'Данные сохранены в этом браузере.'); }
     return true;
   }
   function collection() { return isCatalog() ? (state[section] || []) : state.recipes.filter(r => r.type === section); }
@@ -67,7 +70,7 @@
       else message('Изменения папок не сохранены: '+result.error+' Прежняя база и рецепты не изменены.',true);
       return false;
     }
-    state = clean;persistedSource=S.stringify(clean);message(success);return true;
+    state = clean;persistedSource=S.stringify(clean);clearMissingStorageHelp();message(success);return true;
   }
   // Update just the folder fields: raw input, photo work and other draft fields stay intact.
   function refreshFolderFields() {
@@ -703,7 +706,7 @@
       $('.workspace').inert=value;$('#drafts-panel').inert=value;$('.tabs').inert=value;
     },
     onApplied:(data,source)=>{
-      state=data;persistedSource=source;storageBlocked=false;recoveryRequired=false;
+      state=data;persistedSource=source;storageBlocked=false;recoveryRequired=false;clearMissingStorageHelp();
       $('#folder-form').hidden=true;folderFormId=null;
       selectedId=collection()[0]?.id || null;openSelected();
     },onWriteUncertain:()=>{storageBlocked=true;},message
