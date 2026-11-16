@@ -20,6 +20,8 @@ SITE = 'https://sobaca0808-bit.github.io/kitchen-calculator-test/'
 PREVIOUS = '63443c53d2c7a99060584d54eae0e9c779475405'
 APPROVED = '662a12af04b3f446470a8405e6ec9cd2062fd5b7'
 HOST = 'f9e1df36c53b0817680f50fd9fd8ac5ab0d3254a'
+# Pinned, independently checked source of the installable PWA (PR #27).
+PWA_SOURCE = '11784f16e932dded4ca2e962a3bd7e38622328aa'
 PATHS = ['preview', 'pr-22', 'expenses', 'expense-toggle', 'final']
 
 def sha(payload):
@@ -112,6 +114,28 @@ def build(output, proof, legacy_runtime, source):
                         relative = file.relative_to(old).as_posix()
                         protected_files[relative] = sha(file.read_bytes())
                         assert sha((output / relative).read_bytes()) == protected_files[relative]
+            # The PWA was published after the five legacy sandboxes. Rebuild it
+            # from its pinned source as part of EVERY subsequent main release;
+            # otherwise deploying main silently deletes /pwa/ from Pages.
+            pwa_checkout = temp / 'pwa-source'
+            run('git', '-C', str(ROOT), 'worktree', 'add', '--detach', str(pwa_checkout), PWA_SOURCE)
+            try:
+                assert not (output / 'pwa').exists()
+                run('python3', str(pwa_checkout / 'scripts/build-pwa-preview.py'),
+                    '--output', str(output / 'pwa'), '--source', PWA_SOURCE)
+            finally:
+                run('git', '-C', str(ROOT), 'worktree', 'remove', '--force', str(pwa_checkout))
+            pwa_version = json.loads((output / 'pwa/pwa-version.json').read_text())
+            pwa_manifest = json.loads((output / 'pwa/manifest.webmanifest').read_text())
+            assert pwa_manifest['id'] == '/kitchen-calculator-test/pwa/'
+            assert pwa_manifest['start_url'] == './?source=pwa'
+            assert all(name.startswith('kitchen-calculator-pwa-')
+                       for name in pwa_version['storage_names'].values())
+            pwa_https = {file.relative_to(output).as_posix(): sha(file.read_bytes())
+                         for file in (output / 'pwa').rglob('*') if file.is_file()}
+            assert len(pwa_https) == 44
+            assert set(pwa_https) == ({'pwa/' + name for name in pwa_version['files']}
+                                     | {'pwa/pwa-version.json'})
             files = runtime(lambda file: read(source, file))
             assert len(files) == 36
             html = release_html(read(source, 'index.html').decode(), source)
@@ -128,13 +152,14 @@ def build(output, proof, legacy_runtime, source):
                       'storage_names': current_names, 'previous_root_https': before_root,
                       'approved_source_https': source_hashes,
                       'preserved_test_https': protected_http, 'preserved_test_files': protected_files,
-                      'release_https': released}
+                      'restored_pwa_https': pwa_https, 'release_https': released}
             proof.write_text(json.dumps(result, ensure_ascii=False, indent=2) + '\n')
             legacy_runtime.write_text(json.dumps({'files': {file: base64.b64encode((old / file).read_bytes()).decode()
                                                           for file in before_root}, 'keys': current_names}) + '\n')
             print(json.dumps({'source_commit': source, 'url': SITE, 'root_runtime_files': 36,
                               'preserved_test_files': len(protected_files), 'preserved_test_https': len(protected_http),
-                              'release_https': len(released), 'original_storage_names_preserved': True}))
+                              'release_https': len(released), 'restored_pwa_https': len(pwa_https),
+                              'original_storage_names_preserved': True}))
         finally:
             run('git', '-C', str(ROOT), 'worktree', 'remove', '--force', str(host))
 
