@@ -1,0 +1,41 @@
+{
+  "date": "2026-11-16",
+  "url": "https://sobaca0808-bit.github.io/kitchen-calculator-test/expense-toggle/",
+  "pr": "https://github.com/sobaca0808-bit/kitchen-calculator-test/pull/24",
+  "source_commit": "6cf49ce304b9ddf0e3c6de2d780537f12cbf8e7b",
+  "runtime_ci_commit": "e358eac3215dd6be0fe0ff8a618f12a149b7278a",
+  "runtime_ci_run": 43853899958,
+  "publication_commit": "ab75846098493996222c318b9d042c246b46c038",
+  "publication_run": 43858162221,
+  "publication_job": 133267715219,
+  "publication_conclusion": "success",
+  "artifact": {
+    "id": 14221404871,
+    "name": "browser-preview-proof",
+    "sha256": "8ae634f21b0195889cab81641f9c91227cf96c04ff2b901f54b6321596fd4c1e"
+  },
+  "checks": {
+    "node": 253,
+    "browser_full": 715,
+    "published_toggle_scenarios": 25,
+    "published_toggle_failures": 0,
+    "protected_previous_files": 253,
+    "protected_https_files": 126,
+    "verified_https_files_after": 163,
+    "chrome_restarts_per_viewport": 3,
+    "viewports": [
+      1366,
+      390
+    ],
+    "physical_android_tested": false,
+    "physical_printer_tested": false
+  },
+  "unchanged_refs": {
+    "main": "63443c53d2c7a99060584d54eae0e9c779475405",
+    "feature/warm-professional-kitchen": "04c98fb20444859454fc18fd6f3d6e0429818f8b",
+    "fix/issue-21-preview-persistence": "1a68adffd2046b758b683af3b516adf944081149",
+    "feature/establishment-expenses": "1c1fcc057370f04a0451bf62ef6241a1edeb7587"
+  },
+  "initial_database": "empty; no automatic copies",
+  "production_repository_changed": false
+}
