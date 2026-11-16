@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#161311">
+<title>Добро пожаловать — Кухонный калькулятор</title>
+<style>
+:root{color-scheme:dark;--ink:#f9f4ec;--muted:#e2d8c9;--gold:#d8ae69;--gold2:#f1cf89;--bg:#110f0e;--outline:rgba(240,203,137,.5)}
+*{box-sizing:border-box} html{height:100%;background:var(--bg)} body{margin:0;color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Arial,sans-serif;min-height:100dvh;overflow-x:hidden;background:#110f0e}
+body:before{content:"";position:fixed;inset:0;z-index:-1;background:linear-gradient(115deg,rgba(10,8,6,.82),rgba(30,21,14,.65)),url("assets/gastronomic-background.webp") center/cover}
+button,a{font:inherit} button{cursor:pointer} button:focus-visible,a:focus-visible{outline:3px solid white;outline-offset:4px}
+.shell{width:min(1100px,100%);margin:auto;min-height:100dvh;display:flex;flex-direction:column;padding:clamp(15px,3vw,32px)}
+.top{display:flex;align-items:center;gap:16px;justify-content:space-between}
+.brand{font-size:clamp(19px,3vw,29px);font-weight:800;letter-spacing:-.03em;text-decoration:none;color:white}
+.brand span{color:var(--gold2)} .skip{background:rgba(12,11,10,.72);border:1px solid var(--outline);color:#fff;border-radius:999px;padding:11px 18px;min-height:44px}
+main{flex:1;display:grid;place-items:center;min-height:0}
+.slide{display:none;width:100%;max-width:990px;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);align-items:center;gap:clamp(20px,4vw,50px);padding:30px 0}
+.slide.active{display:grid;animation:enter .28s ease both}@keyframes enter{from{opacity:.3;transform:translateY(7px)}to{opacity:1;transform:none}}
+.visual{border-radius:28px;overflow:hidden;aspect-ratio:5/4;border:1px solid rgba(240,203,137,.4);box-shadow:0 25px 70px rgba(0,0,0,.52);position:relative}
+.visual img{width:100%;height:100%;display:block;object-fit:cover}
+.visual:after{content:"";position:absolute;inset:50% 0 0;background:linear-gradient(transparent,rgba(0,0,0,.4))}
+.kicker{color:var(--gold2);font-size:.85rem;font-weight:800;text-transform:uppercase;letter-spacing:.16em}
+h1{font-size:clamp(34px,5.5vw,62px);line-height:1.04;margin:12px 0 16px;letter-spacing:-.045em}
+h1 em{color:var(--gold2);font-style:normal} .lead{font-size:clamp(17px,2vw,21px);line-height:1.45;color:var(--muted);margin:0 0 20px}
+.features{padding:0;list-style:none;display:grid;gap:11px;margin:0 0 24px}
+.features li{position:relative;padding-left:27px;line-height:1.4} .features li:before{content:"✓";color:var(--gold2);position:absolute;left:0;font-weight:900}
+.action{display:inline-flex;align-items:center;justify-content:center;gap:10px;background:linear-gradient(155deg,#f4dca4,#c69444);border:1px solid #ffe7af;color:#17120b;font-weight:800;text-decoration:none;border-radius:999px;min-height:52px;padding:12px 23px;box-shadow:0 8px 25px rgba(157,108,39,.25);text-align:center}
+.action:hover{filter:brightness(1.07)} .secondary{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:10px 15px;border:1px solid var(--outline);background:rgba(15,13,12,.6);color:white;border-radius:999px;text-decoration:none}
+.controls{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:15px 0 5px;border-top:1px solid rgba(245,215,162,.2)}
+.nav-buttons{display:flex;gap:10px}.nav{min-width:50px;min-height:48px;border-radius:14px;background:rgba(27,23,19,.85);color:var(--gold2);font-size:25px;border:1px solid var(--outline)}
+.nav:disabled{opacity:.3;cursor:default}.dots{display:flex;gap:10px;align-items:center}
+.dot{height:11px;width:11px;border-radius:50%;border:1px solid var(--gold);background:transparent;padding:0}
+.dot.on{background:var(--gold2);width:25px;border-radius:20px}.step-label{font-size:13px;color:var(--muted)}
+.final{text-align:center;max-width:760px;display:flex;flex-direction:column;align-items:center;gap:10px;padding:20px 0}
+.final h1{margin-bottom:5px}.final .lead{max-width:620px}.final-actions{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;margin:12px 0}
+.final-note{font-size:14px;color:var(--muted);max-width:610px;line-height:1.5}
+#installHelp{border:1px solid var(--outline);background:#1d1712;color:white;border-radius:20px;max-width:530px;width:calc(100% - 30px);padding:24px}
+#installHelp::backdrop{background:rgba(0,0,0,.75)} #installHelp h2{margin:0 0 12px} #installHelp p{line-height:1.55}
+.close{float:right;border:1px solid var(--outline);background:transparent;color:#fff;border-radius:10px;padding:8px 12px}
+.small-info{color:var(--muted);font-size:13px}
+@media(max-width:720px){
+.shell{min-height:100dvh;padding:16px}.top{gap:8px}.brand{font-size:18px}.skip{font-size:14px;padding:8px 12px}
+.slide.active{display:flex;flex-direction:column;gap:15px;padding:12px 0 24px;align-items:stretch}
+.visual{aspect-ratio:16/9;border-radius:18px;max-height:33dvh}.copy{text-align:left}.copy h1{font-size:clamp(29px,7vw,43px);margin:7px 0 12px}
+.lead{font-size:16px;margin-bottom:12px}.features{gap:8px;margin-bottom:16px;font-size:14px}
+.action{min-height:50px}.controls{padding-bottom:max(10px,env(safe-area-inset-bottom))}
+.final h1{font-size:clamp(36px,9vw,51px)} .final-actions{flex-direction:column;width:100%;max-width:350px}.final-actions>*{width:100%}
+}
+@media(prefers-reduced-motion:reduce){.slide.active{animation:none}}
+</style>
+</head>
+<body>
+<div class="shell">
+<header class="top">
+<a class="brand" href="index.html" aria-label="Открыть калькулятор">♧ Кухонный <span>калькулятор</span></a>
+<button class="skip" type="button" id="skip">Пропустить →</button>
+</header>
+<main id="slides" aria-label="Знакомство с приложением">
+<section class="slide active" aria-label="Для бизнеса" data-step="0">
+<div class="visual"><img src="assets/graphite-kitchen.webp" alt="Тёплая атмосфера кухни заведения"></div>
+<div class="copy">
+<div class="kicker">01 / Для бизнеса</div>
+<h1>Узнай, сколько <em>приносит</em> твоя кухня</h1>
+<p class="lead">От закупки продуктов до себестоимости блюда и расходов заведения — всё в одной системе.</p>
+<ul class="features"><li>Продукты, полуфабрикаты и блюда</li><li>Себестоимость и наценка</li><li>Учет расходов и плановых продаж</li></ul>
+<button type="button" class="action next">Дальше — для повара →</button>
+</div></section>
+<section class="slide" aria-label="Для повара" data-step="1">
+<div class="visual"><img src="assets/gastronomic-background.webp" alt="Блюда и ингредиенты на кухне"></div>
+<div class="copy">
+<div class="kicker">02 / Для повара</div>
+<h1>Все рецептуры <em>под рукой</em></h1>
+<p class="lead">Точные граммовки, технология приготовления и удобные карты блюд для работы на кухне.</p>
+<ul class="features"><li>Сохраняй рецепты и полуфабрикаты</li><li>Открывай карточку отдельно от редактирования</li><li>Печатай карты с ценами или без</li></ul>
+<button type="button" class="action next">Дальше — для дома →</button>
+</div></section>
+<section class="slide" aria-label="Для дома" data-step="2">
+<div class="visual"><img src="assets/sage-kitchen.webp" alt="Уютная домашняя кухня"></div>
+<div class="copy">
+<div class="kicker">03 / Для дома</div>
+<h1>Твоя личная <em>книга рецептов</em></h1>
+<p class="lead">Собирай любимые рецепты в одном месте и легко повторяй удачные блюда.</p>
+<ul class="features"><li>Записывай ингредиенты и граммовки</li><li>Собирай собственную коллекцию блюд</li><li>Рассчитывай ингредиенты для нужного числа порций</li></ul>
+<button type="button" class="action next">К приложению →</button>
+</div></section>
+<section class="slide" aria-label="Начать пользоваться" data-step="3">
+<div class="final">
+<div class="kicker">04 / Всё в твоих руках</div>
+<h1>Готовь. Создавай. <em>Действуй.</em></h1>
+<p class="lead">Идеи становятся блюдами, когда берёшься за дело. Мы подготовили инструмент — теперь твоя очередь. Дерзай и готовь с умом!</p>
+<div class="final-actions">
+<a class="action" href="index.html">Открыть калькулятор →</a>
+<button id="install" type="button" class="secondary">Установить приложение</button>
+</div>
+<p class="final-note">Это тестовая презентация. Сам калькулятор и его база не изменены. Если браузер не поддерживает прямую установку, подскажем другой способ.</p>
+</div>
+</section>
+</main>
+<footer class="controls">
+<div class="nav-buttons"><button class="nav" id="prev" type="button" aria-label="Назад" disabled>‹</button><button class="nav" id="next" type="button" aria-label="Следующий слайд">›</button></div>
+<div class="dots" aria-label="Перейти к слайду"><button class="dot on" data-to="0" aria-label="Для бизнеса" aria-current="step"></button><button class="dot" data-to="1" aria-label="Для повара"></button><button class="dot" data-to="2" aria-label="Для дома"></button><button class="dot" data-to="3" aria-label="Начать"></button></div>
+<div class="step-label" id="count">1 из 4</div>
+</footer>
+</div>
+<dialog id="installHelp" aria-labelledby="installTitle">
+<button class="close" type="button" id="closeHelp">✕</button>
+<h2 id="installTitle">Как установить приложение</h2>
+<p id="installInstructions">Откройте калькулятор через браузер. В меню браузера выберите «Установить приложение» или «Создать ярлык». На iPhone в Safari нажмите «Поделиться» → «На экран Домой».</p>
+<a href="index.html" class="action">Открыть калькулятор →</a>
+<p class="small-info">Установка зависит от браузера и наличия поддержки PWA. Ярлык может открывать веб-версию.</p>
+</dialog>
+<script>
+(()=>{"use strict";
+const slides=[...document.querySelectorAll(".slide")],dots=[...document.querySelectorAll(".dot")];let current=0,deferredPrompt=null;
+const prev=document.getElementById("prev"),next=document.getElementById("next");
+function show(n){current=Math.max(0,Math.min(slides.length-1,n));slides.forEach((s,i)=>{s.classList.toggle("active",i===current);s.setAttribute("aria-hidden",String(i!==current))});dots.forEach((d,i)=>{d.classList.toggle("on",i===current);if(i===current)d.setAttribute("aria-current","step");else d.removeAttribute("aria-current")});prev.disabled=current===0;next.disabled=current===slides.length-1;document.getElementById("count").textContent=(current+1)+" из "+slides.length;document.getElementById("skip").hidden=current===slides.length-1}
+prev.addEventListener("click",()=>show(current-1));next.addEventListener("click",()=>show(current+1));document.querySelectorAll(".next").forEach(b=>b.addEventListener("click",()=>show(current+1)));dots.forEach(d=>d.addEventListener("click",()=>show(Number(d.dataset.to))));document.getElementById("skip").addEventListener("click",()=>show(3));
+document.addEventListener("keydown",e=>{if(document.getElementById("installHelp").open)return;if(e.key==="ArrowRight")show(current+1);if(e.key==="ArrowLeft")show(current-1)});
+let x0=null,y0=null;const area=document.getElementById("slides");
+area.addEventListener("touchstart",e=>{if(e.touches.length!==1)return;x0=e.touches[0].clientX;y0=e.touches[0].clientY},{passive:true});
+area.addEventListener("touchend",e=>{if(x0===null||!e.changedTouches.length)return;const dx=e.changedTouches[0].clientX-x0,dy=e.changedTouches[0].clientY-y0;x0=null;y0=null;if(Math.abs(dx)>55&&Math.abs(dx)>Math.abs(dy)*1.5)show(current+(dx<0?1:-1))},{passive:true});
+window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();deferredPrompt=e});
+document.getElementById("install").addEventListener("click",async()=>{if(deferredPrompt){const p=deferredPrompt;deferredPrompt=null;try{await p.prompt();await p.userChoice}catch(err){document.getElementById("installHelp").showModal()}return}document.getElementById("installHelp").showModal()});
+document.getElementById("closeHelp").addEventListener("click",()=>document.getElementById("installHelp").close());show(0);
+})();
+</script>
+</body></html>
