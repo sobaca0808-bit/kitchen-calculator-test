@@ -5,6 +5,7 @@ on:
     branches: [preview/browser]
 
 permissions:
+  actions: read
   contents: read
   pages: write
   id-token: write
