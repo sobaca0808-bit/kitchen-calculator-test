@@ -22,9 +22,12 @@ jobs:
       EXPENSES_PR: '23'
       TOGGLE_SOURCE: 6cf49ce304b9ddf0e3c6de2d780537f12cbf8e7b
       TOGGLE_PR: '24'
+      FINAL_SOURCE: 662a12af04b3f446470a8405e6ec9cd2062fd5b7
+      FINAL_PR: '25'
+      FINAL_CHECK_RUN: '43865137744'
     environment:
       name: github-pages
-      url: ${{ steps.deploy.outputs.page_url }}expense-toggle/
+      url: ${{ steps.deploy.outputs.page_url }}final/
     steps:
       - uses: actions/checkout@v4
         with:
@@ -39,6 +42,9 @@ jobs:
           test "$(gh api repos/${{ github.repository }}/git/ref/heads/fix/issue-21-preview-persistence --jq .object.sha)" = 1a68adffd2046b758b683af3b516adf944081149
           test "$(gh api repos/${{ github.repository }}/git/ref/heads/feature/establishment-expenses --jq .object.sha)" = "$EXPENSES_SOURCE"
           test "$(gh api repos/${{ github.repository }}/git/ref/heads/feature/per-recipe-expenses --jq .object.sha)" = "$TOGGLE_SOURCE"
+          test "$(gh api repos/${{ github.repository }}/git/ref/heads/release/unified-review --jq .object.sha)" = "$FINAL_SOURCE"
+          test "$(gh api repos/${{ github.repository }}/actions/runs/$FINAL_CHECK_RUN --jq .head_sha)" = "$FINAL_SOURCE"
+          test "$(gh api repos/${{ github.repository }}/actions/runs/$FINAL_CHECK_RUN --jq .conclusion)" = success
       - name: Build preview without changing any existing base file
         run: python3 preview-hosting/prepare-pages.py --output "$RUNNER_TEMP/pages-combined" --proof "$RUNNER_TEMP/pages-proof.json"
       - name: Append isolated PR22 sandbox without changing root or approved preview
@@ -47,8 +53,10 @@ jobs:
         run: python3 preview-hosting/expenses/build.py --pages "$RUNNER_TEMP/pages-combined" --previous-proof "$RUNNER_TEMP/pr22-proof.json" --proof "$RUNNER_TEMP/expenses-proof.json" --source "$EXPENSES_SOURCE" --pr "$EXPENSES_PR"
       - name: Append per-recipe toggle sandbox without replacing earlier tests
         run: python3 preview-hosting/expense-toggle/build.py --pages "$RUNNER_TEMP/pages-combined" --previous-proof "$RUNNER_TEMP/expenses-proof.json" --proof "$RUNNER_TEMP/toggle-proof.json" --source "$TOGGLE_SOURCE" --pr "$TOGGLE_PR"
-      - name: Verify current root and both existing previews match preserved files
-        run: python3 preview-hosting/pr22/verify.py "$RUNNER_TEMP/toggle-proof.json" --phase before
+      - name: Append unified candidate while preserving all older calculators
+        run: python3 preview-hosting/final/build.py --pages "$RUNNER_TEMP/pages-combined" --previous-proof "$RUNNER_TEMP/toggle-proof.json" --proof "$RUNNER_TEMP/final-proof.json" --source "$FINAL_SOURCE" --pr "$FINAL_PR"
+      - name: Verify all current calculators match preserved files
+        run: python3 preview-hosting/pr22/verify.py "$RUNNER_TEMP/final-proof.json" --phase before
       - name: Upload unchanged base with the isolated preview directory
         uses: actions/upload-pages-artifact@v3
         with:
@@ -61,11 +69,14 @@ jobs:
           test "$(gh api repos/${{ github.repository }}/git/ref/heads/fix/issue-21-preview-persistence --jq .object.sha)" = 1a68adffd2046b758b683af3b516adf944081149
           test "$(gh api repos/${{ github.repository }}/git/ref/heads/feature/establishment-expenses --jq .object.sha)" = "$EXPENSES_SOURCE"
           test "$(gh api repos/${{ github.repository }}/git/ref/heads/feature/per-recipe-expenses --jq .object.sha)" = "$TOGGLE_SOURCE"
+          test "$(gh api repos/${{ github.repository }}/git/ref/heads/release/unified-review --jq .object.sha)" = "$FINAL_SOURCE"
+          test "$(gh api repos/${{ github.repository }}/actions/runs/$FINAL_CHECK_RUN --jq .head_sha)" = "$FINAL_SOURCE"
+          test "$(gh api repos/${{ github.repository }}/actions/runs/$FINAL_CHECK_RUN --jq .conclusion)" = success
       - name: Publish isolated preview alongside unchanged base
         id: deploy
         uses: actions/deploy-pages@v4
-      - name: Verify HTTPS toggle link and all unchanged existing calculators
-        run: python3 preview-hosting/pr22/verify.py "$RUNNER_TEMP/toggle-proof.json" --phase after
+      - name: Verify final HTTPS link and all unchanged existing calculators
+        run: python3 preview-hosting/pr22/verify.py "$RUNNER_TEMP/final-proof.json" --phase after
       - name: Prepare disposable browser checks
         run: |
           python3 preview-hosting/prepare-validation.py > "$RUNNER_TEMP/preview-validation.json"
@@ -117,6 +128,23 @@ jobs:
           python3 preview-hosting/expenses/prepare-checks.py "$TOGGLE_SOURCE" > "$RUNNER_TEMP/toggle-checks.json"
           QA_DIR="$(python3 -c 'import json,os;print(json.load(open(os.environ["RUNNER_TEMP"]+"/toggle-checks.json"))["directory"])')"
           node "$QA_DIR/tests/establishment-expenses.browser.test.js"
+      - name: Verify expenses and saved switches on the final HTTPS calculator
+        env:
+          NODE_PATH: ${{ runner.temp }}/preview-qa/node_modules
+          CHROMIUM_PATH: /usr/bin/google-chrome
+          KITCHEN_TEST_URL: https://sobaca0808-bit.github.io/kitchen-calculator-test/final/
+          KITCHEN_TEST_ARTIFACT_DIR: ${{ runner.temp }}/final-expenses-proof
+          KITCHEN_EXPENSES_NAMESPACE_JSON: '{"book":"kitchen-calculator-final-preview-v1","drafts":"kitchen-calculator-final-drafts-v1","photos":"kitchen-calculator-final-photos-v1","backups":"kitchen-calculator-final-import-backups-v1","appearance":"kitchen-calculator-final-appearance-v1"}'
+        run: |
+          python3 preview-hosting/final/prepare-checks.py "$FINAL_SOURCE" > "$RUNNER_TEMP/final-checks.json"
+          QA_DIR="$(python3 -c 'import json,os;print(json.load(open(os.environ["RUNNER_TEMP"]+"/final-checks.json"))["directory"])')"
+          node "$QA_DIR/tests/establishment-expenses.browser.test.js"
+      - name: Verify full final-calculator persistence lifecycle on desktop and mobile
+        env:
+          NODE_PATH: ${{ runner.temp }}/preview-qa/node_modules
+          CHROMIUM_PATH: /usr/bin/google-chrome
+          FINAL_ARTIFACTS: ${{ runner.temp }}/final-lifecycle-proof
+        run: node preview-hosting/final/check.cjs
       - name: Save browser evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -131,6 +159,9 @@ jobs:
             ${{ runner.temp }}/expenses-browser-proof
             ${{ runner.temp }}/toggle-proof.json
             ${{ runner.temp }}/toggle-browser-proof
+            ${{ runner.temp }}/final-proof.json
+            ${{ runner.temp }}/final-expenses-proof
+            ${{ runner.temp }}/final-lifecycle-proof
       - name: Report verified preview URL
         run: |
           cat >> "$GITHUB_STEP_SUMMARY" <<'REPORT'
@@ -159,4 +190,10 @@ jobs:
 
           Inline switch, per-dish JSON preferences, 192.34 / 266.34 totals and A4 detail choices passed.
           All earlier calculator files remain unchanged; no PR was merged.
+          ## Unified final candidate
+          https://sobaca0808-bit.github.io/kitchen-calculator-test/final/
+
+          PRs 20, 22, 23 and 24 are present once in the same history; no PR was merged.
+          Expenses, saved flags, JSON, photographs, drafts, A4 and 18 full Chrome starts passed.
+          Main, the live calculator and every earlier preview remain unchanged.
           REPORT
