@@ -7,7 +7,7 @@ import time
 from urllib.error import HTTPError
 from urllib.request import Request, urlopen
 
-def check_files(proof, expected, allow_missing=False):
+def check_files(proof, expected, allow_missing=False, allow_unavailable_pwa=False):
     def check(item):
         file, digest = item
         request = Request(proof['url'] + file + '?release-check=' + proof['source_commit'],
@@ -18,7 +18,12 @@ def check_files(proof, expected, allow_missing=False):
                 assert hashlib.sha256(response.read()).hexdigest() == digest, 'Unexpected HTTPS bytes: ' + file
                 return 1
         except HTTPError as error:
-            if allow_missing and error.code == 404: return 0
+            # GitHub Pages may serve a 503 for a directory removed by a later
+            # deployment. Only the isolated PWA recovery probe accepts this as
+            # an absent resource; all root and legacy checks remain strict.
+            if allow_missing and (error.code == 404 or
+                                  (allow_unavailable_pwa and error.code == 503)):
+                return 0
             raise
     with ThreadPoolExecutor(max_workers=8) as pool:
         found = sum(pool.map(check, expected.items()))
@@ -26,15 +31,18 @@ def check_files(proof, expected, allow_missing=False):
 
 def verify(proof, phase):
     protected = proof['preserved_test_https']
+    pwa = proof['restored_pwa_https']
     if phase == 'after':
-        found, missing = check_files(proof, {**protected, **proof['release_https']})
-        return {'verified_https_files': found, 'missing_test_files': missing, 'mode': 'published-release'}
+        found, missing = check_files(proof, {**protected, **pwa, **proof['release_https']})
+        return {'verified_https_files': found, 'missing_test_files': missing,
+                'missing_pwa_files': missing, 'mode': 'published-release'}
     # GitHub's legacy branch publisher may already have exposed the exact approved
     # raw main and removed sandbox directories. Recognize only those known bytes;
     # never accept changed existing sandbox files or an unknown root application.
     for mode, expected, allow_missing in [
         ('previous-main', proof['previous_root_https'], False),
         ('same-release', proof['release_https'], False),
+        ('prior-main-release', proof['prior_main_release_https'], False),
         ('approved-raw-main', proof['approved_source_https'], True),
     ]:
         try:
@@ -42,7 +50,15 @@ def verify(proof, phase):
         except (HTTPError, AssertionError):
             continue
         found, missing = check_files(proof, protected, allow_missing=allow_missing)
-        return {'verified_https_files': root_found + found, 'missing_test_files': missing, 'mode': mode}
+        # The previous release may have removed the PWA entirely. Accept either
+        # the complete pinned build or an entirely absent build, never a partial
+        # or altered set of PWA files.
+        pwa_found, pwa_missing = check_files(
+            proof, pwa, allow_missing=True, allow_unavailable_pwa=True)
+        assert pwa_found == 0 or pwa_missing == 0, 'Partial PWA publication'
+        return {'verified_https_files': root_found + found + pwa_found,
+                'missing_test_files': missing, 'missing_pwa_files': pwa_missing,
+                'mode': mode}
     raise AssertionError('The current root does not match a known approved release; publication stopped.')
 
 if __name__ == '__main__':
@@ -55,7 +71,8 @@ if __name__ == '__main__':
         try:
             result = verify(proof, args.phase)
             print(json.dumps({'phase': args.phase, **result,
-                              'old_test_sites_unchanged': result['missing_test_files'] == 0, 'url': proof['url']}))
+                              'old_test_sites_unchanged': result['missing_test_files'] == 0,
+                              'pwa_complete': result['missing_pwa_files'] == 0, 'url': proof['url']}))
             break
         except Exception:
             if args.phase == 'before' or attempt == 7: raise
