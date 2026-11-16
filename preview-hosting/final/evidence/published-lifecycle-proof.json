@@ -1,0 +1,578 @@
+[
+  {
+    "url": "https://sobaca0808-bit.github.io/kitchen-calculator-test/final/",
+    "width": 1366,
+    "theme": "berry",
+    "cycles": [
+      {
+        "cycle": 1,
+        "contents": {
+          "price": 137.5,
+          "name": "Проверка 21 · Подача риса",
+          "folderId": "folder-52d688ca-8327-43ee-8802-4c1edd59559a",
+          "folderName": "Проверка 21 · Учебная кухня",
+          "prep": "Проверка 21 · Отварной рис",
+          "photoCount": 2,
+          "sellingPrice": 249,
+          "cost": 27.500000000000004,
+          "packaging": 6,
+          "draft": true
+        },
+        "rawSha256": "93f0a5bcaeb0966b73cec2ffd5eb838bd02812a245431c7885f85ab3f54ebeed",
+        "photoHashes": [
+          "8d41cd02555409fbd417a8cbf5d3effbd3b83d76ea47423db12ae2fa23e9a6a8",
+          "7f0fa360a52e4b2945530d0edf3279134ba51b8041a6a010c2a0a6980a2b8165"
+        ],
+        "draftCount": 1,
+        "exportVerifiedBy": "browser-download",
+        "closedChromeProcess": true
+      },
+      {
+        "cycle": 2,
+        "contents": {
+          "price": 138.5,
+          "name": "Проверка 21 · Подача риса",
+          "folderId": "folder-52d688ca-8327-43ee-8802-4c1edd59559a",
+          "folderName": "Проверка 21 · Учебная кухня",
+          "prep": "Проверка 21 · Отварной рис",
+          "photoCount": 2,
+          "sellingPrice": 249,
+          "cost": 27.700000000000003,
+          "packaging": 6,
+          "draft": true
+        },
+        "rawSha256": "9e2a643ec7be4a9a61a8e392541732da7a2a214fdbfb3070469f54d2c2f5a2a5",
+        "photoHashes": [
+          "8d41cd02555409fbd417a8cbf5d3effbd3b83d76ea47423db12ae2fa23e9a6a8",
+          "7f0fa360a52e4b2945530d0edf3279134ba51b8041a6a010c2a0a6980a2b8165"
+        ],
+        "draftCount": 1,
+        "exportVerifiedBy": "browser-download",
+        "closedChromeProcess": true
+      },
+      {
+        "cycle": 3,
+        "contents": {
+          "price": 139.5,
+          "name": "Проверка 21 · Подача риса",
+          "folderId": "folder-52d688ca-8327-43ee-8802-4c1edd59559a",
+          "folderName": "Проверка 21 · Учебная кухня",
+          "prep": "Проверка 21 · Отварной рис",
+          "photoCount": 2,
+          "sellingPrice": 249,
+          "cost": 27.900000000000002,
+          "packaging": 6,
+          "draft": true
+        },
+        "rawSha256": "30cf75984ab2d38b95f4ac12f75b03b5d5200994755ef3ddd4306bb12b985bd8",
+        "photoHashes": [
+          "8d41cd02555409fbd417a8cbf5d3effbd3b83d76ea47423db12ae2fa23e9a6a8",
+          "7f0fa360a52e4b2945530d0edf3279134ba51b8041a6a010c2a0a6980a2b8165"
+        ],
+        "draftCount": 1,
+        "exportVerifiedBy": "browser-download",
+        "closedChromeProcess": true
+      }
+    ],
+    "errors": [],
+    "profileSeeded": false,
+    "isolatedDriverPerRestart": true,
+    "runtimeTransport": "http",
+    "initialRecordPresent": false,
+    "wroteInitialDatabase": false,
+    "initialProducts": 0,
+    "initialRecipes": 0,
+    "foreignStorageAccessBlocked": true,
+    "foreignStorageViolations": [],
+    "staleOverwriteObserved": false,
+    "staleSaveMessage": "Не удалось сохранить в браузере: Не удалось сохранить данные: База изменилась в другой вкладке. Сохранение отменено; введённые поля остаются на экране. Скачайте JSON, чтобы не потерять изменения. Изменения пока в памяти. Скачайте экспорт JSON до закрытия страницы.",
+    "namespaces": {
+      "book": "kitchen-calculator-final-preview-v1",
+      "drafts": "kitchen-calculator-final-drafts-v1",
+      "photos": "kitchen-calculator-final-photos-v1",
+      "backups": "kitchen-calculator-final-import-backups-v1",
+      "appearance": "kitchen-calculator-final-appearance-v1"
+    },
+    "passed": true
+  },
+  {
+    "url": "https://sobaca0808-bit.github.io/kitchen-calculator-test/final/",
+    "width": 390,
+    "theme": "berry",
+    "cycles": [
+      {
+        "cycle": 1,
+        "contents": {
+          "price": 137.5,
+          "name": "Проверка 21 · Подача риса",
+          "folderId": "folder-1c466e42-cb8e-4847-806b-f9c77eb1bf16",
+          "folderName": "Проверка 21 · Учебная кухня",
+          "prep": "Проверка 21 · Отварной рис",
+          "photoCount": 2,
+          "sellingPrice": 249,
+          "cost": 27.500000000000004,
+          "packaging": 6,
+          "draft": true
+        },
+        "rawSha256": "3672fea8fb24ed5e6cbea875c4b87cfbad3c3b4453d77d3c839715e01d619b32",
+        "photoHashes": [
+          "8d41cd02555409fbd417a8cbf5d3effbd3b83d76ea47423db12ae2fa23e9a6a8",
+          "7f0fa360a52e4b2945530d0edf3279134ba51b8041a6a010c2a0a6980a2b8165"
+        ],
+        "draftCount": 1,
+        "exportVerifiedBy": "browser-download",
+        "closedChromeProcess": true
+      },
+      {
+        "cycle": 2,
+        "contents": {
+          "price": 138.5,
+          "name": "Проверка 21 · Подача риса",
+          "folderId": "folder-1c466e42-cb8e-4847-806b-f9c77eb1bf16",
+          "folderName": "Проверка 21 · Учебная кухня",
+          "prep": "Проверка 21 · Отварной рис",
+          "photoCount": 2,
+          "sellingPrice": 249,
+          "cost": 27.700000000000003,
+          "packaging": 6,
+          "draft": true
+        },
+        "rawSha256": "ccacdf55da35c6515232e8281a8ead77d4cba7dca707a60d38bedca854bc9b58",
+        "photoHashes": [
+          "8d41cd02555409fbd417a8cbf5d3effbd3b83d76ea47423db12ae2fa23e9a6a8",
+          "7f0fa360a52e4b2945530d0edf3279134ba51b8041a6a010c2a0a6980a2b8165"
+        ],
+        "draftCount": 1,
+        "exportVerifiedBy": "browser-download",
+        "closedChromeProcess": true
+      },
+      {
+        "cycle": 3,
+        "contents": {
+          "price": 139.5,
+          "name": "Проверка 21 · Подача риса",
+          "folderId": "folder-1c466e42-cb8e-4847-806b-f9c77eb1bf16",
+          "folderName": "Проверка 21 · Учебная кухня",
+          "prep": "Проверка 21 · Отварной рис",
+          "photoCount": 2,
+          "sellingPrice": 249,
+          "cost": 27.900000000000002,
+          "packaging": 6,
+          "draft": true
+        },
+        "rawSha256": "20df3001264e5ad62d0faf9e38715f0a73df1a3fa032ed66d94d6c5160ef01a0",
+        "photoHashes": [
+          "8d41cd02555409fbd417a8cbf5d3effbd3b83d76ea47423db12ae2fa23e9a6a8",
+          "7f0fa360a52e4b2945530d0edf3279134ba51b8041a6a010c2a0a6980a2b8165"
+        ],
+        "draftCount": 1,
+        "exportVerifiedBy": "browser-download",
+        "closedChromeProcess": true
+      }
+    ],
+    "errors": [],
+    "profileSeeded": false,
+    "isolatedDriverPerRestart": true,
+    "runtimeTransport": "http",
+    "initialRecordPresent": false,
+    "wroteInitialDatabase": false,
+    "initialProducts": 0,
+    "initialRecipes": 0,
+    "foreignStorageAccessBlocked": true,
+    "foreignStorageViolations": [],
+    "staleOverwriteObserved": false,
+    "staleSaveMessage": "Не удалось сохранить в браузере: Не удалось сохранить данные: База изменилась в другой вкладке. Сохранение отменено; введённые поля остаются на экране. Скачайте JSON, чтобы не потерять изменения. Изменения пока в памяти. Скачайте экспорт JSON до закрытия страницы.",
+    "namespaces": {
+      "book": "kitchen-calculator-final-preview-v1",
+      "drafts": "kitchen-calculator-final-drafts-v1",
+      "photos": "kitchen-calculator-final-photos-v1",
+      "backups": "kitchen-calculator-final-import-backups-v1",
+      "appearance": "kitchen-calculator-final-appearance-v1"
+    },
+    "passed": true
+  },
+  {
+    "url": "https://sobaca0808-bit.github.io/kitchen-calculator-test/final/",
+    "width": 1366,
+    "theme": "graphite",
+    "cycles": [
+      {
+        "cycle": 1,
+        "contents": {
+          "price": 137.5,
+          "name": "Проверка 21 · Подача риса",
+          "folderId": "folder-8df0a550-7b0e-489b-a199-cc9e3c8c5386",
+          "folderName": "Проверка 21 · Учебная кухня",
+          "prep": "Проверка 21 · Отварной рис",
+          "photoCount": 2,
+          "sellingPrice": 249,
+          "cost": 27.500000000000004,
+          "packaging": 6,
+          "draft": true
+        },
+        "rawSha256": "e856f25bb48bb9929836421f5d9830cb234f8e01460ab04e8a343ffd4b649229",
+        "photoHashes": [
+          "8d41cd02555409fbd417a8cbf5d3effbd3b83d76ea47423db12ae2fa23e9a6a8",
+          "7f0fa360a52e4b2945530d0edf3279134ba51b8041a6a010c2a0a6980a2b8165"
+        ],
+        "draftCount": 1,
+        "exportVerifiedBy": "browser-download",
+        "closedChromeProcess": true
+      },
+      {
+        "cycle": 2,
+        "contents": {
+          "price": 138.5,
+          "name": "Проверка 21 · Подача риса",
+          "folderId": "folder-8df0a550-7b0e-489b-a199-cc9e3c8c5386",
+          "folderName": "Проверка 21 · Учебная кухня",
+          "prep": "Проверка 21 · Отварной рис",
+          "photoCount": 2,
+          "sellingPrice": 249,
+          "cost": 27.700000000000003,
+          "packaging": 6,
+          "draft": true
+        },
+        "rawSha256": "0f8d4d3f0d6ca6acd1551a09e47f9a07fbc121c294d5aee7146e80441fbb96b5",
+        "photoHashes": [
+          "8d41cd02555409fbd417a8cbf5d3effbd3b83d76ea47423db12ae2fa23e9a6a8",
+          "7f0fa360a52e4b2945530d0edf3279134ba51b8041a6a010c2a0a6980a2b8165"
+        ],
+        "draftCount": 1,
+        "exportVerifiedBy": "browser-download",
+        "closedChromeProcess": true
+      },
+      {
+        "cycle": 3,
+        "contents": {
+          "price": 139.5,
+          "name": "Проверка 21 · Подача риса",
+          "folderId": "folder-8df0a550-7b0e-489b-a199-cc9e3c8c5386",
+          "folderName": "Проверка 21 · Учебная кухня",
+          "prep": "Проверка 21 · Отварной рис",
+          "photoCount": 2,
+          "sellingPrice": 249,
+          "cost": 27.900000000000002,
+          "packaging": 6,
+          "draft": true
+        },
+        "rawSha256": "8f7493f0e2c54c85023da2397fa66b5b897319b79dd49fd9ab0128ff57653693",
+        "photoHashes": [
+          "8d41cd02555409fbd417a8cbf5d3effbd3b83d76ea47423db12ae2fa23e9a6a8",
+          "7f0fa360a52e4b2945530d0edf3279134ba51b8041a6a010c2a0a6980a2b8165"
+        ],
+        "draftCount": 1,
+        "exportVerifiedBy": "browser-download",
+        "closedChromeProcess": true
+      }
+    ],
+    "errors": [],
+    "profileSeeded": false,
+    "isolatedDriverPerRestart": true,
+    "runtimeTransport": "http",
+    "initialRecordPresent": false,
+    "wroteInitialDatabase": false,
+    "initialProducts": 0,
+    "initialRecipes": 0,
+    "foreignStorageAccessBlocked": true,
+    "foreignStorageViolations": [],
+    "staleOverwriteObserved": false,
+    "staleSaveMessage": "Не удалось сохранить в браузере: Не удалось сохранить данные: База изменилась в другой вкладке. Сохранение отменено; введённые поля остаются на экране. Скачайте JSON, чтобы не потерять изменения. Изменения пока в памяти. Скачайте экспорт JSON до закрытия страницы.",
+    "namespaces": {
+      "book": "kitchen-calculator-final-preview-v1",
+      "drafts": "kitchen-calculator-final-drafts-v1",
+      "photos": "kitchen-calculator-final-photos-v1",
+      "backups": "kitchen-calculator-final-import-backups-v1",
+      "appearance": "kitchen-calculator-final-appearance-v1"
+    },
+    "passed": true
+  },
+  {
+    "url": "https://sobaca0808-bit.github.io/kitchen-calculator-test/final/",
+    "width": 390,
+    "theme": "graphite",
+    "cycles": [
+      {
+        "cycle": 1,
+        "contents": {
+          "price": 137.5,
+          "name": "Проверка 21 · Подача риса",
+          "folderId": "folder-126e6879-3933-4f5c-b9cc-db26995eb349",
+          "folderName": "Проверка 21 · Учебная кухня",
+          "prep": "Проверка 21 · Отварной рис",
+          "photoCount": 2,
+          "sellingPrice": 249,
+          "cost": 27.500000000000004,
+          "packaging": 6,
+          "draft": true
+        },
+        "rawSha256": "bbe95244dd610449f301a6f276247ba90bddd008d336b243bedb11f2e8f23592",
+        "photoHashes": [
+          "8d41cd02555409fbd417a8cbf5d3effbd3b83d76ea47423db12ae2fa23e9a6a8",
+          "7f0fa360a52e4b2945530d0edf3279134ba51b8041a6a010c2a0a6980a2b8165"
+        ],
+        "draftCount": 1,
+        "exportVerifiedBy": "browser-download",
+        "closedChromeProcess": true
+      },
+      {
+        "cycle": 2,
+        "contents": {
+          "price": 138.5,
+          "name": "Проверка 21 · Подача риса",
+          "folderId": "folder-126e6879-3933-4f5c-b9cc-db26995eb349",
+          "folderName": "Проверка 21 · Учебная кухня",
+          "prep": "Проверка 21 · Отварной рис",
+          "photoCount": 2,
+          "sellingPrice": 249,
+          "cost": 27.700000000000003,
+          "packaging": 6,
+          "draft": true
+        },
+        "rawSha256": "1bb540e48d6c0b1bcc43dcd285c03b5273cfe496dd6b81271482ec6d213541e5",
+        "photoHashes": [
+          "8d41cd02555409fbd417a8cbf5d3effbd3b83d76ea47423db12ae2fa23e9a6a8",
+          "7f0fa360a52e4b2945530d0edf3279134ba51b8041a6a010c2a0a6980a2b8165"
+        ],
+        "draftCount": 1,
+        "exportVerifiedBy": "browser-download",
+        "closedChromeProcess": true
+      },
+      {
+        "cycle": 3,
+        "contents": {
+          "price": 139.5,
+          "name": "Проверка 21 · Подача риса",
+          "folderId": "folder-126e6879-3933-4f5c-b9cc-db26995eb349",
+          "folderName": "Проверка 21 · Учебная кухня",
+          "prep": "Проверка 21 · Отварной рис",
+          "photoCount": 2,
+          "sellingPrice": 249,
+          "cost": 27.900000000000002,
+          "packaging": 6,
+          "draft": true
+        },
+        "rawSha256": "bb365869bf5f64531958cdfc6b98b9976be44dd05fce62d3330d3eab0e2bc052",
+        "photoHashes": [
+          "8d41cd02555409fbd417a8cbf5d3effbd3b83d76ea47423db12ae2fa23e9a6a8",
+          "7f0fa360a52e4b2945530d0edf3279134ba51b8041a6a010c2a0a6980a2b8165"
+        ],
+        "draftCount": 1,
+        "exportVerifiedBy": "browser-download",
+        "closedChromeProcess": true
+      }
+    ],
+    "errors": [],
+    "profileSeeded": false,
+    "isolatedDriverPerRestart": true,
+    "runtimeTransport": "http",
+    "initialRecordPresent": false,
+    "wroteInitialDatabase": false,
+    "initialProducts": 0,
+    "initialRecipes": 0,
+    "foreignStorageAccessBlocked": true,
+    "foreignStorageViolations": [],
+    "staleOverwriteObserved": false,
+    "staleSaveMessage": "Не удалось сохранить в браузере: Не удалось сохранить данные: База изменилась в другой вкладке. Сохранение отменено; введённые поля остаются на экране. Скачайте JSON, чтобы не потерять изменения. Изменения пока в памяти. Скачайте экспорт JSON до закрытия страницы.",
+    "namespaces": {
+      "book": "kitchen-calculator-final-preview-v1",
+      "drafts": "kitchen-calculator-final-drafts-v1",
+      "photos": "kitchen-calculator-final-photos-v1",
+      "backups": "kitchen-calculator-final-import-backups-v1",
+      "appearance": "kitchen-calculator-final-appearance-v1"
+    },
+    "passed": true
+  },
+  {
+    "url": "https://sobaca0808-bit.github.io/kitchen-calculator-test/final/",
+    "width": 1366,
+    "theme": "sage",
+    "cycles": [
+      {
+        "cycle": 1,
+        "contents": {
+          "price": 137.5,
+          "name": "Проверка 21 · Подача риса",
+          "folderId": "folder-8530c5e6-7420-4900-accb-0f48a820566e",
+          "folderName": "Проверка 21 · Учебная кухня",
+          "prep": "Проверка 21 · Отварной рис",
+          "photoCount": 2,
+          "sellingPrice": 249,
+          "cost": 27.500000000000004,
+          "packaging": 6,
+          "draft": true
+        },
+        "rawSha256": "d27c3dc8f4fac9baf29d3ce0226d5429e7d8374c191578ddd27a31bac4777098",
+        "photoHashes": [
+          "8d41cd02555409fbd417a8cbf5d3effbd3b83d76ea47423db12ae2fa23e9a6a8",
+          "7f0fa360a52e4b2945530d0edf3279134ba51b8041a6a010c2a0a6980a2b8165"
+        ],
+        "draftCount": 1,
+        "exportVerifiedBy": "browser-download",
+        "closedChromeProcess": true
+      },
+      {
+        "cycle": 2,
+        "contents": {
+          "price": 138.5,
+          "name": "Проверка 21 · Подача риса",
+          "folderId": "folder-8530c5e6-7420-4900-accb-0f48a820566e",
+          "folderName": "Проверка 21 · Учебная кухня",
+          "prep": "Проверка 21 · Отварной рис",
+          "photoCount": 2,
+          "sellingPrice": 249,
+          "cost": 27.700000000000003,
+          "packaging": 6,
+          "draft": true
+        },
+        "rawSha256": "8d78453757d62ea4b076962db6211f5fe302a3c52211ad2c7345257ad45f115f",
+        "photoHashes": [
+          "8d41cd02555409fbd417a8cbf5d3effbd3b83d76ea47423db12ae2fa23e9a6a8",
+          "7f0fa360a52e4b2945530d0edf3279134ba51b8041a6a010c2a0a6980a2b8165"
+        ],
+        "draftCount": 1,
+        "exportVerifiedBy": "browser-download",
+        "closedChromeProcess": true
+      },
+      {
+        "cycle": 3,
+        "contents": {
+          "price": 139.5,
+          "name": "Проверка 21 · Подача риса",
+          "folderId": "folder-8530c5e6-7420-4900-accb-0f48a820566e",
+          "folderName": "Проверка 21 · Учебная кухня",
+          "prep": "Проверка 21 · Отварной рис",
+          "photoCount": 2,
+          "sellingPrice": 249,
+          "cost": 27.900000000000002,
+          "packaging": 6,
+          "draft": true
+        },
+        "rawSha256": "fdf745f98ea7f2c48cf8aade05b9b1cb84a8d7a225fc2ae0f9cafcbb3dbe0a37",
+        "photoHashes": [
+          "8d41cd02555409fbd417a8cbf5d3effbd3b83d76ea47423db12ae2fa23e9a6a8",
+          "7f0fa360a52e4b2945530d0edf3279134ba51b8041a6a010c2a0a6980a2b8165"
+        ],
+        "draftCount": 1,
+        "exportVerifiedBy": "browser-download",
+        "closedChromeProcess": true
+      }
+    ],
+    "errors": [],
+    "profileSeeded": false,
+    "isolatedDriverPerRestart": true,
+    "runtimeTransport": "http",
+    "initialRecordPresent": false,
+    "wroteInitialDatabase": false,
+    "initialProducts": 0,
+    "initialRecipes": 0,
+    "foreignStorageAccessBlocked": true,
+    "foreignStorageViolations": [],
+    "staleOverwriteObserved": false,
+    "staleSaveMessage": "Не удалось сохранить в браузере: Не удалось сохранить данные: База изменилась в другой вкладке. Сохранение отменено; введённые поля остаются на экране. Скачайте JSON, чтобы не потерять изменения. Изменения пока в памяти. Скачайте экспорт JSON до закрытия страницы.",
+    "namespaces": {
+      "book": "kitchen-calculator-final-preview-v1",
+      "drafts": "kitchen-calculator-final-drafts-v1",
+      "photos": "kitchen-calculator-final-photos-v1",
+      "backups": "kitchen-calculator-final-import-backups-v1",
+      "appearance": "kitchen-calculator-final-appearance-v1"
+    },
+    "passed": true
+  },
+  {
+    "url": "https://sobaca0808-bit.github.io/kitchen-calculator-test/final/",
+    "width": 390,
+    "theme": "sage",
+    "cycles": [
+      {
+        "cycle": 1,
+        "contents": {
+          "price": 137.5,
+          "name": "Проверка 21 · Подача риса",
+          "folderId": "folder-72fb9d37-3721-4bdf-ba59-b2b0b134dcd7",
+          "folderName": "Проверка 21 · Учебная кухня",
+          "prep": "Проверка 21 · Отварной рис",
+          "photoCount": 2,
+          "sellingPrice": 249,
+          "cost": 27.500000000000004,
+          "packaging": 6,
+          "draft": true
+        },
+        "rawSha256": "68a8005d0acdbf5dde0d323938d5d16a05ff61e8ae77f3d730a3e01910c4beda",
+        "photoHashes": [
+          "8d41cd02555409fbd417a8cbf5d3effbd3b83d76ea47423db12ae2fa23e9a6a8",
+          "7f0fa360a52e4b2945530d0edf3279134ba51b8041a6a010c2a0a6980a2b8165"
+        ],
+        "draftCount": 1,
+        "exportVerifiedBy": "browser-download",
+        "closedChromeProcess": true
+      },
+      {
+        "cycle": 2,
+        "contents": {
+          "price": 138.5,
+          "name": "Проверка 21 · Подача риса",
+          "folderId": "folder-72fb9d37-3721-4bdf-ba59-b2b0b134dcd7",
+          "folderName": "Проверка 21 · Учебная кухня",
+          "prep": "Проверка 21 · Отварной рис",
+          "photoCount": 2,
+          "sellingPrice": 249,
+          "cost": 27.700000000000003,
+          "packaging": 6,
+          "draft": true
+        },
+        "rawSha256": "5702e71fa4e0cf617ccd457f8ac3ccef35225889eda135095dc2069c81e9aa00",
+        "photoHashes": [
+          "8d41cd02555409fbd417a8cbf5d3effbd3b83d76ea47423db12ae2fa23e9a6a8",
+          "7f0fa360a52e4b2945530d0edf3279134ba51b8041a6a010c2a0a6980a2b8165"
+        ],
+        "draftCount": 1,
+        "exportVerifiedBy": "browser-download",
+        "closedChromeProcess": true
+      },
+      {
+        "cycle": 3,
+        "contents": {
+          "price": 139.5,
+          "name": "Проверка 21 · Подача риса",
+          "folderId": "folder-72fb9d37-3721-4bdf-ba59-b2b0b134dcd7",
+          "folderName": "Проверка 21 · Учебная кухня",
+          "prep": "Проверка 21 · Отварной рис",
+          "photoCount": 2,
+          "sellingPrice": 249,
+          "cost": 27.900000000000002,
+          "packaging": 6,
+          "draft": true
+        },
+        "rawSha256": "14eda7369ef28d8627468083e95ab5b7c526951784c1cd07cd0c74166bd17eb3",
+        "photoHashes": [
+          "8d41cd02555409fbd417a8cbf5d3effbd3b83d76ea47423db12ae2fa23e9a6a8",
+          "7f0fa360a52e4b2945530d0edf3279134ba51b8041a6a010c2a0a6980a2b8165"
+        ],
+        "draftCount": 1,
+        "exportVerifiedBy": "browser-download",
+        "closedChromeProcess": true
+      }
+    ],
+    "errors": [],
+    "profileSeeded": false,
+    "isolatedDriverPerRestart": true,
+    "runtimeTransport": "http",
+    "initialRecordPresent": false,
+    "wroteInitialDatabase": false,
+    "initialProducts": 0,
+    "initialRecipes": 0,
+    "foreignStorageAccessBlocked": true,
+    "foreignStorageViolations": [],
+    "staleOverwriteObserved": false,
+    "staleSaveMessage": "Не удалось сохранить в браузере: Не удалось сохранить данные: База изменилась в другой вкладке. Сохранение отменено; введённые поля остаются на экране. Скачайте JSON, чтобы не потерять изменения. Изменения пока в памяти. Скачайте экспорт JSON до закрытия страницы.",
+    "namespaces": {
+      "book": "kitchen-calculator-final-preview-v1",
+      "drafts": "kitchen-calculator-final-drafts-v1",
+      "photos": "kitchen-calculator-final-photos-v1",
+      "backups": "kitchen-calculator-final-import-backups-v1",
+      "appearance": "kitchen-calculator-final-appearance-v1"
+    },
+    "passed": true
+  }
+]

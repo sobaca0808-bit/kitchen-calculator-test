@@ -1,0 +1,8 @@
+{
+  "exit_code": 0,
+  "node_passed": 253,
+  "browser_passed": 715,
+  "physical_android_tested": false,
+  "download_policy": "first-process locally; all UI downloads in Chrome CI",
+  "log": "source-full-check.log is the complete independent CI run"
+}

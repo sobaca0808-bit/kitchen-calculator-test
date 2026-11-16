@@ -1,0 +1,30 @@
+{
+  "date": "2026-11-16",
+  "url": "https://sobaca0808-bit.github.io/kitchen-calculator-test/final/",
+  "pr": 25,
+  "source_commit": "662a12af04b3f446470a8405e6ec9cd2062fd5b7",
+  "publication_commit": "45bf302dff135441a6626a4654d536c3e6dcf115",
+  "source_ci_run": 43865137744,
+  "publication_run": 43867024573,
+  "publication_job": 133298099311,
+  "artifact": {
+    "id": 14226636700,
+    "sha256": "5f0a601b37e6bafe5b113d0be1a49281dbbbbea8bbe86da5f7a3affa2dbb8b10"
+  },
+  "results": {
+    "node": 253,
+    "browser_full": 715,
+    "published_expenses": 25,
+    "published_lifecycle": 6,
+    "published_lifecycle_chrome_starts": 18,
+    "protected_old_files": 291,
+    "protected_https_before": 163,
+    "verified_https_after": 200,
+    "physical_android_tested": false,
+    "physical_printer_tested": false
+  },
+  "data": "empty separate database; no automatic copying",
+  "merged_prs": [],
+  "main": "63443c53d2c7a99060584d54eae0e9c779475405",
+  "production_repository_changed": false
+}

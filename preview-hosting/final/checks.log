@@ -1,0 +1,16 @@
+2026-11-16T12:29:38.3871490Z {"unchanged_existing_files": 182, "protected_https_files": 57, "candidate_https_files": 33, "url": "https://sobaca0808-bit.github.io/kitchen-calculator-test/pr-22/"}
+2026-11-16T12:29:38.5852225Z {"unchanged_existing_files": 216, "protected_https_files": 90, "candidate_https_files": 36, "url": "https://sobaca0808-bit.github.io/kitchen-calculator-test/expenses/"}
+2026-11-16T12:29:38.7850653Z {"unchanged_existing_files": 253, "protected_https_files": 126, "candidate_https_files": 37, "url": "https://sobaca0808-bit.github.io/kitchen-calculator-test/expense-toggle/"}
+2026-11-16T12:29:39.0010354Z {"unchanged_existing_files": 291, "protected_https_files": 163, "candidate_https_files": 37, "url": "https://sobaca0808-bit.github.io/kitchen-calculator-test/final/"}
+2026-11-16T12:29:41.0752917Z {"phase": "before", "verified_https_files": 163, "root_and_preview_unchanged": true, "test_url": "https://sobaca0808-bit.github.io/kitchen-calculator-test/final/"}
+2026-11-16T12:29:55.3775077Z {"phase": "after", "verified_https_files": 200, "root_and_preview_unchanged": true, "test_url": "https://sobaca0808-bit.github.io/kitchen-calculator-test/final/"}
+2026-11-16T12:32:38.9604968Z 17 establishment-expense browser scenarios passed; 0 failures.
+2026-11-16T12:33:13.3133664Z 25 establishment-expense browser scenarios passed; 0 failures.
+2026-11-16T12:33:46.9280228Z 25 establishment-expense browser scenarios passed; 0 failures.
+2026-11-16T12:33:54.2842758Z PASS FINAL published isolated persistence: berry 1366 three full Chrome starts; JSON, prices, folders, photos, drafts and stale-tab protection
+2026-11-16T12:34:01.1820111Z PASS FINAL published isolated persistence: berry 390 three full Chrome starts; JSON, prices, folders, photos, drafts and stale-tab protection
+2026-11-16T12:34:08.4312348Z PASS FINAL published isolated persistence: graphite 1366 three full Chrome starts; JSON, prices, folders, photos, drafts and stale-tab protection
+2026-11-16T12:34:15.2383360Z PASS FINAL published isolated persistence: graphite 390 three full Chrome starts; JSON, prices, folders, photos, drafts and stale-tab protection
+2026-11-16T12:34:22.3272704Z PASS FINAL published isolated persistence: sage 1366 three full Chrome starts; JSON, prices, folders, photos, drafts and stale-tab protection
+2026-11-16T12:34:29.1816898Z PASS FINAL published isolated persistence: sage 390 three full Chrome starts; JSON, prices, folders, photos, drafts and stale-tab protection
+2026-11-16T12:34:29.1819405Z PASS FINAL link: https://sobaca0808-bit.github.io/kitchen-calculator-test/final/ 6 scenarios, 18 full Chrome starts

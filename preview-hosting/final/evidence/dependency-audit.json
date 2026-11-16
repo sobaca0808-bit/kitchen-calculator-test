@@ -1,0 +1,64 @@
+{
+  "date": "2026-11-16",
+  "prs": [
+    {
+      "number": 20,
+      "state": "open",
+      "draft": false,
+      "merged": false,
+      "mergeable": true,
+      "mergeable_state": "clean",
+      "head": "04c98fb20444859454fc18fd6f3d6e0429818f8b",
+      "base": "main",
+      "base_sha": "63443c53d2c7a99060584d54eae0e9c779475405"
+    },
+    {
+      "number": 22,
+      "state": "open",
+      "draft": false,
+      "merged": false,
+      "mergeable": true,
+      "mergeable_state": "clean",
+      "head": "1a68adffd2046b758b683af3b516adf944081149",
+      "base": "feature/warm-professional-kitchen",
+      "base_sha": "04c98fb20444859454fc18fd6f3d6e0429818f8b"
+    },
+    {
+      "number": 23,
+      "state": "open",
+      "draft": false,
+      "merged": false,
+      "mergeable": true,
+      "mergeable_state": "clean",
+      "head": "1c1fcc057370f04a0451bf62ef6241a1edeb7587",
+      "base": "fix/issue-21-preview-persistence",
+      "base_sha": "1a68adffd2046b758b683af3b516adf944081149"
+    },
+    {
+      "number": 24,
+      "state": "open",
+      "draft": false,
+      "merged": false,
+      "mergeable": true,
+      "mergeable_state": "clean",
+      "head": "6cf49ce304b9ddf0e3c6de2d780537f12cbf8e7b",
+      "base": "feature/establishment-expenses",
+      "base_sha": "1c1fcc057370f04a0451bf62ef6241a1edeb7587"
+    },
+    {
+      "number": 25,
+      "state": "open",
+      "draft": true,
+      "merged": false,
+      "mergeable": null,
+      "mergeable_state": "unknown",
+      "head": "662a12af04b3f446470a8405e6ec9cd2062fd5b7",
+      "base": "main",
+      "base_sha": "63443c53d2c7a99060584d54eae0e9c779475405"
+    }
+  ],
+  "all_app_files_identical_to_pr24": true,
+  "ancestry": "main -> PR20 -> PR22 -> PR23 -> PR24 -> release/unified-review",
+  "patches_reapplied": false,
+  "source": "662a12af04b3f446470a8405e6ec9cd2062fd5b7"
+}

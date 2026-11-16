@@ -1,0 +1,156 @@
+{
+  "url": "https://sobaca0808-bit.github.io/kitchen-calculator-test/final/",
+  "passed": 25,
+  "failed": 0,
+  "scenarios": [
+    {
+      "name": "berry 1366: visible navigation, live monthly allocation, separate margins, scaling and chef protection",
+      "passed": true,
+      "consoleErrors": [],
+      "foreignStorageViolations": []
+    },
+    {
+      "name": "berry 390: visible navigation, live monthly allocation, separate margins, scaling and chef protection",
+      "passed": true,
+      "consoleErrors": [],
+      "foreignStorageViolations": []
+    },
+    {
+      "name": "graphite 1366: visible navigation, live monthly allocation, separate margins, scaling and chef protection",
+      "passed": true,
+      "consoleErrors": [],
+      "foreignStorageViolations": []
+    },
+    {
+      "name": "graphite 390: visible navigation, live monthly allocation, separate margins, scaling and chef protection",
+      "passed": true,
+      "consoleErrors": [],
+      "foreignStorageViolations": []
+    },
+    {
+      "name": "sage 1366: visible navigation, live monthly allocation, separate margins, scaling and chef protection",
+      "passed": true,
+      "consoleErrors": [],
+      "foreignStorageViolations": []
+    },
+    {
+      "name": "sage 390: visible navigation, live monthly allocation, separate margins, scaling and chef protection",
+      "passed": true,
+      "consoleErrors": [],
+      "foreignStorageViolations": []
+    },
+    {
+      "name": "changing expenses, forecasts, sale price, procurement and prep output recalculates from originals",
+      "passed": true,
+      "consoleErrors": [],
+      "foreignStorageViolations": []
+    },
+    {
+      "name": "empty fields, invalid sales volume and valid zeros do not fabricate full costs or percentages",
+      "passed": true,
+      "consoleErrors": [],
+      "foreignStorageViolations": []
+    },
+    {
+      "name": "unsaved expense navigation requires confirmation and the fixed save stays reachable at 320px",
+      "passed": true,
+      "consoleErrors": [],
+      "foreignStorageViolations": []
+    },
+    {
+      "name": "quota and stale tab preserve the database and allow emergency JSON with proposed expenses",
+      "passed": true,
+      "consoleErrors": [],
+      "foreignStorageViolations": []
+    },
+    {
+      "name": "JSON exports expenses; conflicts require a choice and backup preserves the former plan",
+      "passed": true,
+      "consoleErrors": [],
+      "foreignStorageViolations": []
+    },
+    {
+      "name": "photographs and independent recipe draft survive expense changes, reload and JSON export",
+      "passed": true,
+      "consoleErrors": [],
+      "foreignStorageViolations": []
+    },
+    {
+      "name": "saving an expense plan never changes recipe packaging identity metadata",
+      "passed": true,
+      "consoleErrors": [],
+      "foreignStorageViolations": []
+    },
+    {
+      "name": "reopening the expense form preserves raw decimal precision instead of rounding saved inputs",
+      "passed": true,
+      "consoleErrors": [],
+      "foreignStorageViolations": []
+    },
+    {
+      "name": "A4 calculation includes opted-in expense details; chef print and toggle-off exclude them",
+      "passed": true,
+      "consoleErrors": [],
+      "foreignStorageViolations": []
+    },
+    {
+      "name": "1366: gyro control 192.34 / 266.34, inline placement and unchanged product margin and yield",
+      "passed": true,
+      "consoleErrors": [],
+      "foreignStorageViolations": []
+    },
+    {
+      "name": "390: gyro control 192.34 / 266.34, inline placement and unchanged product margin and yield",
+      "passed": true,
+      "consoleErrors": [],
+      "foreignStorageViolations": []
+    },
+    {
+      "name": "each dish keeps its own switch through reload and actual JSON export/import",
+      "passed": true,
+      "consoleErrors": [],
+      "foreignStorageViolations": []
+    },
+    {
+      "name": "unconfigured expenses explain the missing plan and immediately update after setting it",
+      "passed": true,
+      "consoleErrors": [],
+      "foreignStorageViolations": []
+    },
+    {
+      "name": "rent and payroll edits update enabled dishes without touching their own switch or base cost",
+      "passed": true,
+      "consoleErrors": [],
+      "foreignStorageViolations": []
+    },
+    {
+      "name": "a quota failure or stale tab reverts the checkbox without overwriting the database",
+      "passed": true,
+      "consoleErrors": [],
+      "foreignStorageViolations": []
+    },
+    {
+      "name": "restoring an older recipe draft preserves the later saved per-dish expense choice",
+      "passed": true,
+      "consoleErrors": [],
+      "foreignStorageViolations": []
+    },
+    {
+      "name": "expense A4 can print totals only, full articles, or the existing chef form without finance",
+      "passed": true,
+      "consoleErrors": [],
+      "foreignStorageViolations": []
+    },
+    {
+      "name": "1366: expense plan survives three full browser starts without import",
+      "passed": true,
+      "chromeStarts": 3
+    },
+    {
+      "name": "390: expense plan survives three full browser starts without import",
+      "passed": true,
+      "chromeStarts": 3
+    }
+  ],
+  "failures": []
+}

@@ -1,0 +1,22 @@
+{
+  "source_commit": "662a12af04b3f446470a8405e6ec9cd2062fd5b7",
+  "run": 43865137744,
+  "job": 133291629640,
+  "conclusion": "success",
+  "node_passed": 253,
+  "browser_passed": 715,
+  "theme_cases": {
+    "berry": 217,
+    "graphite": 217,
+    "sage": 217
+  },
+  "shared_cases": {
+    "appearance": 18,
+    "expenses": 25,
+    "persistence": 21
+  },
+  "artifact": {
+    "id": 14226176443,
+    "sha256": "e6ac40f553996eac41c6fa74ab18286d91c6377cca0273955b3f1ca65fa9260b"
+  }
+}
