@@ -56,11 +56,15 @@ self.addEventListener('install', event => {
 self.addEventListener('activate', event => {
   event.waitUntil((async () => {
     const cache = await currentCache(), own = await (await cache.match(META)).json();
+    const older = [];
     for (const name of await caches.keys()) if (name.startsWith(PREFIX) && name !== selected) {
       const data = await metadata(name);
-      // Keep newer waiting installations and incomplete concurrent installations.
-      if (data && data.installedAt < own.installedAt) await caches.delete(name);
+      // Preserve one complete predecessor during the browser's controller handoff.
+      // It is never substituted for this build. Newer/incomplete installs stay intact.
+      if (data && data.installedAt < own.installedAt) older.push({name, ...data});
     }
+    older.sort((a, b) => b.installedAt - a.installedAt);
+    for (const previous of older.slice(1)) await caches.delete(previous.name);
     // No clients.claim or reload: an already open page is never replaced.
   })());
 });
