@@ -1,0 +1,26 @@
+{
+  "url": "http://127.0.0.1:43941/kitchen-calculator-test/pwa/",
+  "passed": 5,
+  "scenarios": [
+    {
+      "name": "1366: installable manifest, offline editing/photos/expenses, JSON and A4",
+      "passed": true
+    },
+    {
+      "name": "390: installable manifest, offline editing/photos/expenses, JSON and A4",
+      "passed": true
+    },
+    {
+      "name": "1366: cold browser restart without network retains data, photos, theme and expenses",
+      "passed": true
+    },
+    {
+      "name": "390: cold browser restart without network retains data, photos, theme and expenses",
+      "passed": true
+    },
+    {
+      "name": "update waits for every tab, keeps dirty fields/draft and rejects a partial release",
+      "passed": true
+    }
+  ]
+}

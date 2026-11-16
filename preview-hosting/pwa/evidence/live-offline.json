@@ -1,0 +1,22 @@
+{
+  "url": "https://sobaca0808-bit.github.io/kitchen-calculator-test/pwa/",
+  "passed": 4,
+  "scenarios": [
+    {
+      "name": "1366: installable manifest, offline editing/photos/expenses, JSON and A4",
+      "passed": true
+    },
+    {
+      "name": "390: installable manifest, offline editing/photos/expenses, JSON and A4",
+      "passed": true
+    },
+    {
+      "name": "1366: cold browser restart without network retains data, photos, theme and expenses",
+      "passed": true
+    },
+    {
+      "name": "390: cold browser restart without network retains data, photos, theme and expenses",
+      "passed": true
+    }
+  ]
+}

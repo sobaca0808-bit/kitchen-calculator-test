@@ -1,0 +1,18 @@
+{
+  "url": "http://127.0.0.1:36693/kitchen-calculator-test/pwa/",
+  "passed": true,
+  "installabilityErrors": [],
+  "installedViaChromeWebAppBackend": true,
+  "chromeUserDisplayMode": "standalone",
+  "standalone": true,
+  "offline": true,
+  "relaunchPreservedData": true,
+  "osState": {
+    "badgeCount": 0,
+    "fileHandlers": []
+  },
+  "desktopShortcuts": [
+    "chrome-bfjggjilckgclmoildfhfhjkgendnlen-Default.desktop"
+  ],
+  "physicalAndroidTested": false
+}

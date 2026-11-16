@@ -1,0 +1,18 @@
+{
+  "url": "https://sobaca0808-bit.github.io/kitchen-calculator-test/pwa/",
+  "passed": true,
+  "installabilityErrors": [],
+  "installedViaChromeWebAppBackend": true,
+  "chromeUserDisplayMode": "standalone",
+  "standalone": true,
+  "offline": true,
+  "relaunchPreservedData": true,
+  "osState": {
+    "badgeCount": 0,
+    "fileHandlers": []
+  },
+  "desktopShortcuts": [
+    "chrome-hdfpjlbobmeifkllikglkipecnnkinpp-Default.desktop"
+  ],
+  "physicalAndroidTested": false
+}
