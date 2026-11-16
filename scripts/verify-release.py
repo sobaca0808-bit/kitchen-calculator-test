@@ -26,9 +26,11 @@ def check_files(proof, expected, allow_missing=False):
 
 def verify(proof, phase):
     protected = proof['preserved_test_https']
+    pwa = proof['restored_pwa_https']
     if phase == 'after':
-        found, missing = check_files(proof, {**protected, **proof['release_https']})
-        return {'verified_https_files': found, 'missing_test_files': missing, 'mode': 'published-release'}
+        found, missing = check_files(proof, {**protected, **pwa, **proof['release_https']})
+        return {'verified_https_files': found, 'missing_test_files': missing,
+                'missing_pwa_files': missing, 'mode': 'published-release'}
     # GitHub's legacy branch publisher may already have exposed the exact approved
     # raw main and removed sandbox directories. Recognize only those known bytes;
     # never accept changed existing sandbox files or an unknown root application.
@@ -42,7 +44,14 @@ def verify(proof, phase):
         except (HTTPError, AssertionError):
             continue
         found, missing = check_files(proof, protected, allow_missing=allow_missing)
-        return {'verified_https_files': root_found + found, 'missing_test_files': missing, 'mode': mode}
+        # The previous release may have removed the PWA entirely. Accept either
+        # the complete pinned build or an entirely absent build, never a partial
+        # or altered set of PWA files.
+        pwa_found, pwa_missing = check_files(proof, pwa, allow_missing=True)
+        assert pwa_found == 0 or pwa_missing == 0, 'Partial PWA publication'
+        return {'verified_https_files': root_found + found + pwa_found,
+                'missing_test_files': missing, 'missing_pwa_files': pwa_missing,
+                'mode': mode}
     raise AssertionError('The current root does not match a known approved release; publication stopped.')
 
 if __name__ == '__main__':
@@ -55,7 +64,8 @@ if __name__ == '__main__':
         try:
             result = verify(proof, args.phase)
             print(json.dumps({'phase': args.phase, **result,
-                              'old_test_sites_unchanged': result['missing_test_files'] == 0, 'url': proof['url']}))
+                              'old_test_sites_unchanged': result['missing_test_files'] == 0,
+                              'pwa_complete': result['missing_pwa_files'] == 0, 'url': proof['url']}))
             break
         except Exception:
             if args.phase == 'before' or attempt == 7: raise
