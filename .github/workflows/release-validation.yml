@@ -1,7 +1,7 @@
 name: Release publication fix checks
 on:
   push:
-    branches: [fix/pages-release-workflow]
+    branches: [fix/pages-release-workflow, fix/keep-pwa-pages-on-release]
 permissions:
   actions: read
   contents: read
