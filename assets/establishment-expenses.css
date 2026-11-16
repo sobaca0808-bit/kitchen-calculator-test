@@ -3,7 +3,7 @@
   .workspace[data-section=expenses] { grid-template-columns:minmax(0,1fr); }
   .workspace[data-section=expenses]>.library { display:none; }
   .expense-form { max-width:1000px; }
-  .expenses-toggle { display:flex;align-items:center;gap:9px;min-height:44px;flex-wrap:wrap; }
+  .card-controls label.expenses-toggle { display:flex;align-items:center;gap:9px;min-height:44px;flex-wrap:wrap; }
   .expenses-toggle input { width:22px;height:22px;margin:0;accent-color:var(--berry,var(--green)); }
   .expenses-toggle[hidden] { display:none!important; }
   .establishment-costs .expenses-open { margin-top:10px; }
