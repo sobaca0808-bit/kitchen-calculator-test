@@ -15,7 +15,10 @@ jobs:
       - name: Verify calculations, storage and JSON conflicts
         run: node --test tests/establishment-expenses.test.js tests/profitability.test.js tests/packaging.test.js tests/storage.test.js tests/json-merge.test.js tests/import-transaction.test.js
       - name: Install disposable browser tooling
-        run: npm install --prefix "$RUNNER_TEMP/expenses-tools" --ignore-scripts --no-audit --no-fund playwright@1.62.1
+        run: |
+          npm install --prefix "$RUNNER_TEMP/expenses-tools" --ignore-scripts --no-audit --no-fund playwright@1.62.1
+          sudo apt-get update -qq
+          sudo apt-get install -y poppler-utils
       - name: Check all themes, desktop/mobile, A4 and browser restart
         env:
           NODE_PATH: ${{ runner.temp }}/expenses-tools/node_modules
