@@ -29,11 +29,12 @@ jobs:
         env:
           NODE_PATH: ${{ runner.temp }}/pwa-tools/node_modules
           CHROMIUM_PATH: /usr/bin/google-chrome
+          KITCHEN_PWA_HEADFUL: '1'
           KITCHEN_PWA_V1: ${{ runner.temp }}/pwa-versions/a
           KITCHEN_PWA_V2: ${{ runner.temp }}/pwa-versions/b
           KITCHEN_PWA_BAD: ${{ runner.temp }}/pwa-versions/bad
           KITCHEN_PWA_ARTIFACTS: ${{ runner.temp }}/pwa-proof
-        run: node tests/pwa.browser.test.js
+        run: xvfb-run -a node tests/pwa.browser.test.js
       - name: Install and launch an actual desktop PWA in graphical Chrome
         if: ${{ !cancelled() }}
         env:
