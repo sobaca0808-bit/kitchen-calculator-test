@@ -1,7 +1,7 @@
 name: Establishment expenses checks
 on:
   push:
-    branches: [feature/establishment-expenses]
+    branches: [feature/establishment-expenses, feature/per-recipe-expenses]
   workflow_dispatch:
 permissions:
   contents: read
@@ -13,7 +13,7 @@ jobs:
         with:
           persist-credentials: false
       - name: Verify calculations, storage and JSON conflicts
-        run: node --test tests/establishment-expenses.test.js tests/profitability.test.js tests/packaging.test.js tests/storage.test.js tests/json-merge.test.js tests/import-transaction.test.js
+        run: node --test tests/establishment-expenses.test.js tests/recipe-expense-preferences.test.js tests/profitability.test.js tests/packaging.test.js tests/storage.test.js tests/json-merge.test.js tests/import-transaction.test.js
       - name: Install disposable browser tooling
         run: |
           npm install --prefix "$RUNNER_TEMP/expenses-tools" --ignore-scripts --no-audit --no-fund playwright@1.62.1

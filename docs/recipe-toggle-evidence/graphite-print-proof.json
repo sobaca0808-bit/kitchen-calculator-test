@@ -1,0 +1,166 @@
+[
+  {
+    "width": 320,
+    "contrast": {
+      "products#item-name": 10.04,
+      "products.intro": 6.61,
+      "products#save-item": 6.7,
+      "products#delete-item": 7.59,
+      "productslabel": 6.61,
+      "productsfield": 10.04,
+      "prep#item-name": 10.04,
+      "prep.intro": 6.61,
+      "prep#save-item": 6.7,
+      "prep#delete-item": 7.59,
+      "preplabel": 6.61,
+      "prepfield": 10.04,
+      "dish#item-name": 10.04,
+      "dish.intro": 6.61,
+      "dish#save-item": 6.7,
+      "dish#delete-item": 7.59,
+      "dishlabel": 6.61,
+      "dishfield": 10.04,
+      "packaging#item-name": 10.04,
+      "packaging.intro": 6.61,
+      "packaging#save-item": 6.7,
+      "packaging#delete-item": 7.59,
+      "packaginglabel": 6.61,
+      "packagingfield": 10.04
+    }
+  },
+  {
+    "width": 390,
+    "contrast": {
+      "products#item-name": 10.04,
+      "products.intro": 6.61,
+      "products#save-item": 6.7,
+      "products#delete-item": 7.59,
+      "productslabel": 6.61,
+      "productsfield": 10.04,
+      "prep#item-name": 10.04,
+      "prep.intro": 6.61,
+      "prep#save-item": 6.7,
+      "prep#delete-item": 7.59,
+      "preplabel": 6.61,
+      "prepfield": 10.04,
+      "dish#item-name": 10.04,
+      "dish.intro": 6.61,
+      "dish#save-item": 6.7,
+      "dish#delete-item": 7.59,
+      "dishlabel": 6.61,
+      "dishfield": 10.04,
+      "packaging#item-name": 10.04,
+      "packaging.intro": 6.61,
+      "packaging#save-item": 6.7,
+      "packaging#delete-item": 7.59,
+      "packaginglabel": 6.61,
+      "packagingfield": 10.04
+    }
+  },
+  {
+    "width": 768,
+    "contrast": {
+      "products#item-name": 10.04,
+      "products.intro": 6.61,
+      "products#save-item": 6.7,
+      "products#delete-item": 7.59,
+      "productslabel": 6.61,
+      "productsfield": 10.04,
+      "prep#item-name": 10.04,
+      "prep.intro": 6.61,
+      "prep#save-item": 6.7,
+      "prep#delete-item": 7.59,
+      "preplabel": 6.61,
+      "prepfield": 10.04,
+      "dish#item-name": 10.04,
+      "dish.intro": 6.61,
+      "dish#save-item": 6.7,
+      "dish#delete-item": 7.59,
+      "dishlabel": 6.61,
+      "dishfield": 10.04,
+      "packaging#item-name": 10.04,
+      "packaging.intro": 6.61,
+      "packaging#save-item": 6.7,
+      "packaging#delete-item": 7.59,
+      "packaginglabel": 6.61,
+      "packagingfield": 10.04
+    }
+  },
+  {
+    "width": 1366,
+    "contrast": {
+      "products#item-name": 10.04,
+      "products.intro": 6.61,
+      "products#save-item": 6.7,
+      "products#delete-item": 7.59,
+      "productslabel": 6.61,
+      "productsfield": 10.04,
+      "prep#item-name": 10.04,
+      "prep.intro": 6.61,
+      "prep#save-item": 6.7,
+      "prep#delete-item": 7.59,
+      "preplabel": 6.61,
+      "prepfield": 10.04,
+      "dish#item-name": 10.04,
+      "dish.intro": 6.61,
+      "dish#save-item": 6.7,
+      "dish#delete-item": 7.59,
+      "dishlabel": 6.61,
+      "dishfield": 10.04,
+      "packaging#item-name": 10.04,
+      "packaging.intro": 6.61,
+      "packaging#save-item": 6.7,
+      "packaging#delete-item": 7.59,
+      "packaginglabel": 6.61,
+      "packagingfield": 10.04
+    }
+  },
+  {
+    "form": "chef",
+    "choice": "none",
+    "pages": 1,
+    "printPixelsIdentical": true
+  },
+  {
+    "form": "chef",
+    "choice": "first",
+    "pages": 2,
+    "printPixelsIdentical": true
+  },
+  {
+    "form": "chef",
+    "choice": "second",
+    "pages": 2,
+    "printPixelsIdentical": true
+  },
+  {
+    "form": "chef",
+    "choice": "both",
+    "pages": 2,
+    "printPixelsIdentical": true
+  },
+  {
+    "form": "calculation",
+    "choice": "none",
+    "pages": 1,
+    "printPixelsIdentical": true
+  },
+  {
+    "form": "calculation",
+    "choice": "first",
+    "pages": 1,
+    "printPixelsIdentical": true
+  },
+  {
+    "form": "calculation",
+    "choice": "second",
+    "pages": 1,
+    "printPixelsIdentical": true
+  },
+  {
+    "form": "calculation",
+    "choice": "both",
+    "pages": 1,
+    "printPixelsIdentical": true
+  }
+]

@@ -35,12 +35,15 @@
       (batch && model.view.yieldGrams != null ? `<p class="chef-yield">Выход на ${esc(num(count,8))} порций: <strong>${esc(num(model.view.yieldGrams))} г</strong></p>` : '')+
       details(recipe);
   }
-  function calculation(state, model) {
+  function calculation(state, model, options={}) {
     const {view} = model, {recipe,result} = view, count = recipe.portions;
     const packaging = root.KitchenPackaging.calculate(state,recipe,count);
     const total = result.knownCost + packaging.knownCost;
     if (!Number.isFinite(total)) throw Error('Слишком большая полная себестоимость. Уменьшите количество порций.');
     const complete = result.complete && packaging.complete;
+    const adjusted=options.expenseResult;
+    const totals=adjusted ? `<p class="card-base-cost">Продукты и упаковка без расходов: ${esc(money(total))}${complete?'':' (неполно)'}</p><p class="card-cost" data-cost-basis="with-expenses">Расчётная себестоимость с расходами: ${Number.isFinite(adjusted.totalCost)?esc(money(adjusted.totalCost)):'не рассчитано'}</p><p class="portion-cost">На одну порцию с расходами: ${Number.isFinite(adjusted.fullCostPerPortion)?esc(money(adjusted.fullCostPerPortion)):'не рассчитано'}</p>`
+      : `<p class="card-cost">${complete ? 'Общая себестоимость' : 'Известная часть стоимости (расчёт неполный)'}: ${esc(money(total))}</p><p class="portion-cost">На одну порцию: ${esc(money(total/count))}${complete ? '' : ' (неполно)'}</p>`;
     return header(model,'КАЛЬКУЛЯЦИОННАЯ КАРТА')+
       `<table class="food-ingredients calculation-ingredients"><thead><tr><th>Ингредиент</th><th>Кол-во</th><th>Выход, г</th><th>Сумма</th></tr></thead><tbody>${recipe.ingredients.map((source,index) => {
         const row = model.rows[index], computed = result.rows[index];
@@ -48,16 +51,17 @@
         return `<tr ${attributes(row)}><td>${ingredient(row)}</td><td class="calculation-quantity">${source.quantity == null || !unit ? 'Не задано' : esc(num(source.quantity,8))+' '+esc(unit)}</td><td class="calculation-output">${computed.massGrams == null ? 'Неизвестен' : esc(num(computed.massGrams))}</td><td class="calculation-cost">${esc(money(computed.knownCost))}${computed.complete ? '' : ' (неполно)'}</td></tr>`;
       }).join('')}</tbody></table>`+
       root.KitchenPackagingUI.renderCard(state,recipe,count,true)+
+      `<div id="recipe-expense-control" class="recipe-expense-control"></div>`+
       `<p class="card-raw-mass">Общая масса ингредиентов: ${view.rawMass == null ? 'неизвестна — задайте коэффициенты массы' : esc(num(view.rawMass))+' г'}</p><p class="card-yield"><strong>Выход готового блюда: ${view.yieldGrams == null ? 'неизвестен — уточните массу компонентов' : esc(num(view.yieldGrams))+' г'}</strong></p>`+
       ((recipe.packaging || []).length ? `<p class="food-cost">Себестоимость ингредиентов: ${esc(money(result.knownCost))}${result.complete ? '' : ' (неполно)'}</p>` : '')+
-      `<p class="card-cost">${complete ? 'Общая себестоимость' : 'Известная часть стоимости (расчёт неполный)'}: ${esc(money(total))}</p><p class="portion-cost">На одну порцию: ${esc(money(total/count))}${complete ? '' : ' (неполно)'}</p>`+
+      totals+
       root.KitchenProfitabilityView.render(state,recipe.id)+details(recipe);
   }
   const renderers = Object.freeze({chef,calculation});
-  function render(state, model) {
+  function render(state, model, options={}) {
     const renderer = Object.hasOwn(renderers,model?.mode) ? renderers[model.mode] : null;
     if (typeof renderer !== 'function') throw Error('Неизвестная форма технологической карты.');
-    return renderer(state,model);
+    return renderer(state,model,options);
   }
   root.KitchenRecipeCardTemplates = {render};
 })(typeof globalThis !== 'undefined' ? globalThis : this);
