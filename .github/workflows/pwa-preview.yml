@@ -1,0 +1,96 @@
+name: Publish isolated PWA preview
+on:
+  push:
+    branches: [preview/browser]
+    paths: ['preview-hosting/pwa/**', '.github/workflows/pwa-preview.yml']
+permissions:
+  actions: read
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: github-pages
+  cancel-in-progress: false
+jobs:
+  preview:
+    timeout-minutes: 35
+    runs-on: ubuntu-latest
+    env:
+      APPROVED_MAIN: b7e391d2273c7a412fb8506da8d15133773fc355
+      PWA_SOURCE: 11784f16e932dded4ca2e962a3bd7e38622328aa
+      PWA_CHECK_RUN: '43937565624'
+    environment:
+      name: github-pages
+      url: https://sobaca0808-bit.github.io/kitchen-calculator-test/pwa/
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify unchanged main and successful checks of the pinned candidate
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          test '${{ github.repository }}' = sobaca0808-bit/kitchen-calculator-test
+          test "$(gh api repos/${{ github.repository }}/git/ref/heads/main --jq .object.sha)" = "$APPROVED_MAIN"
+          test "$(gh api repos/${{ github.repository }}/git/ref/heads/feature/installable-pwa --jq .object.sha)" = "$PWA_SOURCE"
+          test "$(gh api repos/${{ github.repository }}/actions/runs/$PWA_CHECK_RUN --jq .head_sha)" = "$PWA_SOURCE"
+          for ATTEMPT in $(seq 1 100); do
+            STATUS="$(gh api repos/${{ github.repository }}/actions/runs/$PWA_CHECK_RUN --jq .status)"
+            if [ "$STATUS" = completed ]; then break; fi
+            echo "Waiting for the pinned PWA and calculator checks ($ATTEMPT/100)."
+            sleep 12
+          done
+          test "$(gh api repos/${{ github.repository }}/actions/runs/$PWA_CHECK_RUN --jq .conclusion)" = success
+          test "$(gh api repos/${{ github.repository }}/actions/runs/$PWA_CHECK_RUN/jobs --jq '[.jobs[] | select(.name == "check" or .name == "regressions") | .conclusion] | length == 2 and all(. == "success")')" = true
+          test "$(gh api repos/${{ github.repository }}/pulls/27 --jq .merged)" = false
+      - name: Preserve the exact working site and append an isolated PWA
+        run: python3 preview-hosting/pwa/build.py --pages "$RUNNER_TEMP/pwa-site" --proof "$RUNNER_TEMP/pwa-publication-proof.json" --source "$PWA_SOURCE" --pr 27
+      - name: Verify all 212 existing HTTPS resources before publication
+        run: python3 preview-hosting/pwa/verify.py "$RUNNER_TEMP/pwa-publication-proof.json" --phase before
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: ${{ runner.temp }}/pwa-site
+      - name: Recheck main and candidate immediately before publishing
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          test "$(gh api repos/${{ github.repository }}/git/ref/heads/main --jq .object.sha)" = "$APPROVED_MAIN"
+          test "$(gh api repos/${{ github.repository }}/git/ref/heads/feature/installable-pwa --jq .object.sha)" = "$PWA_SOURCE"
+          test "$(gh api repos/${{ github.repository }}/actions/runs/$PWA_CHECK_RUN --jq .conclusion)" = success
+      - name: Publish only the additional PWA while preserving existing files
+        id: deploy
+        uses: actions/deploy-pages@v4
+      - name: Verify new HTTPS files and every preserved calculator
+        run: python3 preview-hosting/pwa/verify.py "$RUNNER_TEMP/pwa-publication-proof.json" --phase after
+      - name: Prepare disposable live-browser verification
+        run: |
+          npm install --prefix "$RUNNER_TEMP/pwa-tools" --ignore-scripts --no-audit --no-fund playwright@1.62.1
+          sudo apt-get update -qq
+          sudo apt-get install -y poppler-utils xvfb xauth
+      - name: Verify actual HTTPS PWA, installation, offline data and all expense scenarios
+        env:
+          NODE_PATH: ${{ runner.temp }}/pwa-tools/node_modules
+          CHROMIUM_PATH: /usr/bin/google-chrome
+          PWA_ARTIFACTS: ${{ runner.temp }}/pwa-live-proof
+        run: xvfb-run -a node preview-hosting/pwa/check.cjs
+      - name: Save publication and browser evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pwa-preview-proof
+          path: |
+            ${{ runner.temp }}/pwa-publication-proof.json
+            ${{ runner.temp }}/pwa-live-proof
+      - name: Report the verified PWA link
+        run: |
+          cat >> "$GITHUB_STEP_SUMMARY" <<'REPORT'
+          ## PWA preview — PR 27, not merged
+          https://sobaca0808-bit.github.io/kitchen-calculator-test/pwa/
+
+          Isolated localStorage/IndexedDB and worker scope. Main is still b7e391d.
+          All 212 previous HTTPS resources are byte-for-byte unchanged.
+          Actual desktop Chrome install, standalone launch, offline editing/photos,
+          JSON, A4, expenses and cold browser restarts passed on desktop/mobile widths.
+          Physical Android installation remains a manual owner check.
+          REPORT

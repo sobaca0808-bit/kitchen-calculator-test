@@ -1,8 +1,9 @@
 name: Publish isolated browser preview
 
 on:
-  push:
-    branches: [preview/browser]
+  # Historical publisher pins the pre-release main. Keep it available for audit,
+  # but use the guarded PWA publisher for new previews of the released app.
+  workflow_dispatch:
 
 permissions:
   actions: read
