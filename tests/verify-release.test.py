@@ -17,10 +17,13 @@ class ReleaseVerification(unittest.TestCase):
         self.old = {'index.html': b'old', 'old.js': b'old JS'}
         self.new = {'index.html': b'release', 'app.js': b'approved JS', 'release-version.json': b'correct version'}
         self.raw = {'index.html': b'approved raw main', 'app.js': b'approved JS'}
+        self.prior = {'index.html': b'last main release', 'app.js': b'approved JS',
+                      'release-version.json': b'last release metadata'}
         self.tests = {'final/index.html': b'final', 'preview/index.html': b'preview'}
         self.pwa = {'pwa/index.html': b'PWA', 'pwa/sw.js': b'PWA service worker'}
         self.proof = {'url': 'https://example.invalid/', 'source_commit': 'a' * 40,
                       'previous_root_https': {k:digest(v) for k,v in self.old.items()},
+                      'prior_main_release_https': {k:digest(v) for k,v in self.prior.items()},
                       'release_https': {k:digest(v) for k,v in self.new.items()},
                       'approved_source_https': {k:digest(v) for k,v in self.raw.items()},
                       'preserved_test_https': {k:digest(v) for k,v in self.tests.items()},
@@ -40,6 +43,11 @@ class ReleaseVerification(unittest.TestCase):
 
     def test_same_release_can_be_retried(self):
         self.assertEqual(self.verify({**self.new, **self.tests})['mode'], 'same-release')
+
+    def test_most_recent_main_release_without_pwa_can_be_repaired(self):
+        result = self.verify({**self.prior, **self.tests})
+        self.assertEqual(result['mode'], 'prior-main-release')
+        self.assertEqual(result['missing_pwa_files'], 2)
 
     def test_known_raw_main_can_restore_absent_sandboxes(self):
         result = self.verify(self.raw)
