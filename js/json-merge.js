@@ -15,7 +15,7 @@
     folder: new Set(['id', 'name']),
     product: new Set(['id', 'name', 'aliases', 'price', 'packQuantity', 'unit', 'massPerPiece', 'gramsPerMl', 'note']),
     packaging: new Set(['id', 'name', 'price', 'packQuantity', 'unit', 'note']),
-    recipe: new Set(['id', 'type', 'name', 'note', 'folderId', 'portions', 'technology', 'sellingPrice', 'actualYield', 'photoId', 'photoIds', 'photo', 'photos', 'ingredients', 'packaging']),
+    recipe: new Set(['id', 'type', 'name', 'note', 'folderId', 'portions', 'technology', 'sellingPrice', 'includeEstablishmentExpenses', 'actualYield', 'photoId', 'photoIds', 'photo', 'photos', 'ingredients', 'packaging']),
     ingredient: new Set(['id', 'refId', 'quantity', 'unit', 'lossPercent', 'outputGrams', 'note']),
     material: new Set(['id', 'refId', 'ingredientRefId', 'quantity', 'unit', 'freeForGuest', 'costMode']),
     photo: new Set(['dataUrl', 'width', 'height', 'mime'])

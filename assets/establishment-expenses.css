@@ -3,16 +3,27 @@
   .workspace[data-section=expenses] { grid-template-columns:minmax(0,1fr); }
   .workspace[data-section=expenses]>.library { display:none; }
   .expense-form { max-width:1000px; }
-  .card-controls label.expenses-toggle { display:flex;align-items:center;gap:9px;min-height:44px;flex-wrap:wrap; }
+  .recipe-expense-control { margin:16px 0;padding:12px;border:1px solid var(--line);border-radius:8px;background:var(--linen); }
+  .recipe-expense-control label.expenses-toggle { display:flex;align-items:center;gap:10px;min-height:44px;font-size:14px;cursor:pointer; }
   .expenses-toggle input { width:22px;height:22px;margin:0;accent-color:var(--berry,var(--green)); }
   .expenses-toggle[hidden] { display:none!important; }
+  .expense-print-control[hidden] { display:none!important; }
+  .expense-print-control small { max-width:230px;line-height:1.4; }
+  .expense-control-summary { margin:8px 0; }
+  .expense-control-summary p { margin:6px 0; }
+  .expense-breakdown-details summary { cursor:pointer;min-height:44px;padding:10px 0;font-weight:600; }
+  .expense-switch-block>.expenses-open { margin-top:8px; }
+  .expense-print-breakdown { display:none; }
   .establishment-costs .expenses-open { margin-top:10px; }
   .establishment-costs dd { overflow-wrap:anywhere; }
   @media(max-width:760px) { .tabs [data-tab=expenses] { grid-column:1/-1; } }
 }
-.expense-breakdown { table-layout:fixed;width:100%; }
-.expense-breakdown th,.expense-breakdown td { overflow-wrap:anywhere; }
+.expense-breakdown,.expense-print-table { table-layout:fixed;width:100%; }
+.expense-breakdown th,.expense-breakdown td,.expense-print-table th,.expense-print-table td { overflow-wrap:anywhere; }
 @media print {
+  .recipe-expense-control { display:none!important; }
+  .recipe-card[data-print-expense-detail=summary] .expense-print-breakdown { display:none!important; }
+  .recipe-card[data-print-expense-detail=full] .expense-print-breakdown { display:block; }
   .establishment-costs .expenses-open { display:none!important; }
   .establishment-costs tr,.establishment-costs .profitability-grid>div { break-inside:avoid; }
   .establishment-costs th { color:black;background:none; }

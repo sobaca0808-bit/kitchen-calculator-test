@@ -15,7 +15,8 @@
   let recoveryRequired = !!loaded.error;
   let section = 'dish', selectedId = state.recipes.find(r => r.type === 'dish')?.id || null;
   let viewing = true, viewPortions = 1, cardMode = 'calculation';
-  let includeExpenses=false, expenseEditor=null;
+  let expenseEditor=null, expensePrintDetail='summary';
+  const ExpensePreferences=KitchenRecipeExpensePreferences;
   let folderFilter = 'all', folderFormId = null;
   const selectedFolderId = () => folderFilter.startsWith('folder:') ? folderFilter.slice(7) : null;
   const printPhotoChoices = {chef:'both',calculation:'both'};
@@ -34,10 +35,10 @@
   function clearMissingStorageHelp(){
     const help=$('#storage-help');if(help&&location.hash!=='#storage-diagnostics')help.hidden=true;
   }
-  function persist(candidate, success, restore = false) {
+  function persist(candidate, success, restore = false, syncPackaging=true) {
     if (recoveryRequired && !restore) {message('Сохранение заблокировано: исходное хранилище не удалось прочитать. Восстановите резервную копию через импорт JSON. Исходные данные не изменены.',true);return false;}
     let clean;
-    try { clean = S.validate(candidate);if(section!=='expenses')clean=P.resolveLinks(clean); } catch(e) { message(e.message, true); return false; }
+    try { clean = S.validate(candidate);if(section!=='expenses'&&syncPackaging)clean=P.resolveLinks(clean); } catch(e) { message(e.message, true); return false; }
     const result = S.save(clean,undefined,persistedSource);
     if (!result.ok) {
       storageBlocked = true;
@@ -169,7 +170,7 @@
     if(owner && record.isNew && !confirm('Этот черновик создавался как новый рецепт, но в базе уже есть запись с тем же ID. Восстановить для редактирования? Последующее нажатие «Сохранить» заменит её содержимое.'))return;
     try {
       clearTimeout(draftTimer); section=type;selectedId=id;viewing=false;
-      draft=clone(record.data);isNew=record.isNew || !state.recipes.some(r=>r.id===id);dirty=true;
+      draft=ExpensePreferences.restorePreference(clone(record.data),state.recipes.find(r=>r.id===id));isNew=record.isNew || !state.recipes.some(r=>r.id===id);dirty=true;
       const missingFolder = type === 'dish' && draft.folderId && !(state.folders || []).some(folder=>folder.id === draft.folderId);
       if(missingFolder) delete draft.folderId;
       errors=new Map(record.errors);invalidValues=new Map(record.invalidValues);draftStatus='Черновик восстановлен · нажмите «Сохранить» для изменения карточки';
@@ -295,10 +296,11 @@
   function renderCard() {
     editor.innerHTML = `<div class="card-controls"><button id="back-list">← К списку</button><button id="edit-recipe">Изменить</button><button id="print-recipe">Печать</button><label>Форма карты<select id="card-mode"><option value="calculation" ${cardMode==='calculation'?'selected':''}>Калькуляционная карта</option><option value="chef" ${cardMode==='chef'?'selected':''}>Карта повара</option></select></label><label>Количество порций<input id="view-portions" type="text" inputmode="decimal" value="${esc(num(viewPortions,8))}"></label><label>Фотографии при печати<select id="print-photos"><option value="none">Без фотографий</option><option value="first">Только первая</option><option value="second">Только вторая</option><option value="both">Обе фотографии</option></select></label><p id="view-error" role="status"></p></div><article id="recipe-card" class="recipe-card"></article>`;
     const card=$('#recipe-card');
-    const expenseToggle=document.createElement('label');expenseToggle.className='expenses-toggle';
-    expenseToggle.innerHTML=`<input id="include-establishment-expenses" type="checkbox" ${includeExpenses?'checked':''}>Учитывать расходы заведения`;
-    $('.card-controls',editor).append(expenseToggle);
-    $('#include-establishment-expenses').addEventListener('change',event=>{includeExpenses=event.target.checked;draw();});
+    const expensePrintControl=document.createElement('label');expensePrintControl.className='expense-print-control';
+    expensePrintControl.innerHTML=`Статьи расходов при печати<select id="print-expense-detail"><option value="summary">Только итоги</option><option value="full">С детализацией</option></select><small>Без цен — форма «Карта повара».</small>`;
+    $('.card-controls',editor).append(expensePrintControl);
+    $('#print-expense-detail').value=expensePrintDetail;
+    $('#print-expense-detail').addEventListener('change',event=>{expensePrintDetail=event.target.value;card.dataset.printExpenseDetail=expensePrintDetail;});
     const moveControls = document.createElement('div');moveControls.className = 'recipe-folder-move';
     moveControls.innerHTML = `<label>Папка блюда<select id="move-folder">${folderOptions(draft.folderId)}</select></label><button id="move-recipe" disabled>Переместить</button>`;
     $('.card-controls',editor).append(moveControls);$('#move-folder').value = draft.folderId || '';
@@ -338,13 +340,26 @@
         // Both forms share the saved recipe and the same gallery. Presentation changes
         // neither recreate photo records nor alter their order or bytes.
         const galleryElement=$('#card-photos',card);
-        card.innerHTML=KitchenRecipeCardTemplates.render(state,model);
-        expenseToggle.hidden=cardMode==='chef';
+        const includeExpenses=ExpensePreferences.enabled(draft),expenseResult=cardMode==='calculation'&&includeExpenses?KitchenExpenses.calculate(state,draft.id,viewPortions):undefined;
+        card.innerHTML=KitchenRecipeCardTemplates.render(state,model,{expenseResult});
+        expensePrintControl.hidden=cardMode!=='calculation'||!includeExpenses;
+        card.dataset.printExpenseDetail=expensePrintDetail;
+        if(cardMode==='calculation'){
+          $('#recipe-expense-control',card).innerHTML=KitchenExpensesUI.renderControl(state,draft.id,viewPortions,{enabled:includeExpenses,result:expenseResult});
+          $('#include-establishment-expenses',card).addEventListener('change',event=>{
+            const checked=event.target.checked;
+            try{
+              const candidate=ExpensePreferences.update(state,draft.id,checked);
+              if(!persist(candidate,checked?'Расходы включены для этого блюда. Выбор сохранён.':'Расходы отключены для этого блюда. План расходов сохранён.',false,false)){event.target.checked=includeExpenses;return;}
+              draft=clone(state.recipes.find(r=>r.id===draft.id));draw();$('#include-establishment-expenses',card).focus({preventScroll:true});
+            }catch(error){event.target.checked=includeExpenses;message(error.message,true);}
+          });
+        }
         if(cardMode==='calculation'&&includeExpenses){
           const financial=card.querySelector('.profitability-card');
-          (financial||card).insertAdjacentHTML(financial?'afterend':'beforeend',KitchenExpensesUI.renderCard(state,draft.id,viewPortions));
-          $('.expenses-open',card).onclick=()=>switchSection('expenses');
+          (financial||card).insertAdjacentHTML(financial?'afterend':'beforeend',KitchenExpensesUI.renderCard(state,draft.id,viewPortions,{result:expenseResult,showBreakdown:false}));
         }
+        card.querySelectorAll('.expenses-open').forEach(button=>button.onclick=()=>switchSection('expenses'));
         card.dataset.mode=cardMode;
         if(galleryElement && photoPreview) $('#card-photos',card).replaceWith(galleryElement);
         else {
@@ -600,7 +615,7 @@
       foodInvalid:[...errors.keys()].some(key=>key!=='selling-price' && !key.startsWith('pack-'))
     });
     if(section==='dish'&&$('#expenses-preview')){
-      $('#expenses-preview').innerHTML=includeExpenses?KitchenExpensesUI.renderCard(currentState(),draft.id,draft.portions||1,{invalid:errors.size>0}):'';
+      $('#expenses-preview').innerHTML=ExpensePreferences.enabled(draft)?KitchenExpensesUI.renderCard(currentState(),draft.id,draft.portions||1,{invalid:errors.size>0}):'';
       $('#expenses-preview .expenses-open')?.addEventListener('click',()=>switchSection('expenses'));
     }
     $('#form-error').textContent = errors.size ? 'Исправьте ввод: '+[...errors.values()][0] : '';

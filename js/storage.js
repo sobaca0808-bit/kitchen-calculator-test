@@ -217,13 +217,15 @@
         if (!Array.isArray(value) || value.length > 2) fail(label + ': допустимо не больше двух фотографий.');
         return Array.from(value, (entry, slot)=>entry === null ? null : embedded ? photo(entry,label+', фото '+(slot+1)) : photoId(entry,label+', фото '+(slot+1)));
       }
-      return extensions(item,['id','type','name','note','folderId','portions','technology','sellingPrice','actualYield','photoId','photo','photoIds','photos','packaging','ingredients'],{
+      if(item.includeEstablishmentExpenses!==undefined&&item.type!=='dish')fail(label+': учёт расходов можно выбрать только для блюда.');
+      return extensions(item,['id','type','name','note','folderId','portions','technology','sellingPrice','includeEstablishmentExpenses','actualYield','photoId','photo','photoIds','photos','packaging','ingredients'],{
         id: id(item.id, label + ', id'), type: item.type,
         name: text(item.name, label + ', название', true, 500), note: text(item.note, label + ', заметка'),
         ...(item.folderId !== undefined ? {folderId: item.folderId} : {}),
         ...(item.portions !== undefined ? {portions: number(item.portions, label + ', порции', true) ?? 1} : {}),
         ...(item.technology !== undefined ? {technology: text(item.technology, label + ', технология')} : {}),
         ...(item.sellingPrice !== undefined ? {sellingPrice: number(item.sellingPrice, label + ', цена продажи')} : {}),
+        ...(item.includeEstablishmentExpenses!==undefined?{includeEstablishmentExpenses:boolean(item.includeEstablishmentExpenses,label+', учитывать расходы заведения')}:{}) ,
         actualYield: number(item.actualYield, label + ', фактический выход', true),
         ...(item.photoId !== undefined ? {photoId: photoId(item.photoId, label + ', фотография')} : {}),
         ...(item.photo !== undefined ? {photo: photo(item.photo, label + ', фотография')} : {}),
