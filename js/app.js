@@ -15,6 +15,7 @@
   let recoveryRequired = !!loaded.error;
   let section = 'dish', selectedId = state.recipes.find(r => r.type === 'dish')?.id || null;
   let viewing = true, viewPortions = 1, cardMode = 'calculation';
+  let includeExpenses=false, expenseEditor=null;
   let folderFilter = 'all', folderFormId = null;
   const selectedFolderId = () => folderFilter.startsWith('folder:') ? folderFilter.slice(7) : null;
   const printPhotoChoices = {chef:'both',calculation:'both'};
@@ -36,7 +37,7 @@
   function persist(candidate, success, restore = false) {
     if (recoveryRequired && !restore) {message('Сохранение заблокировано: исходное хранилище не удалось прочитать. Восстановите резервную копию через импорт JSON. Исходные данные не изменены.',true);return false;}
     let clean;
-    try { clean = P.resolveLinks(S.validate(candidate)); } catch(e) { message(e.message, true); return false; }
+    try { clean = S.validate(candidate);if(section!=='expenses')clean=P.resolveLinks(clean); } catch(e) { message(e.message, true); return false; }
     const result = S.save(clean,undefined,persistedSource);
     if (!result.ok) {
       storageBlocked = true;
@@ -107,6 +108,7 @@
   }
   function currentState() {
     const next = clone(state);
+    if(section==='expenses'&&expenseEditor)next.establishmentExpenses=expenseEditor.value();
     if (draft) {
       const key = isCatalog() ? section : 'recipes';
       if (!next[key]) next[key] = [];
@@ -236,11 +238,14 @@
     libraryList.setAttribute('role','region');
     libraryList.setAttribute('aria-labelledby','section-title');
     libraryList.tabIndex = 0;
-    $('#section-title').textContent = labels[section][0]; $('#create').textContent = '+ ' + labels[section][1];
+    $('.library').hidden=section==='expenses';
     for (const key of ['dish','prep','products','packaging']) {
       $(`#count-${key}`).textContent = ['products','packaging'].includes(key) ? (state[key] || []).length : state.recipes.filter(r => r.type === key).length;
       $(`[data-tab="${key}"]`).setAttribute('aria-current',section === key ? 'page' : 'false');
     }
+    $('[data-tab="expenses"]')?.setAttribute('aria-current',section==='expenses'?'page':'false');
+    if(section==='expenses')return;
+    $('#section-title').textContent = labels[section][0]; $('#create').textContent = '+ ' + labels[section][1];
     const query = $('#library-search').value.toLocaleLowerCase('ru').trim();
     renderFolders(query);
     const list = collection().filter(item => (item.name+' '+(item.aliases || '')).toLocaleLowerCase('ru').includes(query) &&
@@ -279,6 +284,10 @@
   function renderEditor() {
     photoEditor?.dispose();photoEditor=null;photoPreview?.dispose();photoPreview=null;
     packagingEditor = null;
+    expenseEditor=null;
+    if(section==='expenses'){
+      expenseEditor=KitchenExpensesUI.mount(editor,{config:state.establishmentExpenses,onChange:markDirty,onSave:saveDraft});return;
+    }
     if (!draft) { editor.innerHTML = `<div class="empty-state"><h2>${section === 'dish' && collection().length ? 'Выберите рецепт из списка' : 'Начните с новой записи'}</h2><p>Откройте сохранённую запись или создайте новую<br>кнопкой в справочнике.</p></div>`; return; }
     if (section === 'dish' && viewing) renderCard();
     else if (section === 'products') renderProduct(); else if (section === 'packaging') renderPackaging(); else renderRecipe();
@@ -286,6 +295,10 @@
   function renderCard() {
     editor.innerHTML = `<div class="card-controls"><button id="back-list">← К списку</button><button id="edit-recipe">Изменить</button><button id="print-recipe">Печать</button><label>Форма карты<select id="card-mode"><option value="calculation" ${cardMode==='calculation'?'selected':''}>Калькуляционная карта</option><option value="chef" ${cardMode==='chef'?'selected':''}>Карта повара</option></select></label><label>Количество порций<input id="view-portions" type="text" inputmode="decimal" value="${esc(num(viewPortions,8))}"></label><label>Фотографии при печати<select id="print-photos"><option value="none">Без фотографий</option><option value="first">Только первая</option><option value="second">Только вторая</option><option value="both">Обе фотографии</option></select></label><p id="view-error" role="status"></p></div><article id="recipe-card" class="recipe-card"></article>`;
     const card=$('#recipe-card');
+    const expenseToggle=document.createElement('label');expenseToggle.className='expenses-toggle';
+    expenseToggle.innerHTML=`<input id="include-establishment-expenses" type="checkbox" ${includeExpenses?'checked':''}>Учитывать расходы заведения`;
+    $('.card-controls',editor).append(expenseToggle);
+    $('#include-establishment-expenses').addEventListener('change',event=>{includeExpenses=event.target.checked;draw();});
     const moveControls = document.createElement('div');moveControls.className = 'recipe-folder-move';
     moveControls.innerHTML = `<label>Папка блюда<select id="move-folder">${folderOptions(draft.folderId)}</select></label><button id="move-recipe" disabled>Переместить</button>`;
     $('.card-controls',editor).append(moveControls);$('#move-folder').value = draft.folderId || '';
@@ -326,6 +339,12 @@
         // neither recreate photo records nor alter their order or bytes.
         const galleryElement=$('#card-photos',card);
         card.innerHTML=KitchenRecipeCardTemplates.render(state,model);
+        expenseToggle.hidden=cardMode==='chef';
+        if(cardMode==='calculation'&&includeExpenses){
+          const financial=card.querySelector('.profitability-card');
+          (financial||card).insertAdjacentHTML(financial?'afterend':'beforeend',KitchenExpensesUI.renderCard(state,draft.id,viewPortions));
+          $('.expenses-open',card).onclick=()=>switchSection('expenses');
+        }
         card.dataset.mode=cardMode;
         if(galleryElement && photoPreview) $('#card-photos',card).replaceWith(galleryElement);
         else {
@@ -412,6 +431,10 @@
       <label class="recipe-note">Способ приготовления<textarea id="technology" maxlength="10000">${esc(draft.technology)}</textarea></label>
       <details class="recipe-note" ${draft.note ? 'open' : ''}><summary>Заметка к рецепту</summary><textarea id="recipe-note" placeholder="Что нужно уточнить или учесть">${esc(draft.note)}</textarea></details><div id="summary" class="summary" aria-live="polite"></div>${section === 'dish' ? `<div class="selling-price-editor recipe-note"><label>Цена продажи блюда, ₽${numericInput('selling-price',draft.sellingPrice,'Не задана')}</label><p class="field-help">Цена за одну порцию. Показатели ниже рассчитаны только по продуктовой себестоимости, без упаковки.</p></div><div id="profitability-preview" aria-live="polite"></div>` : ''}<p id="form-error" class="inline-error" role="status"></p></div>` + actions(true);
     bindCommon(); renderRows();
+    if(section==='dish'){
+      const preview=document.createElement('div');preview.id='expenses-preview';
+      $('#profitability-preview').after(preview);
+    }
     $('#recipe-folder')?.addEventListener('change',event=>{
       if(event.target.value) draft.folderId = event.target.value;else delete draft.folderId;
       markDirty();
@@ -576,10 +599,21 @@
       invalid:errors.has('selling-price'),
       foodInvalid:[...errors.keys()].some(key=>key!=='selling-price' && !key.startsWith('pack-'))
     });
+    if(section==='dish'&&$('#expenses-preview')){
+      $('#expenses-preview').innerHTML=includeExpenses?KitchenExpensesUI.renderCard(currentState(),draft.id,draft.portions||1,{invalid:errors.size>0}):'';
+      $('#expenses-preview .expenses-open')?.addEventListener('click',()=>switchSection('expenses'));
+    }
     $('#form-error').textContent = errors.size ? 'Исправьте ввод: '+[...errors.values()][0] : '';
   }
   function saveDraft() {
     if(backupBusy) {message('Дождитесь завершения работы с резервной копией.',true);return false;}
+    if(section==='expenses'){
+      let candidate;try{candidate=currentState();}catch(error){message(error.message,true);editor.querySelector('[aria-invalid=true]')?.focus();return false;}
+      if(!persist(candidate,'Расходы сохранены ✓. Калькуляции блюд пересчитываются автоматически.')){
+        $('#save-state').textContent='В памяти · скачайте JSON';$('#save-item').textContent='Повторить сохранение';return false;
+      }
+      dirty=false;$('#save-state').textContent='Сохранено в браузере';$('#save-item').textContent='Сохранено ✓';$('#save-item').classList.add('saved');return true;
+    }
     if(photoEditor?.busy) {message('Дождитесь обработки фотографии перед сохранением.',true);return false;}
     if (!draft.name.trim()) {message('Введите название.',true);$('#item-name').focus();return false;}
     if (errors.size) {message('Исправьте ошибки в числовых полях перед сохранением.',true);editor.querySelector('[aria-invalid="true"]')?.focus();return false;}
@@ -636,6 +670,7 @@
   $('[data-tab="prep"]').addEventListener('click',() => switchSection('prep'));
   $('[data-tab="products"]').addEventListener('click',() => switchSection('products'));
   $('[data-tab="packaging"]').addEventListener('click',() => switchSection('packaging'));
+  $('[data-tab="expenses"]')?.addEventListener('click',() => switchSection('expenses'));
   $('#library-search').addEventListener('input',renderLibrary);
   $('#folder-filter').addEventListener('change',event=>{
     const next = event.target.value;
@@ -678,7 +713,8 @@
     if(photoEditor?.busy) {message('Дождитесь обработки фотографии перед экспортом.',true);return;}
     const hasUnfinishedRecipe=editingRecipe() && dirty;
     const emergency=dirty&&(storageBlocked||recoveryRequired);
-    if(emergency&&(!draft?.name?.trim()||errors.size)){message('Исправьте название и числа перед экспортом введённой записи.',true);return;}
+    if(emergency&&section!=='expenses'&&(!draft?.name?.trim()||errors.size)){message('Исправьте название и числа перед экспортом введённой записи.',true);return;}
+    if(emergency&&section==='expenses'){try{expenseEditor.value();}catch(error){message(error.message,true);return;}}
     if(emergency&&hasUnfinishedRecipe)flushDraft();
     if(!emergency&&dirty && (hasUnfinishedRecipe ? !flushDraft() : !saveDraft())) return;
     backupBusy=true;$('#export').disabled=true;

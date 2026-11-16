@@ -134,6 +134,17 @@
   }
   const dimension = value => value === 'pcs' ? 'count' : ['g', 'kg'].includes(value) ? 'mass' : 'volume';
   const packagingDimension = value => ['m', 'cm'].includes(value) ? 'length' : dimension(value);
+  function expenseConfig(input) {
+    const value=copyJSON(input);object(value,'Расходы заведения');
+    if(value.method!=='planned-portions')fail('Расходы заведения: неизвестный способ распределения.');
+    const period=text(value.period,'Расходы заведения, месяц',false,7);
+    if(period&&!/^[0-9]{4}-(0[1-9]|1[0-2])$/.test(period))fail('Расходы заведения: укажите месяц в формате ГГГГ-ММ.');
+    const plannedPortions=number(value.plannedPortions,'План продаж в порциях');
+    if(plannedPortions!==null&&(!Number.isSafeInteger(plannedPortions)||plannedPortions<=0))fail('План продаж: укажите целое число порций больше нуля.');
+    const result={method:'planned-portions',period,plannedPortions};
+    for(const [key,label] of [['rent','Аренда'],['utilities','Коммунальные платежи'],['payroll','Зарплаты'],['other','Прочие расходы']])result[key]=number(value[key],label);
+    return extensions(value,['method','period','plannedPortions','rent','utilities','payroll','other'],result);
+  }
   function validate(input) {
     input = copyJSON(input,true);
     object(input, 'Данные');
@@ -321,7 +332,7 @@
         for (const ref of refs) stack.push({ id: ref, exit: false });
       }
     }
-    return extensions(input,['version','products','recipes','packaging','folders'],{ version: 1, products, recipes, ...(packaging !== undefined ? {packaging} : {}), ...(folders !== undefined ? {folders} : {}) });
+    return extensions(input,['version','products','recipes','packaging','folders','establishmentExpenses'],{ version: 1, products, recipes, ...(packaging !== undefined ? {packaging} : {}), ...(folders !== undefined ? {folders} : {}), ...(input.establishmentExpenses!==undefined?{establishmentExpenses:expenseConfig(input.establishmentExpenses)}:{}) });
   }
   function parseJSON(source) {
     if (typeof source !== 'string') fail('Резервная копия должна быть текстовым JSON-файлом.');
@@ -372,5 +383,5 @@
       return { ok: false, error: (written?'Результат записи не подтверждён: ':'Не удалось сохранить данные: ') + error.message + ' Скачайте JSON, чтобы не потерять изменения.', ...(written?{commitUncertain:true}:{}) };
     }
   }
-  return { KEY, MAX_IMPORT_BYTES, MAX_PHOTO_BYTES, MAX_PHOTO_SIDE, MAX_RECIPE_DEPTH, folderName, validate, parseJSON, stringify, empty, snapshot, load, save };
+  return { KEY, MAX_IMPORT_BYTES, MAX_PHOTO_BYTES, MAX_PHOTO_SIDE, MAX_RECIPE_DEPTH, folderName, expenseConfig, validate, parseJSON, stringify, empty, snapshot, load, save };
 });

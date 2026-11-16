@@ -1,0 +1,33 @@
+name: Establishment expenses checks
+on:
+  push:
+    branches: [feature/establishment-expenses]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Verify calculations, storage and JSON conflicts
+        run: node --test tests/establishment-expenses.test.js tests/profitability.test.js tests/packaging.test.js tests/storage.test.js tests/json-merge.test.js tests/import-transaction.test.js
+      - name: Install disposable browser tooling
+        run: |
+          npm install --prefix "$RUNNER_TEMP/expenses-tools" --ignore-scripts --no-audit --no-fund playwright@1.62.1
+          sudo apt-get update -qq
+          sudo apt-get install -y poppler-utils
+      - name: Check all themes, desktop/mobile, A4 and browser restart
+        env:
+          NODE_PATH: ${{ runner.temp }}/expenses-tools/node_modules
+          CHROMIUM_PATH: /usr/bin/google-chrome
+          KITCHEN_TEST_ARTIFACT_DIR: ${{ runner.temp }}/expenses-proof
+        run: node tests/establishment-expenses.browser.test.js
+      - name: Save browser evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: establishment-expenses-checks
+          path: ${{ runner.temp }}/expenses-proof

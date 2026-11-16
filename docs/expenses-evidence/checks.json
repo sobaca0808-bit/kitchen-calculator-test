@@ -1,0 +1,20 @@
+{
+  "fullCommand": {
+    "nodePassed": 242,
+    "browserPassed": 705,
+    "exitCode": 0
+  },
+  "targetedNewSuite": {
+    "passed": 17,
+    "failed": 0,
+    "exitCode": 0
+  },
+  "browserDistinctPassed": 707,
+  "originalBrowserCasesRetained": 690,
+  "newNodeCases": 19,
+  "newBrowserCases": 17,
+  "runtimeCICommit": "aed462db0dfe3abe923880c0c4fda0dd3867fd5d",
+  "runtimeCIRun": 43843609461,
+  "physicalAndroidTested": false,
+  "singleFull707RunClaimed": false
+}

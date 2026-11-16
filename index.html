@@ -13,9 +13,10 @@
   <link rel="stylesheet" href="assets/editor-actions.css">
   <link rel="stylesheet" href="assets/warm-kitchen.css?v=berry-2">
   <link rel="stylesheet" href="assets/appearance.css?v=three-themes-1">
+  <link rel="stylesheet" href="assets/establishment-expenses.css?v=expenses-1">
   <script defer src="js/calculations.js"></script>
   <script defer src="js/seed.js"></script>
-  <script defer src="js/storage.js?v=issue21-storage-1"></script>
+  <script defer src="js/storage.js?v=expenses-1"></script>
   <script defer src="js/folders.js"></script>
   <script defer src="js/packaging.js"></script>
   <script defer src="js/packaging-ui.js"></script>
@@ -23,16 +24,18 @@
   <script defer src="js/recipe-card-model.js"></script>
   <script defer src="js/profitability.js"></script>
   <script defer src="js/profitability-view.js"></script>
+  <script defer src="js/establishment-expenses.js?v=expenses-1"></script>
+  <script defer src="js/establishment-expenses-ui.js?v=expenses-1"></script>
   <script defer src="js/recipe-card-templates.js"></script>
   <script defer src="js/drafts.js?v=issue21-storage-1"></script>
   <script defer src="js/photo-viewer.js"></script>
   <script defer src="js/photos.js?v=issue21-storage-1"></script>
   <script defer src="js/json-merge.js"></script>
   <script defer src="js/import-transaction.js?v=issue21-storage-1"></script>
-  <script defer src="js/import-ui.js?v=issue21-storage-1"></script>
+  <script defer src="js/import-ui.js?v=expenses-1"></script>
   <script defer src="js/persistence-diagnostics.js?v=issue21-storage-1"></script>
   <script defer src="js/editor-actions.js"></script>
-  <script defer src="js/app.js?v=issue21-storage-1"></script>
+  <script defer src="js/app.js?v=expenses-1"></script>
 </head>
 <body>
   <p class="test-notice" role="note">ТЕСТ PR №2 · Отдельное хранилище. Рабочие продукты и рецепты здесь не используются.</p>
@@ -55,7 +58,7 @@
     </div>
   </header>
   <div id="message" role="status" aria-live="polite" hidden></div>
-  <nav class="tabs" aria-label="Разделы"><button data-tab="dish">Мои рецепты <span id="count-dish"></span></button><button data-tab="prep">Полуфабрикаты <span id="count-prep"></span></button><button data-tab="products">Продукты <span id="count-products"></span></button><button data-tab="packaging">Упаковка и фасовка <span id="count-packaging"></span></button></nav>
+  <nav class="tabs" aria-label="Разделы"><button data-tab="dish">Мои рецепты <span id="count-dish"></span></button><button data-tab="prep">Полуфабрикаты <span id="count-prep"></span></button><button data-tab="products">Продукты <span id="count-products"></span></button><button data-tab="packaging">Упаковка и фасовка <span id="count-packaging"></span></button><button data-tab="expenses">Расходы заведения</button></nav>
   <section id="import-panel" class="import-panel" aria-label="Предварительный просмотр импорта" aria-busy="false" hidden>
     <h2>Проверка перед импортом</h2><p id="import-file-name" class="import-file-name"></p>
     <p>Это ручной перенос JSON, без автоматической синхронизации. Сохранённые данные изменятся только после применения.</p>
@@ -101,7 +104,7 @@
     </aside>
     <section id="editor" class="editor" aria-label="Редактор"></section>
   </main>
-  <footer class="page-footer">Себестоимость продуктов и упаковки · Труд, аренда и прочие расходы не учитываются</footer>
+  <footer class="page-footer">Продукты и упаковка · Расходы заведения — отдельная плановая оценка</footer>
   <noscript>Для работы калькулятора включите JavaScript в браузере.</noscript>
 </body>
 </html>
