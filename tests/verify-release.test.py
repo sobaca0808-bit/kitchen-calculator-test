@@ -18,11 +18,13 @@ class ReleaseVerification(unittest.TestCase):
         self.new = {'index.html': b'release', 'app.js': b'approved JS', 'release-version.json': b'correct version'}
         self.raw = {'index.html': b'approved raw main', 'app.js': b'approved JS'}
         self.tests = {'final/index.html': b'final', 'preview/index.html': b'preview'}
+        self.pwa = {'pwa/index.html': b'PWA', 'pwa/sw.js': b'PWA service worker'}
         self.proof = {'url': 'https://example.invalid/', 'source_commit': 'a' * 40,
                       'previous_root_https': {k:digest(v) for k,v in self.old.items()},
                       'release_https': {k:digest(v) for k,v in self.new.items()},
                       'approved_source_https': {k:digest(v) for k,v in self.raw.items()},
-                      'preserved_test_https': {k:digest(v) for k,v in self.tests.items()}}
+                      'preserved_test_https': {k:digest(v) for k,v in self.tests.items()},
+                      'restored_pwa_https': {k:digest(v) for k,v in self.pwa.items()}}
 
     def verify(self, files, phase='before'):
         def read(request, timeout):
@@ -43,6 +45,7 @@ class ReleaseVerification(unittest.TestCase):
         result = self.verify(self.raw)
         self.assertEqual(result['mode'], 'approved-raw-main')
         self.assertEqual(result['missing_test_files'], 2)
+        self.assertEqual(result['missing_pwa_files'], 2)
 
     def test_existing_modified_sandbox_is_never_overwritten(self):
         with self.assertRaises(AssertionError):
@@ -52,10 +55,25 @@ class ReleaseVerification(unittest.TestCase):
         with self.assertRaises(AssertionError):
             self.verify({'index.html': b'unknown', **self.tests})
 
-    def test_after_release_requires_every_sandbox(self):
+    def test_after_release_requires_every_sandbox_and_pwa(self):
         with self.assertRaises(HTTPError): self.verify(self.new, 'after')
-        result = self.verify({**self.new, **self.tests}, 'after')
-        self.assertEqual(result['verified_https_files'], 5)
+        with self.assertRaises(HTTPError): self.verify({**self.new, **self.tests}, 'after')
+        result = self.verify({**self.new, **self.tests, **self.pwa}, 'after')
+        self.assertEqual(result['verified_https_files'], 7)
         self.assertEqual(result['missing_test_files'], 0)
+        self.assertEqual(result['missing_pwa_files'], 0)
+
+    def test_complete_existing_pwa_is_preserved(self):
+        result = self.verify({**self.new, **self.tests, **self.pwa})
+        self.assertEqual(result['mode'], 'same-release')
+        self.assertEqual(result['missing_pwa_files'], 0)
+
+    def test_partial_existing_pwa_is_rejected(self):
+        with self.assertRaises(AssertionError):
+            self.verify({**self.new, **self.tests, 'pwa/index.html': self.pwa['pwa/index.html']})
+
+    def test_altered_existing_pwa_is_rejected(self):
+        with self.assertRaises(AssertionError):
+            self.verify({**self.new, **self.tests, **self.pwa, 'pwa/sw.js': b'not the pinned PWA'})
 
 if __name__ == '__main__': unittest.main()
