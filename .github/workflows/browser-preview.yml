@@ -20,9 +20,11 @@ jobs:
     env:
       EXPENSES_SOURCE: 1c1fcc057370f04a0451bf62ef6241a1edeb7587
       EXPENSES_PR: '23'
+      TOGGLE_SOURCE: 6cf49ce304b9ddf0e3c6de2d780537f12cbf8e7b
+      TOGGLE_PR: '24'
     environment:
       name: github-pages
-      url: ${{ steps.deploy.outputs.page_url }}expenses/
+      url: ${{ steps.deploy.outputs.page_url }}expense-toggle/
     steps:
       - uses: actions/checkout@v4
         with:
@@ -36,14 +38,17 @@ jobs:
           test "$(gh api repos/${{ github.repository }}/git/ref/heads/feature/warm-professional-kitchen --jq .object.sha)" = 04c98fb20444859454fc18fd6f3d6e0429818f8b
           test "$(gh api repos/${{ github.repository }}/git/ref/heads/fix/issue-21-preview-persistence --jq .object.sha)" = 1a68adffd2046b758b683af3b516adf944081149
           test "$(gh api repos/${{ github.repository }}/git/ref/heads/feature/establishment-expenses --jq .object.sha)" = "$EXPENSES_SOURCE"
+          test "$(gh api repos/${{ github.repository }}/git/ref/heads/feature/per-recipe-expenses --jq .object.sha)" = "$TOGGLE_SOURCE"
       - name: Build preview without changing any existing base file
         run: python3 preview-hosting/prepare-pages.py --output "$RUNNER_TEMP/pages-combined" --proof "$RUNNER_TEMP/pages-proof.json"
       - name: Append isolated PR22 sandbox without changing root or approved preview
         run: python3 preview-hosting/pr22/build.py --pages "$RUNNER_TEMP/pages-combined" --old-proof "$RUNNER_TEMP/pages-proof.json" --proof "$RUNNER_TEMP/pr22-proof.json"
       - name: Append establishment expenses with its own storage
         run: python3 preview-hosting/expenses/build.py --pages "$RUNNER_TEMP/pages-combined" --previous-proof "$RUNNER_TEMP/pr22-proof.json" --proof "$RUNNER_TEMP/expenses-proof.json" --source "$EXPENSES_SOURCE" --pr "$EXPENSES_PR"
+      - name: Append per-recipe toggle sandbox without replacing earlier tests
+        run: python3 preview-hosting/expense-toggle/build.py --pages "$RUNNER_TEMP/pages-combined" --previous-proof "$RUNNER_TEMP/expenses-proof.json" --proof "$RUNNER_TEMP/toggle-proof.json" --source "$TOGGLE_SOURCE" --pr "$TOGGLE_PR"
       - name: Verify current root and both existing previews match preserved files
-        run: python3 preview-hosting/pr22/verify.py "$RUNNER_TEMP/expenses-proof.json" --phase before
+        run: python3 preview-hosting/pr22/verify.py "$RUNNER_TEMP/toggle-proof.json" --phase before
       - name: Upload unchanged base with the isolated preview directory
         uses: actions/upload-pages-artifact@v3
         with:
@@ -55,11 +60,12 @@ jobs:
           test "$(gh api repos/${{ github.repository }}/git/ref/heads/main --jq .object.sha)" = 63443c53d2c7a99060584d54eae0e9c779475405
           test "$(gh api repos/${{ github.repository }}/git/ref/heads/fix/issue-21-preview-persistence --jq .object.sha)" = 1a68adffd2046b758b683af3b516adf944081149
           test "$(gh api repos/${{ github.repository }}/git/ref/heads/feature/establishment-expenses --jq .object.sha)" = "$EXPENSES_SOURCE"
+          test "$(gh api repos/${{ github.repository }}/git/ref/heads/feature/per-recipe-expenses --jq .object.sha)" = "$TOGGLE_SOURCE"
       - name: Publish isolated preview alongside unchanged base
         id: deploy
         uses: actions/deploy-pages@v4
-      - name: Verify HTTPS expense link and all unchanged existing calculators
-        run: python3 preview-hosting/pr22/verify.py "$RUNNER_TEMP/expenses-proof.json" --phase after
+      - name: Verify HTTPS toggle link and all unchanged existing calculators
+        run: python3 preview-hosting/pr22/verify.py "$RUNNER_TEMP/toggle-proof.json" --phase after
       - name: Prepare disposable browser checks
         run: |
           python3 preview-hosting/prepare-validation.py > "$RUNNER_TEMP/preview-validation.json"
@@ -100,6 +106,17 @@ jobs:
           python3 preview-hosting/expenses/prepare-checks.py "$EXPENSES_SOURCE" > "$RUNNER_TEMP/expenses-checks.json"
           QA_DIR="$(python3 -c 'import json,os;print(json.load(open(os.environ["RUNNER_TEMP"]+"/expenses-checks.json"))["directory"])')"
           node "$QA_DIR/tests/establishment-expenses.browser.test.js"
+      - name: Test actual per-recipe toggle URL and the 192.34 plus 74 control example
+        env:
+          NODE_PATH: ${{ runner.temp }}/preview-qa/node_modules
+          CHROMIUM_PATH: /usr/bin/google-chrome
+          KITCHEN_TEST_URL: https://sobaca0808-bit.github.io/kitchen-calculator-test/expense-toggle/
+          KITCHEN_TEST_ARTIFACT_DIR: ${{ runner.temp }}/toggle-browser-proof
+          KITCHEN_EXPENSES_NAMESPACE_JSON: '{"book":"kitchen-calculator-expense-toggle-preview-v1","drafts":"kitchen-calculator-expense-toggle-drafts-v1","photos":"kitchen-calculator-expense-toggle-photos-v1","backups":"kitchen-calculator-expense-toggle-import-backups-v1","appearance":"kitchen-calculator-expense-toggle-appearance-v1"}'
+        run: |
+          python3 preview-hosting/expenses/prepare-checks.py "$TOGGLE_SOURCE" > "$RUNNER_TEMP/toggle-checks.json"
+          QA_DIR="$(python3 -c 'import json,os;print(json.load(open(os.environ["RUNNER_TEMP"]+"/toggle-checks.json"))["directory"])')"
+          node "$QA_DIR/tests/establishment-expenses.browser.test.js"
       - name: Save browser evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -112,6 +129,8 @@ jobs:
             ${{ runner.temp }}/pr22-browser-proof
             ${{ runner.temp }}/expenses-proof.json
             ${{ runner.temp }}/expenses-browser-proof
+            ${{ runner.temp }}/toggle-proof.json
+            ${{ runner.temp }}/toggle-browser-proof
       - name: Report verified preview URL
         run: |
           cat >> "$GITHUB_STEP_SUMMARY" <<'REPORT'
@@ -134,4 +153,10 @@ jobs:
           Monthly costs divided by planned portions, separate food and expense margins.
           All three themes, desktop/mobile, A4, JSON, photos, drafts and browser restart passed.
           The root, /preview/ and /pr-22/ files remain unchanged. No PR was merged.
+
+          ## Per-recipe expense toggle sandbox
+          https://sobaca0808-bit.github.io/kitchen-calculator-test/expense-toggle/
+
+          Inline switch, per-dish JSON preferences, 192.34 / 266.34 totals and A4 detail choices passed.
+          All earlier calculator files remain unchanged; no PR was merged.
           REPORT
