@@ -10,6 +10,9 @@ from urllib.parse import urlsplit
 ROOT = Path(__file__).resolve().parents[2]
 SOURCE = '1a68adffd2046b758b683af3b516adf944081149'
 PATH = 'pr-22'
+PR = 22
+TITLE = '<title>Тест сохранения PR №22 — Кухонный калькулятор</title>'
+NOTICE = 'ТЕСТ · PR №22 · Отдельная тестовая база. Данные /preview/ и основной версии не меняются.'
 CHANGES = {
     'js/storage.js': ('kitchen-calculator-pr2-browser-test-v1', 'kitchen-calculator-pr22-preview-v1'),
     'js/drafts.js': ('kitchen-calculator-pr2-browser-drafts-v1', 'kitchen-calculator-pr22-drafts-v1'),
@@ -36,7 +39,7 @@ def build(pages, old_proof, proof_file):
             assert not asset.startswith(('/', 'data:')) and '://' not in asset
             files.add(str(Path(css).parent / asset))
     manifest = {'source_repository': 'sobaca0808-bit/kitchen-calculator-test', 'source_commit': SOURCE,
-                'pull_request': 22, 'path': '/' + PATH + '/', 'storage_namespace': [new for _, new in CHANGES.values()], 'files': {}}
+                'pull_request': PR, 'path': '/' + PATH + '/', 'storage_namespace': [new for _, new in CHANGES.values()], 'files': {}}
     target = pages / PATH
     for name in sorted(files):
         path = Path(name)
@@ -53,8 +56,7 @@ def build(pages, old_proof, proof_file):
             title = '<title>ТЕСТ PR №2 — Кухонный калькулятор</title>'
             notice = 'ТЕСТ PR №2 · Отдельное хранилище. Рабочие продукты и рецепты здесь не используются.'
             assert text.count(title) == 1 and text.count(notice) == 1 and 'noindex, nofollow' in text
-            payload = text.replace(title, '<title>Тест сохранения PR №22 — Кухонный калькулятор</title>').replace(
-                notice, 'ТЕСТ · PR №22 · Отдельная тестовая база. Данные /preview/ и основной версии не меняются.').encode()
+            payload = text.replace(title, TITLE).replace(notice, NOTICE).encode()
         output = target / path
         output.parent.mkdir(parents=True, exist_ok=True)
         output.write_bytes(payload)
