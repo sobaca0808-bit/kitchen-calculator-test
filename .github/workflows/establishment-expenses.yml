@@ -1,7 +1,7 @@
 name: Establishment expenses checks
 on:
   push:
-    branches: [feature/per-recipe-expenses]
+    branches: [feature/establishment-expenses, feature/per-recipe-expenses]
   workflow_dispatch:
 permissions:
   contents: read
