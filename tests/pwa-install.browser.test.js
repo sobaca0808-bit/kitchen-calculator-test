@@ -11,7 +11,7 @@ async function appWindow(excluded){
   }
   await new Promise(resolve=>setTimeout(resolve,100));
  }
- throw Error('An installed standalone application window did not open');
+ console.log('PWA WINDOW DIAGNOSTIC',JSON.stringify(await Promise.all(context.pages().map(async page=>({url:page.url(),standalone:await page.evaluate(()=>matchMedia('(display-mode: standalone)').matches).catch(()=>null),excluded:page===excluded})))));throw Error('An installed standalone application window did not open');
 }
 (async()=>{
  assert(process.env.KITCHEN_PWA_HEADFUL==='1','Run the installation test in graphical Chrome under Xvfb');
@@ -25,11 +25,14 @@ async function appWindow(excluded){
  const expected=await page.evaluate(()=>localStorage.getItem(KitchenStorage.KEY)),session=await context.newCDPSession(page);
  const eligibility=await session.send('Page.getInstallabilityErrors');assert.deepEqual(eligibility.installabilityErrors,[]);
  await session.send('PWA.install',{manifestId:url,installUrlOrBundleUrl:url});const osState=await session.send('PWA.getOsAppState',{manifestId:url});
+ // CDP installs without a UI and defaults to browser mode. Use Chrome's actual
+ // Open-as-window preference; no display-mode media emulation is involved.
+ await session.send('PWA.changeAppUserSettings',{manifestId:url,displayMode:'standalone'});
  await session.send('PWA.launch',{manifestId:url});let app=await appWindow(page);await app.waitForLoadState();assert.equal(await app.evaluate(()=>localStorage.getItem(KitchenStorage.KEY)),expected);
  await session.detach();await context.setOffline(true);await app.reload();await app.waitForFunction(()=>!!navigator.serviceWorker.controller);assert.equal(await app.evaluate(()=>navigator.onLine),false);assert.equal(await app.evaluate(()=>matchMedia('(display-mode: standalone)').matches),true);
  assert.equal(await app.evaluate(()=>KitchenStorage.load().data.products[0].price),123);await app.screenshot({path:path.join(output,'installed-standalone-offline.png'),fullPage:true});
  await app.close();const again=await context.newCDPSession(page);await again.send('PWA.launch',{manifestId:url});app=await appWindow(page);await again.detach();await context.setOffline(false);await context.setOffline(true);await app.reload();await app.waitForFunction(()=>!!navigator.serviceWorker.controller);assert.equal(await app.evaluate(()=>KitchenStorage.load().data.products[0].price),123);assert(await app.evaluate(()=>matchMedia('(display-mode: standalone)').matches));
  const shortcuts=[];try{for(const entry of await fs.readdir(path.join(profile,'xdg-data/applications')))if(entry.endsWith('.desktop'))shortcuts.push(entry);}catch(_){}
- await fs.writeFile(path.join(output,'installation-proof.json'),JSON.stringify({url,passed:true,installabilityErrors:eligibility.installabilityErrors,installedViaChromeWebAppBackend:true,standalone:true,offline:true,relaunchPreservedData:true,osState,desktopShortcuts:shortcuts,physicalAndroidTested:false},null,2)+'\n');
+ await fs.writeFile(path.join(output,'installation-proof.json'),JSON.stringify({url,passed:true,installabilityErrors:eligibility.installabilityErrors,installedViaChromeWebAppBackend:true,chromeUserDisplayMode:'standalone',standalone:true,offline:true,relaunchPreservedData:true,osState,desktopShortcuts:shortcuts,physicalAndroidTested:false},null,2)+'\n');
  console.log('PASS PWA INSTALL: actual Chrome installation, standalone launch, offline reload and relaunch with saved data');
 })().catch(error=>{console.error(error);process.exitCode=1;}).finally(async()=>{await context?.close();await server?.close();if(profile)await fs.rm(profile,{recursive:true,force:true,maxRetries:3,retryDelay:100});});
