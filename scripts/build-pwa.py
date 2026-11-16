@@ -25,7 +25,7 @@ def runtime(root):
             files.add(clean_path(str(Path(css).parent / clean_path(asset))))
     manifest = json.loads((root / 'manifest.webmanifest').read_text())
     assert manifest['name'] == 'Кухонный калькулятор' and manifest['display'] == 'standalone'
-    assert manifest['scope'] == './' and manifest['id'] == './' and manifest['start_url'] == './?source=pwa'
+    assert manifest['scope'] == './' and manifest['id'] in ['/kitchen-calculator-test/', '/kitchen-calculator-test/pwa/'] and manifest['start_url'] == './?source=pwa'
     assert any(icon.get('purpose') == 'maskable' for icon in manifest['icons'])
     assert {'192x192', '512x512'}.issubset({icon['sizes'] for icon in manifest['icons']})
     for icon in manifest['icons']: files.add(clean_path(icon['src']))

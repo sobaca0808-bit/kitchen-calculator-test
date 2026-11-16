@@ -18,9 +18,9 @@ class PWABuild(unittest.TestCase):
 
     def test_scope_and_maskable_icons(self):
         manifest=json.loads((ROOT/'manifest.webmanifest').read_text())
-        self.assertEqual(manifest['id'],'./');self.assertEqual(manifest['scope'],'./')
+        self.assertEqual(manifest['id'],'/kitchen-calculator-test/');self.assertEqual(manifest['scope'],'./')
         for icon in manifest['icons']:
-            image=Image.open(ROOT/icon['src']);self.assertEqual(image.size,tuple(map(int,icon['sizes'].split('x'))))
+            image=Image.open(ROOT/icon['src']);image.load();self.assertEqual(image.size,tuple(map(int,icon['sizes'].split('x'))))
             if icon['purpose']=='maskable':
                 self.assertEqual(image.convert('RGB').getpixel((0,0)),(166,91,119))
                 for y in range(image.height):

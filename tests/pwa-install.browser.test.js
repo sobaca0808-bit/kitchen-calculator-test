@@ -25,7 +25,7 @@ async function appWindow(excluded){
  await page.locator('[data-tab=products]').click();await page.locator('#create').click();await page.locator('#item-name').fill('Установка PWA · тестовый продукт');await page.locator('#price').fill('123');await page.locator('#packQuantity').fill('1');await page.locator('#save-item').click();await page.waitForFunction(()=>document.querySelector('#save-item').textContent.includes('Сохранено ✓'));
  const expected=await page.evaluate(()=>localStorage.getItem(KitchenStorage.KEY)),session=await context.newCDPSession(page);
  const eligibility=await session.send('Page.getInstallabilityErrors');assert.deepEqual(eligibility.installabilityErrors,[]);
- await session.send('PWA.install',{manifestId:url,installUrl:url});const osState=await session.send('PWA.getOsAppState',{manifestId:url});
+ await session.send('PWA.install',{manifestId:url,installUrlOrBundleUrl:url});const osState=await session.send('PWA.getOsAppState',{manifestId:url});
  await session.send('PWA.launch',{manifestId:url});let app=await appWindow(page);await app.waitForLoadState();assert.equal(await app.evaluate(()=>localStorage.getItem(KitchenStorage.KEY)),expected);
  await session.detach();await context.setOffline(true);await app.reload();await app.waitForFunction(()=>!!navigator.serviceWorker.controller);assert.equal(await app.evaluate(()=>navigator.onLine),false);assert.equal(await app.evaluate(()=>matchMedia('(display-mode: standalone)').matches),true);
  assert.equal(await app.evaluate(()=>KitchenStorage.load().data.products[0].price),123);await app.screenshot({path:path.join(output,'installed-standalone-offline.png'),fullPage:true});

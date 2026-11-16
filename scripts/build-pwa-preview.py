@@ -33,7 +33,7 @@ def build(output, source, root=ROOT):
     html = html.replace('ТЕСТ PR №2 · Отдельное хранилище. Рабочие продукты и рецепты здесь не используются.', 'ТЕСТ PWA · Отдельная база. Рабочая версия и прежние стенды не меняются.')
     html = re.sub(r'((?:src|href)=["\'])([^"\']+\.(?:js|css))(?:\?[^"\']*)?(["\'])', lambda m:m[1]+m[2]+'?v=pwa-'+source[:12]+m[3], html)
     (output / 'index.html').write_text(html)
-    manifest = json.loads((output / 'manifest.webmanifest').read_text());manifest['short_name'] = 'Кухня · тест'
+    manifest = json.loads((output / 'manifest.webmanifest').read_text());manifest['short_name'] = 'Кухня · тест';manifest['id'] = '/kitchen-calculator-test/pwa/'
     (output / 'manifest.webmanifest').write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + '\n')
     result = module.build(output, source);result['storage_names'] = NAMES
     (output / 'pwa-version.json').write_text(json.dumps(result, ensure_ascii=False, indent=2) + '\n')
