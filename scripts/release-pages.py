@@ -126,6 +126,7 @@ def build(output, proof, legacy_runtime, source):
             released['release-version.json'] = sha((output / 'release-version.json').read_bytes())
             result = {'source_commit': source, 'url': SITE, 'previous_main': PREVIOUS, 'preservation_commit': HOST,
                       'storage_names': current_names, 'previous_root_https': before_root,
+                      'approved_source_https': source_hashes,
                       'preserved_test_https': protected_http, 'preserved_test_files': protected_files,
                       'release_https': released}
             proof.write_text(json.dumps(result, ensure_ascii=False, indent=2) + '\n')
