@@ -343,25 +343,34 @@
     if (typeof globalThis.localStorage === 'undefined') fail('Локальное хранилище недоступно в этом браузере.');
     return globalThis.localStorage;
   }
-  function load(storage) {
+  const empty = () => ({version:1,products:[],recipes:[]});
+  function snapshot(storage) {
+    let source;
     try {
-      const source = getStorage(storage).getItem(KEY);
-      return { data: source === null ? null : parseJSON(source), error: null };
+      source = getStorage(storage).getItem(KEY);
+      return { data: source === null ? null : parseJSON(source), error: null, source };
     } catch (error) {
-      return { data: null, error: 'Не удалось загрузить сохранённые данные: ' + error.message + ' Исходная запись не изменена.' };
+      return { data: null, error: 'Не удалось загрузить сохранённые данные: ' + error.message + ' Исходная запись не изменена.', source };
     }
   }
-  function save(data, storage) {
+  function load(storage) {
+    const {data,error}=snapshot(storage);return {data,error};
+  }
+  function save(data, storage, expectedSource) {
+    let written=false;
     try {
       if (Array.isArray(data?.recipes) && data.recipes.some(recipe => recipe.photo !== undefined || recipe.photos !== undefined)) {
         fail('Сначала сохраните фотографии в отдельном хранилище устройства.');
       }
       const serialized = stringify(data);
-      getStorage(storage).setItem(KEY, serialized);
+      const target=getStorage(storage);
+      if(arguments.length>=3&&target.getItem(KEY)!==expectedSource)fail('База изменилась в другой вкладке. Сохранение отменено; введённые поля остаются на экране.');
+      target.setItem(KEY, serialized);written=true;
+      if(target.getItem(KEY)!==serialized)fail('Браузер не подтвердил запись. Не закрывайте страницу до экспорта изменений.');
       return { ok: true, error: null };
     } catch (error) {
-      return { ok: false, error: 'Не удалось сохранить данные: ' + error.message + ' Скачайте JSON, чтобы не потерять изменения.' };
+      return { ok: false, error: (written?'Результат записи не подтверждён: ':'Не удалось сохранить данные: ') + error.message + ' Скачайте JSON, чтобы не потерять изменения.', ...(written?{commitUncertain:true}:{}) };
     }
   }
-  return { KEY, MAX_IMPORT_BYTES, MAX_PHOTO_BYTES, MAX_PHOTO_SIDE, MAX_RECIPE_DEPTH, folderName, validate, parseJSON, stringify, load, save };
+  return { KEY, MAX_IMPORT_BYTES, MAX_PHOTO_BYTES, MAX_PHOTO_SIDE, MAX_RECIPE_DEPTH, folderName, validate, parseJSON, stringify, empty, snapshot, load, save };
 });

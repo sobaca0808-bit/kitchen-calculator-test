@@ -256,15 +256,21 @@
         } else backup=await saveBackup(currentState,{expectedSource,mode,draftSource},snapshot);
         currentSnapshot(currentState,expectedSource);
         const createdIds=[];
+        let commitUncertain=false;
         try {
           const data=await localCandidate(incomingPortable,snapshot.current,snapshot.portable,createdIds);
           currentSnapshot(currentState,expectedSource);
-          const result=S.save(data,storageTarget());
-          if (!result.ok) fail('Импорт не сохранён: '+result.error+' Исходная база осталась без изменений.');
+          const result=S.save(data,storageTarget(),expectedSource);
+          if (!result.ok) {
+            commitUncertain=!!result.commitUncertain;
+            const error=Error(commitUncertain?'Браузер не подтвердил результат записи. Резервная копия до импорта сохранена. Подготовленные фотографии оставлены для проверки после повторного открытия.':'Импорт не сохранён: '+result.error+' Исходная база осталась без изменений.');
+            error.commitUncertain=commitUncertain;throw error;
+          }
           // Commit point: no async work, cleanup or fallible reads after this.
           // Existing image IDs stay available for independent saved drafts.
           return {data,backup,noOp:false};
         } catch(error) {
+          if(commitUncertain)throw error;
           let cleanupError;
           try {await photos.rollback([...new Set(createdIds)]);} catch(rollbackError){cleanupError=rollbackError;}
           if (cleanupError) throw Error(error.message+' Не удалось удалить временные фото; исходные фотографии и база не удалялись.');

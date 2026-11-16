@@ -8,7 +8,7 @@ import {resolve} from 'node:path';
 
 const root=fileURLToPath(new URL('../',import.meta.url));
 const mount='/kitchen-calculator-test';
-const logicTests=['calculations','storage','storage-extensions','json-merge','import-transaction','folders','recipe-view','recipe-card-model','profitability','preview-isolation','pages','packaging','drafts','photos','photo-print-selection','appearance'].map(name=>'tests/'+name+'.test.js');
+const logicTests=['calculations','storage','storage-extensions','json-merge','import-transaction','folders','recipe-view','recipe-card-model','profitability','preview-isolation','pages','packaging','drafts','photos','photo-print-selection','appearance','preview-persistence'].map(name=>'tests/'+name+'.test.js');
 function run(args,env=process.env) {
   return new Promise((done,reject)=>{
     const label=env.KITCHEN_TEST_THEME;
@@ -23,6 +23,7 @@ function run(args,env=process.env) {
 const runtimeFiles=new Map([
   ['/','index.html'],['/index.html','index.html'],['/styles.css','styles.css'],['/assets/folders.css','assets/folders.css'],['/assets/import.css','assets/import.css'],['/assets/editor-actions.css','assets/editor-actions.css'],['/assets/warm-kitchen.css','assets/warm-kitchen.css'],['/assets/food-pattern.svg','assets/food-pattern.svg'],
   ['/assets/appearance.css','assets/appearance.css'],['/assets/graphite-kitchen.webp','assets/graphite-kitchen.webp'],['/assets/sage-kitchen.webp','assets/sage-kitchen.webp'],
+  ['/js/persistence-diagnostics.js','js/persistence-diagnostics.js'],
   ['/assets/gastronomic-background.webp','assets/gastronomic-background.webp'],['/assets/watercolor-kitchen.webp','assets/watercolor-kitchen.webp'],
   ...['appearance','calculations','seed','storage','folders','recipe-view','recipe-card-model','recipe-card-templates','profitability','profitability-view','packaging','packaging-ui','drafts','photo-viewer','photos','json-merge','import-transaction','import-ui','editor-actions','app'].map(name=>['/js/'+name+'.js','js/'+name+'.js'])
 ]);
@@ -56,5 +57,6 @@ try {
   }));
   const failures=results.filter(result=>result.status==='rejected');if(failures.length)throw Error(failures.map(result=>result.reason.message).join('\n'));
   await run(['tests/appearance.browser.test.js'],{...process.env,KITCHEN_TEST_URL:testURL,KITCHEN_TEST_THEME:'',KITCHEN_TEST_ARTIFACT_DIR:resolve(artifacts,'appearance')});
+  await run(['tests/preview-persistence.browser.test.js'],{...process.env,KITCHEN_TEST_THEME:'',KITCHEN_TEST_ARTIFACT_DIR:resolve(artifacts,'persistence')});
 } catch(error){console.error(error.message);process.exitCode=1;}
 finally {await new Promise(done=>server.close(done));}

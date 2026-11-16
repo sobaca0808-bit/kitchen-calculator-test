@@ -15,7 +15,7 @@
   <link rel="stylesheet" href="assets/appearance.css?v=three-themes-1">
   <script defer src="js/calculations.js"></script>
   <script defer src="js/seed.js"></script>
-  <script defer src="js/storage.js"></script>
+  <script defer src="js/storage.js?v=issue21-storage-1"></script>
   <script defer src="js/folders.js"></script>
   <script defer src="js/packaging.js"></script>
   <script defer src="js/packaging-ui.js"></script>
@@ -24,14 +24,15 @@
   <script defer src="js/profitability.js"></script>
   <script defer src="js/profitability-view.js"></script>
   <script defer src="js/recipe-card-templates.js"></script>
-  <script defer src="js/drafts.js"></script>
+  <script defer src="js/drafts.js?v=issue21-storage-1"></script>
   <script defer src="js/photo-viewer.js"></script>
-  <script defer src="js/photos.js"></script>
+  <script defer src="js/photos.js?v=issue21-storage-1"></script>
   <script defer src="js/json-merge.js"></script>
-  <script defer src="js/import-transaction.js"></script>
-  <script defer src="js/import-ui.js"></script>
+  <script defer src="js/import-transaction.js?v=issue21-storage-1"></script>
+  <script defer src="js/import-ui.js?v=issue21-storage-1"></script>
+  <script defer src="js/persistence-diagnostics.js?v=issue21-storage-1"></script>
   <script defer src="js/editor-actions.js"></script>
-  <script defer src="js/app.js"></script>
+  <script defer src="js/app.js?v=issue21-storage-1"></script>
 </head>
 <body>
   <p class="test-notice" role="note">ТЕСТ PR №2 · Отдельное хранилище. Рабочие продукты и рецепты здесь не используются.</p>
@@ -73,6 +74,12 @@
     </div>
   </section>
   <section id="damaged-source" class="import-backups" hidden><p>Исходная база не читается. Автоматический импорт заблокирован, чтобы не заменить данные неполной копией. Скачайте исходную запись для восстановления; фотографии и черновики остаются в браузере.</p><button id="download-damaged-source">↓ Скачать исходную запись</button></section>
+  <section id="storage-help" class="import-backups" hidden><p>Данные хранятся в этом браузере и профиле, не на GitHub. В приватном режиме и после очистки они могут быть недоступны. Корень сайта и /preview/ используют отдельные базы. Можно проверить источники без изменения данных или выбрать свой JSON через обычный импорт.</p><button id="storage-diagnostics-open" type="button">Проверить сохранение и локальные источники</button></section>
+  <section id="storage-diagnostics" class="import-panel" aria-labelledby="storage-diagnostics-title" aria-busy="false" hidden>
+    <h2 id="storage-diagnostics-title" tabindex="-1">Диагностика сохранения</h2><p id="storage-context" class="import-file-name"></p>
+    <p>Ничего не переносится автоматически. Сравните источники, названия и цены. Старые примеры не нужно импортировать вместо своей базы. Перед объединением можно скачать каждый источник; применение использует существующую проверку конфликтов и обязательную резервную копию.</p>
+    <div class="import-backup-actions"><button id="storage-diagnostics-refresh" type="button">Обновить источники</button><button id="storage-diagnostics-close" type="button">Закрыть</button></div><div id="storage-sources"></div>
+  </section>
   <section id="drafts-panel" class="drafts-panel" aria-label="Восстановление черновиков" hidden></section>
   <main class="workspace">
     <aside class="library" aria-label="Справочник">

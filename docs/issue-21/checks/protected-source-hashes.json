@@ -1,0 +1,32 @@
+{
+  "base": "04c98fb20444859454fc18fd6f3d6e0429818f8b",
+  "allListedFilesByteIdentical": true,
+  "files": {
+    "assets/ILLUSTRATIONS.md": "19840381403629a9b82ed6c220f227e072edabe8318e3abc3f454b149069a0db",
+    "assets/appearance.css": "bdc3c153fdec43baf9389b8d597a4e73010a5a767c83fb3ecbcb185150451dba",
+    "assets/editor-actions.css": "9ef8045bd68604bf0afa8c695a52a57e74c3d63d63a75d3145a40fee30aa4b3a",
+    "assets/folders.css": "2d4e05d922b416390290b2dc9b2ac4b0fe11fbf908f27468025d54e16eb7ff51",
+    "assets/food-pattern.svg": "18fd825d6e74cc8fffd14706942fec63fcf3279fa7949e52f0d41bdb7c5e4e4b",
+    "assets/gastronomic-background.webp": "b098bc25fdfe85e4c242b08f13cb3e2cb31ba5063fec42eac8410ca82f1ce03e",
+    "assets/graphite-kitchen.webp": "1215f9de1588ecf536e29ed7ba7879a4b462a9c08fd24eb67d2b06c3c2c4ce5f",
+    "assets/import.css": "ae4a884000c5a9b534bf831a27d0f3d034635eaf44e24dc179c3db918e21dd67",
+    "assets/sage-kitchen.webp": "378815ed3c1b0b96ea8c6f9c784cb0c2b1a52d948a00f5c1722f27b3fb2ca8e3",
+    "assets/warm-kitchen.css": "f3e073c418d12c81619dc09130ecba0c6cdad46cf6214b23ae9e6466a7739002",
+    "assets/watercolor-kitchen.webp": "2ae2b7c5b48a90554f687e1d3f3326ff7fc22b6cce23861ab31762345711e6ec",
+    "js/appearance.js": "cf7688f87031ef30dc92c4b93563a3f4a425b503257e8b8ee54a4f545fe3c078",
+    "js/calculations.js": "86f10f10f2bf50d72b34471baa05f1e9431edfd44767b0f65593cf8674acc99a",
+    "js/editor-actions.js": "25b9a80217906a17e740d2ed32bd22d29f40103797518d3a8340b2099a74c22a",
+    "js/folders.js": "fe3d4881e750079f731184c28f25ad3948459535f820a4872540dc929a130bae",
+    "js/json-merge.js": "a3bca8b844c328e2ae9db30f1eb1eeba0807d1400d4ba974f1406cdf413bb177",
+    "js/packaging-ui.js": "cfc32423b2f505bec564f6f33ed04ea8328f0ebdbe6ee9abc291282cab0a1081",
+    "js/packaging.js": "4cfc62028ea6df17c8389285995f199e5f97bcf17b0c4e3761779dfdd52e7df3",
+    "js/photo-viewer.js": "a28d39a1fdcf8c720584d5505fd6f71a581a7068a4accf8cd09c9c6eff14ff0b",
+    "js/profitability-view.js": "6aee3ee679297cfa9326bd89e0f1fdc21d0189cd3e6743d43aa505b4a903872e",
+    "js/profitability.js": "c85ce8efc61518dd4aee4d259dd3f704641c5e736340e2a5c4f6773ec132c31f",
+    "js/recipe-card-model.js": "337ad6d512356a22fa7f4f9d091e97b4e25747c4af8298c79e5a393928f38136",
+    "js/recipe-card-templates.js": "f238a9bb20b15b79ea2ee6ae4a719aed2e17813a9ca7d3a06161ee0cac4d4785",
+    "js/recipe-view.js": "113056db3a2d54bec616ab5803c9a25f13d3d115d4656cba0f8b7a38301c02f9",
+    "js/seed.js": "a69bf9c4a80aa55d88e91194c2923c6a643b2e711420601c7d449c17c24cc27e",
+    "styles.css": "99a75564b834aae581fc03819fb2be7d5da5662241b1c49b7df70834196c8250"
+  }
+}

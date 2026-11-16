@@ -8,8 +8,10 @@
   const money = n => !Number.isFinite(n) ? 'Значение слишком велико' : new Intl.NumberFormat('ru-RU', {style:'currency',currency:'RUB',minimumFractionDigits:2,maximumFractionDigits:2}).format(n);
   const num = (n, digits = 3) => n == null ? '' : new Intl.NumberFormat('ru-RU',{maximumFractionDigits:digits,useGrouping:false}).format(n);
   const unitOptions = selected => Object.entries(C.units).map(([value,u]) => `<option value="${value}" ${selected === value ? 'selected' : ''}>${u.label}</option>`).join('');
-  const loaded = S.load();
-  let state = loaded.data || (loaded.error ? {version:1,products:[],recipes:[]} : KitchenSeed.create());
+  const loaded = S.snapshot();
+  let persistedSource=loaded.source;
+  // An absent record must remain absent until an explicit save or confirmed import.
+  let state = loaded.data || S.empty();
   let recoveryRequired = !!loaded.error;
   let section = 'dish', selectedId = state.recipes.find(r => r.type === 'dish')?.id || null;
   let viewing = true, viewPortions = 1, cardMode = 'calculation';
@@ -28,16 +30,19 @@
   function message(text, error = false) {
     const el = $('#message'); el.textContent = text; el.className = error ? 'error' : ''; el.hidden = false;
   }
+  function clearMissingStorageHelp(){
+    const help=$('#storage-help');if(help&&location.hash!=='#storage-diagnostics')help.hidden=true;
+  }
   function persist(candidate, success, restore = false) {
     if (recoveryRequired && !restore) {message('Сохранение заблокировано: исходное хранилище не удалось прочитать. Восстановите резервную копию через импорт JSON. Исходные данные не изменены.',true);return false;}
     let clean;
     try { clean = P.resolveLinks(S.validate(candidate)); } catch(e) { message(e.message, true); return false; }
-    const result = S.save(clean);
-    state = clean;
+    const result = S.save(clean,undefined,persistedSource);
     if (!result.ok) {
       storageBlocked = true;
-      message('Не удалось сохранить в браузере: ' + result.error + ' Изменения пока в памяти. Скачайте экспорт JSON до закрытия страницы.', true);
-    } else { recoveryRequired = false; storageBlocked = false; message(success || 'Данные сохранены в этом браузере.'); }
+      message(result.commitUncertain?result.error+' Поля остаются на экране. После экспорта проверьте базу при повторном открытии.':'Не удалось сохранить в браузере: ' + result.error + ' Изменения пока в памяти. Скачайте экспорт JSON до закрытия страницы.', true);
+      return false;
+    } else { state=clean;persistedSource=S.stringify(clean);recoveryRequired = false; storageBlocked = false;clearMissingStorageHelp();message(success || 'Данные сохранены в этом браузере.'); }
     return true;
   }
   function collection() { return isCatalog() ? (state[section] || []) : state.recipes.filter(r => r.type === section); }
@@ -53,15 +58,19 @@
     if(!folderActionAllowed()) return false;
     let clean;
     try {
-      const latest = S.load();
-      if(latest.error || !latest.data || S.stringify(latest.data) !== S.stringify(state)) {
+      const latest = S.snapshot();
+      if(latest.error || latest.source!==persistedSource || S.stringify(latest.data||S.empty()) !== S.stringify(state)) {
         message('База в браузере изменилась или недоступна. Операция с папкой отменена, чтобы не перезаписать другие изменения. Сохраните текущую работу в черновик и обновите страницу.',true);return false;
       }
       clean = S.validate(candidate);
     } catch(error) {message(error.message,true);return false;}
-    const result = S.save(clean);
-    if(!result.ok) {message('Изменения папок не сохранены: '+result.error+' Прежняя база и рецепты не изменены.',true);return false;}
-    state = clean;message(success);return true;
+    const result = S.save(clean,undefined,persistedSource);
+    if(!result.ok) {
+      if(result.commitUncertain){storageBlocked=true;message(result.error+' Результат изменения папки нужно проверить после повторного открытия.',true);}
+      else message('Изменения папок не сохранены: '+result.error+' Прежняя база и рецепты не изменены.',true);
+      return false;
+    }
+    state = clean;persistedSource=S.stringify(clean);clearMissingStorageHelp();message(success);return true;
   }
   // Update just the folder fields: raw input, photo work and other draft fields stay intact.
   function refreshFolderFields() {
@@ -576,7 +585,10 @@
     if (errors.size) {message('Исправьте ошибки в числовых полях перед сохранением.',true);editor.querySelector('[aria-invalid="true"]')?.focus();return false;}
     draft.name = draft.name.trim();
     const candidate = currentState();
-    if(!persist(candidate,'Сохранено ✓. Связанные калькуляции пересчитаны.')) return false;
+    if(!persist(candidate,'Сохранено ✓. Связанные калькуляции пересчитаны.')) {
+      $('#save-state').textContent='В памяти · скачайте JSON';$('#save-item').textContent='Повторить сохранение';$('#save-item').classList.remove('saved');
+      if(editingRecipe()){dirty=true;flushDraft();}return false;
+    }
     selectedId = draft.id;
     if(!storageBlocked) {
       clearTimeout(draftTimer);draftTimer=null;dirty=false;isNew=false;
@@ -665,17 +677,21 @@
     if(backupBusy)return;
     if(photoEditor?.busy) {message('Дождитесь обработки фотографии перед экспортом.',true);return;}
     const hasUnfinishedRecipe=editingRecipe() && dirty;
-    if(dirty && (hasUnfinishedRecipe ? !flushDraft() : !saveDraft())) return;
+    const emergency=dirty&&(storageBlocked||recoveryRequired);
+    if(emergency&&(!draft?.name?.trim()||errors.size)){message('Исправьте название и числа перед экспортом введённой записи.',true);return;}
+    if(emergency&&hasUnfinishedRecipe)flushDraft();
+    if(!emergency&&dirty && (hasUnfinishedRecipe ? !flushDraft() : !saveDraft())) return;
     backupBusy=true;$('#export').disabled=true;
     try {
-      const portable=await Photos.exportData(state);
+      const portable=await Photos.exportData(emergency?P.resolveLinks(S.validate(currentState())):state);
       const text = S.stringify(portable), url = URL.createObjectURL(new Blob([text],{type:'application/json;charset=utf-8'}));
       const link = document.createElement('a');link.href = url;link.download = 'kitchen-calculator-PR2-TEST-'+new Date().toISOString().slice(0,10)+'.json';link.click();setTimeout(() => URL.revokeObjectURL(url),1000);
       message('JSON с сохранёнными карточками и фотографиями подготовлен к скачиванию.'+(hasUnfinishedRecipe?' Незавершённый черновик хранится отдельно: сначала нажмите «Сохранить», чтобы включить изменения в резервную копию.':''));
+      if(emergency)message('Введённые изменения включены в скачиваемый JSON. Экспорт не выполняет новую запись в базу браузера.');
     } catch(e) {message('Экспорт не выполнен: '+e.message,true);}
     finally {backupBusy=false;$('#export').disabled=false;}
   });
-  KitchenImportUI.mount({
+  const importController=KitchenImportUI.mount({
     getState:()=>state,
     getDraftSource:()=>localStorage.getItem(D.KEY),
     canStart:()=>{
@@ -689,11 +705,11 @@
       backupBusy=value;$('#import').disabled=value;$('#export').disabled=value;
       $('.workspace').inert=value;$('#drafts-panel').inert=value;$('.tabs').inert=value;
     },
-    onApplied:data=>{
-      state=data;storageBlocked=false;recoveryRequired=false;
+    onApplied:(data,source)=>{
+      state=data;persistedSource=source;storageBlocked=false;recoveryRequired=false;clearMissingStorageHelp();
       $('#folder-form').hidden=true;folderFormId=null;
       selectedId=collection()[0]?.id || null;openSelected();
-    },message
+    },onWriteUncertain:()=>{storageBlocked=true;},message
   });
   $('#damaged-source').hidden=!recoveryRequired;
   $('#download-damaged-source').addEventListener('click',()=>{
@@ -711,10 +727,13 @@
   });
   window.addEventListener('pagehide',()=>flushDraft());
   document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')flushDraft();});
+  window.addEventListener('storage',event=>{
+    if(event.key===S.KEY&&event.newValue!==persistedSource){storageBlocked=true;message('База изменилась в другой вкладке. Сохранение старой версии заблокировано. Введённые поля остаются на экране: скачайте JSON с изменениями перед обновлением страницы.',true);}
+  });
   openSelected();
   if(loaded.error) message('Не удалось прочитать сохранённые данные: '+loaded.error+' Исходная запись не перезаписана. Автоматическая запись и импорт заблокированы. Скачайте исходную запись для восстановления; фотографии и черновики остаются в браузере.',true);
   else if(!loaded.data) {
-    const saved = S.save(state);
-    if(!saved.ok) {storageBlocked = true;if($('#save-state')) $('#save-state').textContent = 'В памяти · скачайте JSON';message('Браузер не разрешил сохранение: '+saved.error+' Скачивайте JSON перед закрытием страницы.',true);}
+    message('По этому адресу в данном браузере сохранённая база отсутствует. Можно импортировать свой JSON. Если вы уже работали здесь, проверьте сохранение и другие локальные источники. Демо-данные не записаны.');
   }
+  globalThis.KitchenPersistenceDiagnostics?.mount({missing:loaded.source===null,failed:!!loaded.error,openImport:importController.openCandidate,message});
 })();

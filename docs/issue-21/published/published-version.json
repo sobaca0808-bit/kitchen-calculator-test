@@ -1,0 +1,430 @@
+{
+  "sourceCommit": "04c98fb20444859454fc18fd6f3d6e0429818f8b",
+  "rootCommit": "63443c53d2c7a99060584d54eae0e9c779475405",
+  "manifest": {
+    "source_repository": "sobaca0808-bit/kitchen-calculator-test",
+    "source_commit": "04c98fb20444859454fc18fd6f3d6e0429818f8b",
+    "pull_request": 20,
+    "storage_namespace": [
+      "kitchen-calculator-preview-v1",
+      "kitchen-calculator-preview-drafts-v1",
+      "kitchen-calculator-preview-photos-v1",
+      "kitchen-calculator-preview-import-backups-v1",
+      "kitchen-calculator-appearance-preview-v1"
+    ],
+    "files": {
+      "assets/appearance.css": {
+        "sha256": "bdc3c153fdec43baf9389b8d597a4e73010a5a767c83fb3ecbcb185150451dba",
+        "source_sha256": "bdc3c153fdec43baf9389b8d597a4e73010a5a767c83fb3ecbcb185150451dba",
+        "storage_name_only": false
+      },
+      "assets/editor-actions.css": {
+        "sha256": "9ef8045bd68604bf0afa8c695a52a57e74c3d63d63a75d3145a40fee30aa4b3a",
+        "source_sha256": "9ef8045bd68604bf0afa8c695a52a57e74c3d63d63a75d3145a40fee30aa4b3a",
+        "storage_name_only": false
+      },
+      "assets/folders.css": {
+        "sha256": "2d4e05d922b416390290b2dc9b2ac4b0fe11fbf908f27468025d54e16eb7ff51",
+        "source_sha256": "2d4e05d922b416390290b2dc9b2ac4b0fe11fbf908f27468025d54e16eb7ff51",
+        "storage_name_only": false
+      },
+      "assets/gastronomic-background.webp": {
+        "sha256": "b098bc25fdfe85e4c242b08f13cb3e2cb31ba5063fec42eac8410ca82f1ce03e",
+        "source_sha256": "b098bc25fdfe85e4c242b08f13cb3e2cb31ba5063fec42eac8410ca82f1ce03e",
+        "storage_name_only": false
+      },
+      "assets/graphite-kitchen.webp": {
+        "sha256": "1215f9de1588ecf536e29ed7ba7879a4b462a9c08fd24eb67d2b06c3c2c4ce5f",
+        "source_sha256": "1215f9de1588ecf536e29ed7ba7879a4b462a9c08fd24eb67d2b06c3c2c4ce5f",
+        "storage_name_only": false
+      },
+      "assets/import.css": {
+        "sha256": "ae4a884000c5a9b534bf831a27d0f3d034635eaf44e24dc179c3db918e21dd67",
+        "source_sha256": "ae4a884000c5a9b534bf831a27d0f3d034635eaf44e24dc179c3db918e21dd67",
+        "storage_name_only": false
+      },
+      "assets/sage-kitchen.webp": {
+        "sha256": "378815ed3c1b0b96ea8c6f9c784cb0c2b1a52d948a00f5c1722f27b3fb2ca8e3",
+        "source_sha256": "378815ed3c1b0b96ea8c6f9c784cb0c2b1a52d948a00f5c1722f27b3fb2ca8e3",
+        "storage_name_only": false
+      },
+      "assets/warm-kitchen.css": {
+        "sha256": "f3e073c418d12c81619dc09130ecba0c6cdad46cf6214b23ae9e6466a7739002",
+        "source_sha256": "f3e073c418d12c81619dc09130ecba0c6cdad46cf6214b23ae9e6466a7739002",
+        "storage_name_only": false
+      },
+      "assets/watercolor-kitchen.webp": {
+        "sha256": "2ae2b7c5b48a90554f687e1d3f3326ff7fc22b6cce23861ab31762345711e6ec",
+        "source_sha256": "2ae2b7c5b48a90554f687e1d3f3326ff7fc22b6cce23861ab31762345711e6ec",
+        "storage_name_only": false
+      },
+      "index.html": {
+        "sha256": "eaeeb2bd013d03a636d381bbb8b1cc4ee2bf20041680ca685534c3f5568f09ae",
+        "source_sha256": "14d4636a66a4b30f25d87003a5f1588b6275b8924dc4043a529b9462b7f7d3d6",
+        "storage_name_only": false
+      },
+      "js/app.js": {
+        "sha256": "49b9b7ce918ad7cbfd73bb35f2f6e48d80cb042483f4fe2af6932459817f57bf",
+        "source_sha256": "49b9b7ce918ad7cbfd73bb35f2f6e48d80cb042483f4fe2af6932459817f57bf",
+        "storage_name_only": false
+      },
+      "js/appearance.js": {
+        "sha256": "00f38b355b50a28790e96b1cb36a72164d9badbeac59c62ca369def537f66c80",
+        "source_sha256": "cf7688f87031ef30dc92c4b93563a3f4a425b503257e8b8ee54a4f545fe3c078",
+        "storage_name_only": true
+      },
+      "js/calculations.js": {
+        "sha256": "86f10f10f2bf50d72b34471baa05f1e9431edfd44767b0f65593cf8674acc99a",
+        "source_sha256": "86f10f10f2bf50d72b34471baa05f1e9431edfd44767b0f65593cf8674acc99a",
+        "storage_name_only": false
+      },
+      "js/drafts.js": {
+        "sha256": "c277845a04a04fbba3354bbc298e0ea007e3965447a51eed971b58eed2bc961a",
+        "source_sha256": "205bbbd41cbd9708ad7b2cbb5509cd8d87a960c7d2987c1eaa659fa7b562c339",
+        "storage_name_only": true
+      },
+      "js/editor-actions.js": {
+        "sha256": "25b9a80217906a17e740d2ed32bd22d29f40103797518d3a8340b2099a74c22a",
+        "source_sha256": "25b9a80217906a17e740d2ed32bd22d29f40103797518d3a8340b2099a74c22a",
+        "storage_name_only": false
+      },
+      "js/folders.js": {
+        "sha256": "fe3d4881e750079f731184c28f25ad3948459535f820a4872540dc929a130bae",
+        "source_sha256": "fe3d4881e750079f731184c28f25ad3948459535f820a4872540dc929a130bae",
+        "storage_name_only": false
+      },
+      "js/import-transaction.js": {
+        "sha256": "e407b8312f3402f9a9a47a5879ceb1d869479f9fb9add550a8eba4348ec14c4f",
+        "source_sha256": "3b1ac7843bbda68544bcbce354435e0b6c38f23980489b6f190c53d0a6b28920",
+        "storage_name_only": true
+      },
+      "js/import-ui.js": {
+        "sha256": "d6aee976ec306bec1406613f2616b3733a90a1f6c12b2a813540ec9cb091bb00",
+        "source_sha256": "d6aee976ec306bec1406613f2616b3733a90a1f6c12b2a813540ec9cb091bb00",
+        "storage_name_only": false
+      },
+      "js/json-merge.js": {
+        "sha256": "a3bca8b844c328e2ae9db30f1eb1eeba0807d1400d4ba974f1406cdf413bb177",
+        "source_sha256": "a3bca8b844c328e2ae9db30f1eb1eeba0807d1400d4ba974f1406cdf413bb177",
+        "storage_name_only": false
+      },
+      "js/packaging-ui.js": {
+        "sha256": "cfc32423b2f505bec564f6f33ed04ea8328f0ebdbe6ee9abc291282cab0a1081",
+        "source_sha256": "cfc32423b2f505bec564f6f33ed04ea8328f0ebdbe6ee9abc291282cab0a1081",
+        "storage_name_only": false
+      },
+      "js/packaging.js": {
+        "sha256": "4cfc62028ea6df17c8389285995f199e5f97bcf17b0c4e3761779dfdd52e7df3",
+        "source_sha256": "4cfc62028ea6df17c8389285995f199e5f97bcf17b0c4e3761779dfdd52e7df3",
+        "storage_name_only": false
+      },
+      "js/photo-viewer.js": {
+        "sha256": "a28d39a1fdcf8c720584d5505fd6f71a581a7068a4accf8cd09c9c6eff14ff0b",
+        "source_sha256": "a28d39a1fdcf8c720584d5505fd6f71a581a7068a4accf8cd09c9c6eff14ff0b",
+        "storage_name_only": false
+      },
+      "js/photos.js": {
+        "sha256": "463c071a5cead1434085bd86902b8e3373ea5791deacba8fe5f9bd10aef20c05",
+        "source_sha256": "f037bf864351f9e33ed139d663036d47635e9904e38069ef1bc33da9035b92dd",
+        "storage_name_only": true
+      },
+      "js/profitability-view.js": {
+        "sha256": "6aee3ee679297cfa9326bd89e0f1fdc21d0189cd3e6743d43aa505b4a903872e",
+        "source_sha256": "6aee3ee679297cfa9326bd89e0f1fdc21d0189cd3e6743d43aa505b4a903872e",
+        "storage_name_only": false
+      },
+      "js/profitability.js": {
+        "sha256": "c85ce8efc61518dd4aee4d259dd3f704641c5e736340e2a5c4f6773ec132c31f",
+        "source_sha256": "c85ce8efc61518dd4aee4d259dd3f704641c5e736340e2a5c4f6773ec132c31f",
+        "storage_name_only": false
+      },
+      "js/recipe-card-model.js": {
+        "sha256": "337ad6d512356a22fa7f4f9d091e97b4e25747c4af8298c79e5a393928f38136",
+        "source_sha256": "337ad6d512356a22fa7f4f9d091e97b4e25747c4af8298c79e5a393928f38136",
+        "storage_name_only": false
+      },
+      "js/recipe-card-templates.js": {
+        "sha256": "f238a9bb20b15b79ea2ee6ae4a719aed2e17813a9ca7d3a06161ee0cac4d4785",
+        "source_sha256": "f238a9bb20b15b79ea2ee6ae4a719aed2e17813a9ca7d3a06161ee0cac4d4785",
+        "storage_name_only": false
+      },
+      "js/recipe-view.js": {
+        "sha256": "113056db3a2d54bec616ab5803c9a25f13d3d115d4656cba0f8b7a38301c02f9",
+        "source_sha256": "113056db3a2d54bec616ab5803c9a25f13d3d115d4656cba0f8b7a38301c02f9",
+        "storage_name_only": false
+      },
+      "js/seed.js": {
+        "sha256": "a69bf9c4a80aa55d88e91194c2923c6a643b2e711420601c7d449c17c24cc27e",
+        "source_sha256": "a69bf9c4a80aa55d88e91194c2923c6a643b2e711420601c7d449c17c24cc27e",
+        "storage_name_only": false
+      },
+      "js/storage.js": {
+        "sha256": "534ce53a7870aea4ac24893689fb48cb43868ad1b89503793e1679e33855ad55",
+        "source_sha256": "ce21481cbf1c6291f43467a49f4f607d731196b54e95ccd789389f24c3dcaf87",
+        "storage_name_only": true
+      },
+      "styles.css": {
+        "sha256": "99a75564b834aae581fc03819fb2be7d5da5662241b1c49b7df70834196c8250",
+        "source_sha256": "99a75564b834aae581fc03819fb2be7d5da5662241b1c49b7df70834196c8250",
+        "storage_name_only": false
+      }
+    }
+  },
+  "httpsFileChecks": [
+    {
+      "path": "preview/assets/appearance.css",
+      "sha256": "bdc3c153fdec43baf9389b8d597a4e73010a5a767c83fb3ecbcb185150451dba",
+      "sourceSha256": "bdc3c153fdec43baf9389b8d597a4e73010a5a767c83fb3ecbcb185150451dba"
+    },
+    {
+      "path": "preview/assets/editor-actions.css",
+      "sha256": "9ef8045bd68604bf0afa8c695a52a57e74c3d63d63a75d3145a40fee30aa4b3a",
+      "sourceSha256": "9ef8045bd68604bf0afa8c695a52a57e74c3d63d63a75d3145a40fee30aa4b3a"
+    },
+    {
+      "path": "preview/assets/folders.css",
+      "sha256": "2d4e05d922b416390290b2dc9b2ac4b0fe11fbf908f27468025d54e16eb7ff51",
+      "sourceSha256": "2d4e05d922b416390290b2dc9b2ac4b0fe11fbf908f27468025d54e16eb7ff51"
+    },
+    {
+      "path": "preview/assets/gastronomic-background.webp",
+      "sha256": "b098bc25fdfe85e4c242b08f13cb3e2cb31ba5063fec42eac8410ca82f1ce03e",
+      "sourceSha256": "b098bc25fdfe85e4c242b08f13cb3e2cb31ba5063fec42eac8410ca82f1ce03e"
+    },
+    {
+      "path": "preview/assets/graphite-kitchen.webp",
+      "sha256": "1215f9de1588ecf536e29ed7ba7879a4b462a9c08fd24eb67d2b06c3c2c4ce5f",
+      "sourceSha256": "1215f9de1588ecf536e29ed7ba7879a4b462a9c08fd24eb67d2b06c3c2c4ce5f"
+    },
+    {
+      "path": "preview/assets/import.css",
+      "sha256": "ae4a884000c5a9b534bf831a27d0f3d034635eaf44e24dc179c3db918e21dd67",
+      "sourceSha256": "ae4a884000c5a9b534bf831a27d0f3d034635eaf44e24dc179c3db918e21dd67"
+    },
+    {
+      "path": "preview/assets/sage-kitchen.webp",
+      "sha256": "378815ed3c1b0b96ea8c6f9c784cb0c2b1a52d948a00f5c1722f27b3fb2ca8e3",
+      "sourceSha256": "378815ed3c1b0b96ea8c6f9c784cb0c2b1a52d948a00f5c1722f27b3fb2ca8e3"
+    },
+    {
+      "path": "preview/assets/warm-kitchen.css",
+      "sha256": "f3e073c418d12c81619dc09130ecba0c6cdad46cf6214b23ae9e6466a7739002",
+      "sourceSha256": "f3e073c418d12c81619dc09130ecba0c6cdad46cf6214b23ae9e6466a7739002"
+    },
+    {
+      "path": "preview/assets/watercolor-kitchen.webp",
+      "sha256": "2ae2b7c5b48a90554f687e1d3f3326ff7fc22b6cce23861ab31762345711e6ec",
+      "sourceSha256": "2ae2b7c5b48a90554f687e1d3f3326ff7fc22b6cce23861ab31762345711e6ec"
+    },
+    {
+      "path": "preview/index.html",
+      "sha256": "eaeeb2bd013d03a636d381bbb8b1cc4ee2bf20041680ca685534c3f5568f09ae",
+      "sourceSha256": "14d4636a66a4b30f25d87003a5f1588b6275b8924dc4043a529b9462b7f7d3d6"
+    },
+    {
+      "path": "preview/js/app.js",
+      "sha256": "49b9b7ce918ad7cbfd73bb35f2f6e48d80cb042483f4fe2af6932459817f57bf",
+      "sourceSha256": "49b9b7ce918ad7cbfd73bb35f2f6e48d80cb042483f4fe2af6932459817f57bf"
+    },
+    {
+      "path": "preview/js/appearance.js",
+      "sha256": "00f38b355b50a28790e96b1cb36a72164d9badbeac59c62ca369def537f66c80",
+      "sourceSha256": "cf7688f87031ef30dc92c4b93563a3f4a425b503257e8b8ee54a4f545fe3c078"
+    },
+    {
+      "path": "preview/js/calculations.js",
+      "sha256": "86f10f10f2bf50d72b34471baa05f1e9431edfd44767b0f65593cf8674acc99a",
+      "sourceSha256": "86f10f10f2bf50d72b34471baa05f1e9431edfd44767b0f65593cf8674acc99a"
+    },
+    {
+      "path": "preview/js/drafts.js",
+      "sha256": "c277845a04a04fbba3354bbc298e0ea007e3965447a51eed971b58eed2bc961a",
+      "sourceSha256": "205bbbd41cbd9708ad7b2cbb5509cd8d87a960c7d2987c1eaa659fa7b562c339"
+    },
+    {
+      "path": "preview/js/editor-actions.js",
+      "sha256": "25b9a80217906a17e740d2ed32bd22d29f40103797518d3a8340b2099a74c22a",
+      "sourceSha256": "25b9a80217906a17e740d2ed32bd22d29f40103797518d3a8340b2099a74c22a"
+    },
+    {
+      "path": "preview/js/folders.js",
+      "sha256": "fe3d4881e750079f731184c28f25ad3948459535f820a4872540dc929a130bae",
+      "sourceSha256": "fe3d4881e750079f731184c28f25ad3948459535f820a4872540dc929a130bae"
+    },
+    {
+      "path": "preview/js/import-transaction.js",
+      "sha256": "e407b8312f3402f9a9a47a5879ceb1d869479f9fb9add550a8eba4348ec14c4f",
+      "sourceSha256": "3b1ac7843bbda68544bcbce354435e0b6c38f23980489b6f190c53d0a6b28920"
+    },
+    {
+      "path": "preview/js/import-ui.js",
+      "sha256": "d6aee976ec306bec1406613f2616b3733a90a1f6c12b2a813540ec9cb091bb00",
+      "sourceSha256": "d6aee976ec306bec1406613f2616b3733a90a1f6c12b2a813540ec9cb091bb00"
+    },
+    {
+      "path": "preview/js/json-merge.js",
+      "sha256": "a3bca8b844c328e2ae9db30f1eb1eeba0807d1400d4ba974f1406cdf413bb177",
+      "sourceSha256": "a3bca8b844c328e2ae9db30f1eb1eeba0807d1400d4ba974f1406cdf413bb177"
+    },
+    {
+      "path": "preview/js/packaging-ui.js",
+      "sha256": "cfc32423b2f505bec564f6f33ed04ea8328f0ebdbe6ee9abc291282cab0a1081",
+      "sourceSha256": "cfc32423b2f505bec564f6f33ed04ea8328f0ebdbe6ee9abc291282cab0a1081"
+    },
+    {
+      "path": "preview/js/packaging.js",
+      "sha256": "4cfc62028ea6df17c8389285995f199e5f97bcf17b0c4e3761779dfdd52e7df3",
+      "sourceSha256": "4cfc62028ea6df17c8389285995f199e5f97bcf17b0c4e3761779dfdd52e7df3"
+    },
+    {
+      "path": "preview/js/photo-viewer.js",
+      "sha256": "a28d39a1fdcf8c720584d5505fd6f71a581a7068a4accf8cd09c9c6eff14ff0b",
+      "sourceSha256": "a28d39a1fdcf8c720584d5505fd6f71a581a7068a4accf8cd09c9c6eff14ff0b"
+    },
+    {
+      "path": "preview/js/photos.js",
+      "sha256": "463c071a5cead1434085bd86902b8e3373ea5791deacba8fe5f9bd10aef20c05",
+      "sourceSha256": "f037bf864351f9e33ed139d663036d47635e9904e38069ef1bc33da9035b92dd"
+    },
+    {
+      "path": "preview/js/profitability-view.js",
+      "sha256": "6aee3ee679297cfa9326bd89e0f1fdc21d0189cd3e6743d43aa505b4a903872e",
+      "sourceSha256": "6aee3ee679297cfa9326bd89e0f1fdc21d0189cd3e6743d43aa505b4a903872e"
+    },
+    {
+      "path": "preview/js/profitability.js",
+      "sha256": "c85ce8efc61518dd4aee4d259dd3f704641c5e736340e2a5c4f6773ec132c31f",
+      "sourceSha256": "c85ce8efc61518dd4aee4d259dd3f704641c5e736340e2a5c4f6773ec132c31f"
+    },
+    {
+      "path": "preview/js/recipe-card-model.js",
+      "sha256": "337ad6d512356a22fa7f4f9d091e97b4e25747c4af8298c79e5a393928f38136",
+      "sourceSha256": "337ad6d512356a22fa7f4f9d091e97b4e25747c4af8298c79e5a393928f38136"
+    },
+    {
+      "path": "preview/js/recipe-card-templates.js",
+      "sha256": "f238a9bb20b15b79ea2ee6ae4a719aed2e17813a9ca7d3a06161ee0cac4d4785",
+      "sourceSha256": "f238a9bb20b15b79ea2ee6ae4a719aed2e17813a9ca7d3a06161ee0cac4d4785"
+    },
+    {
+      "path": "preview/js/recipe-view.js",
+      "sha256": "113056db3a2d54bec616ab5803c9a25f13d3d115d4656cba0f8b7a38301c02f9",
+      "sourceSha256": "113056db3a2d54bec616ab5803c9a25f13d3d115d4656cba0f8b7a38301c02f9"
+    },
+    {
+      "path": "preview/js/seed.js",
+      "sha256": "a69bf9c4a80aa55d88e91194c2923c6a643b2e711420601c7d449c17c24cc27e",
+      "sourceSha256": "a69bf9c4a80aa55d88e91194c2923c6a643b2e711420601c7d449c17c24cc27e"
+    },
+    {
+      "path": "preview/js/storage.js",
+      "sha256": "534ce53a7870aea4ac24893689fb48cb43868ad1b89503793e1679e33855ad55",
+      "sourceSha256": "ce21481cbf1c6291f43467a49f4f607d731196b54e95ccd789389f24c3dcaf87"
+    },
+    {
+      "path": "preview/styles.css",
+      "sha256": "99a75564b834aae581fc03819fb2be7d5da5662241b1c49b7df70834196c8250",
+      "sourceSha256": "99a75564b834aae581fc03819fb2be7d5da5662241b1c49b7df70834196c8250"
+    },
+    {
+      "path": "index.html",
+      "sha256": "8dabce7f24c3827bc82a6e942c2c73a1f21bf668f4d99239bc721715b058536d"
+    },
+    {
+      "path": "styles.css",
+      "sha256": "99a75564b834aae581fc03819fb2be7d5da5662241b1c49b7df70834196c8250"
+    },
+    {
+      "path": "assets/folders.css",
+      "sha256": "2d4e05d922b416390290b2dc9b2ac4b0fe11fbf908f27468025d54e16eb7ff51"
+    },
+    {
+      "path": "assets/import.css",
+      "sha256": "ae4a884000c5a9b534bf831a27d0f3d034635eaf44e24dc179c3db918e21dd67"
+    },
+    {
+      "path": "assets/editor-actions.css",
+      "sha256": "9ef8045bd68604bf0afa8c695a52a57e74c3d63d63a75d3145a40fee30aa4b3a"
+    },
+    {
+      "path": "js/calculations.js",
+      "sha256": "86f10f10f2bf50d72b34471baa05f1e9431edfd44767b0f65593cf8674acc99a"
+    },
+    {
+      "path": "js/seed.js",
+      "sha256": "a69bf9c4a80aa55d88e91194c2923c6a643b2e711420601c7d449c17c24cc27e"
+    },
+    {
+      "path": "js/storage.js",
+      "sha256": "ce21481cbf1c6291f43467a49f4f607d731196b54e95ccd789389f24c3dcaf87"
+    },
+    {
+      "path": "js/folders.js",
+      "sha256": "fe3d4881e750079f731184c28f25ad3948459535f820a4872540dc929a130bae"
+    },
+    {
+      "path": "js/packaging.js",
+      "sha256": "4cfc62028ea6df17c8389285995f199e5f97bcf17b0c4e3761779dfdd52e7df3"
+    },
+    {
+      "path": "js/packaging-ui.js",
+      "sha256": "cfc32423b2f505bec564f6f33ed04ea8328f0ebdbe6ee9abc291282cab0a1081"
+    },
+    {
+      "path": "js/recipe-view.js",
+      "sha256": "113056db3a2d54bec616ab5803c9a25f13d3d115d4656cba0f8b7a38301c02f9"
+    },
+    {
+      "path": "js/recipe-card-model.js",
+      "sha256": "337ad6d512356a22fa7f4f9d091e97b4e25747c4af8298c79e5a393928f38136"
+    },
+    {
+      "path": "js/profitability.js",
+      "sha256": "c85ce8efc61518dd4aee4d259dd3f704641c5e736340e2a5c4f6773ec132c31f"
+    },
+    {
+      "path": "js/profitability-view.js",
+      "sha256": "6aee3ee679297cfa9326bd89e0f1fdc21d0189cd3e6743d43aa505b4a903872e"
+    },
+    {
+      "path": "js/recipe-card-templates.js",
+      "sha256": "f238a9bb20b15b79ea2ee6ae4a719aed2e17813a9ca7d3a06161ee0cac4d4785"
+    },
+    {
+      "path": "js/drafts.js",
+      "sha256": "205bbbd41cbd9708ad7b2cbb5509cd8d87a960c7d2987c1eaa659fa7b562c339"
+    },
+    {
+      "path": "js/photo-viewer.js",
+      "sha256": "a28d39a1fdcf8c720584d5505fd6f71a581a7068a4accf8cd09c9c6eff14ff0b"
+    },
+    {
+      "path": "js/photos.js",
+      "sha256": "f037bf864351f9e33ed139d663036d47635e9904e38069ef1bc33da9035b92dd"
+    },
+    {
+      "path": "js/json-merge.js",
+      "sha256": "a3bca8b844c328e2ae9db30f1eb1eeba0807d1400d4ba974f1406cdf413bb177"
+    },
+    {
+      "path": "js/import-transaction.js",
+      "sha256": "3b1ac7843bbda68544bcbce354435e0b6c38f23980489b6f190c53d0a6b28920"
+    },
+    {
+      "path": "js/import-ui.js",
+      "sha256": "d6aee976ec306bec1406613f2616b3733a90a1f6c12b2a813540ec9cb091bb00"
+    },
+    {
+      "path": "js/editor-actions.js",
+      "sha256": "25b9a80217906a17e740d2ed32bd22d29f40103797518d3a8340b2099a74c22a"
+    },
+    {
+      "path": "js/app.js",
+      "sha256": "49b9b7ce918ad7cbfd73bb35f2f6e48d80cb042483f4fe2af6932459817f57bf"
+    },
+    {
+      "path": "assets/gastronomic-background.webp",
+      "sha256": "b098bc25fdfe85e4c242b08f13cb3e2cb31ba5063fec42eac8410ca82f1ce03e"
+    }
+  ]
+}

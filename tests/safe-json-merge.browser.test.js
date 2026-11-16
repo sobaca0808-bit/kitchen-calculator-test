@@ -351,9 +351,9 @@ async function cancel(page) {await page.locator('#import-cancel').click();}
       assert.equal((await stored(page)).recipes.length,5);await assertValid(page);assert.deepEqual((await backupJSON(page)).recipes,before.recipes);
       await page.reload();assert.equal((await stored(page)).recipes.length,5);assert(await page.locator('[data-open="remote-dish"]').count());
     },{beforeOpen:async page=>{
-      await page.route('**/js/import-ui.js',async route=>{
+      await page.route('**/js/import-ui.js*',async route=>{
         const response=await route.fetch(),source=await response.text();
-        const injection='\n;(()=>{const original=KitchenImportUI.mount;KitchenImportUI.mount=function(options){return original({...options,onApplied(data){options.onApplied(data);throw Error("fictional render failure");}});};})();';
+        const injection='\n;(()=>{const original=KitchenImportUI.mount;KitchenImportUI.mount=function(options){return original({...options,onApplied(...args){options.onApplied(...args);throw Error("fictional render failure");}});};})();';
         await route.fulfill({response,body:source+injection});
       });
     }});
