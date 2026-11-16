@@ -1,0 +1,158 @@
+[
+  {
+    "theme": "berry",
+    "width": 1366,
+    "contrast": {
+      "#section-title": 11.43,
+      ".local-note": 6.29,
+      ".card-controls label": 6.29,
+      "#appearance-toggle": 11.43,
+      "#recipe-card h1": 11.43,
+      "#recipe-card th": 9.97,
+      ".profitability-grid dt": 5.76,
+      "#item-name": 10.46,
+      ".intro": 5.76,
+      "#save-item": 4.71,
+      "#delete-item": 5.77,
+      "#editor label:has(input)": 5.76
+    }
+  },
+  {
+    "theme": "berry",
+    "width": 390,
+    "contrast": {
+      "#section-title": 11.43,
+      ".local-note": 6.29,
+      ".card-controls label": 6.29,
+      "#appearance-toggle": 11.43,
+      "#recipe-card h1": 11.43,
+      "#recipe-card th": 9.97,
+      ".profitability-grid dt": 5.76,
+      "#item-name": 10.46,
+      ".intro": 5.76,
+      "#save-item": 4.71,
+      "#delete-item": 5.77,
+      "#editor label:has(input)": 5.76
+    }
+  },
+  {
+    "theme": "graphite",
+    "width": 1366,
+    "contrast": {
+      "#section-title": 11.31,
+      ".local-note": 7.45,
+      ".card-controls label": 7.45,
+      "#appearance-toggle": 11.31,
+      "#recipe-card h1": 11.31,
+      "#recipe-card th": 8.85,
+      ".profitability-grid dt": 6.61,
+      "#item-name": 10.04,
+      ".intro": 6.61,
+      "#save-item": 6.7,
+      "#delete-item": 7.59,
+      "#editor label:has(input)": 6.61
+    }
+  },
+  {
+    "theme": "graphite",
+    "width": 390,
+    "contrast": {
+      "#section-title": 11.31,
+      ".local-note": 7.45,
+      ".card-controls label": 7.45,
+      "#appearance-toggle": 11.31,
+      "#recipe-card h1": 11.31,
+      "#recipe-card th": 8.85,
+      ".profitability-grid dt": 6.61,
+      "#item-name": 10.04,
+      ".intro": 6.61,
+      "#save-item": 6.7,
+      "#delete-item": 7.59,
+      "#editor label:has(input)": 6.61
+    }
+  },
+  {
+    "theme": "sage",
+    "width": 1366,
+    "contrast": {
+      "#section-title": 11.21,
+      ".local-note": 6.47,
+      ".card-controls label": 6.47,
+      "#appearance-toggle": 11.21,
+      "#recipe-card h1": 11.21,
+      "#recipe-card th": 9.25,
+      ".profitability-grid dt": 5.86,
+      "#item-name": 10.17,
+      ".intro": 5.87,
+      "#save-item": 5.5,
+      "#delete-item": 5.79,
+      "#editor label:has(input)": 5.87
+    }
+  },
+  {
+    "theme": "sage",
+    "width": 390,
+    "contrast": {
+      "#section-title": 11.21,
+      ".local-note": 6.47,
+      ".card-controls label": 6.47,
+      "#appearance-toggle": 11.21,
+      "#recipe-card h1": 11.21,
+      "#recipe-card th": 9.25,
+      ".profitability-grid dt": 5.86,
+      "#item-name": 10.17,
+      ".intro": 5.87,
+      "#save-item": 5.5,
+      "#delete-item": 5.79,
+      "#editor label:has(input)": 5.87
+    }
+  },
+  {
+    "approvedBerry": true,
+    "width": 1366,
+    "view": "main",
+    "sameSize": true,
+    "maxChannelDifference": 0,
+    "pixelsOverTwo": 0
+  },
+  {
+    "approvedBerry": true,
+    "width": 1366,
+    "view": "card",
+    "sameSize": true,
+    "maxChannelDifference": 0,
+    "pixelsOverTwo": 0
+  },
+  {
+    "approvedBerry": true,
+    "width": 1366,
+    "view": "editor",
+    "sameSize": true,
+    "maxChannelDifference": 0,
+    "pixelsOverTwo": 0
+  },
+  {
+    "approvedBerry": true,
+    "width": 390,
+    "view": "main",
+    "sameSize": true,
+    "maxChannelDifference": 2,
+    "pixelsOverTwo": 0
+  },
+  {
+    "approvedBerry": true,
+    "width": 390,
+    "view": "card",
+    "sameSize": true,
+    "maxChannelDifference": 2,
+    "pixelsOverTwo": 0
+  },
+  {
+    "approvedBerry": true,
+    "width": 390,
+    "view": "editor",
+    "sameSize": true,
+    "maxChannelDifference": 0,
+    "pixelsOverTwo": 0
+  }
+]

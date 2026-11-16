@@ -1,5 +1,6 @@
 /* Task #14: fictional folder library, loopback server and disposable profiles only. */
 'use strict';
+const APPEARANCE_KEY=require('./helpers/theme-context.js').KEY;
 const {replaceJSONFromFile}=require('./helpers/import-preview.js');
 const assert=require('node:assert/strict');
 const fs=require('node:fs/promises');
@@ -32,7 +33,7 @@ async function initialize(context,data=fixture()){
  },{key:KEY,production:PRODUCTION,sentinel:SENTINEL,data});
 }
 function watch(context,errors){context.on('page',page=>{page.setDefaultTimeout(12000);page.on('pageerror',error=>errors.push(error.message));page.on('dialog',dialog=>dialog.accept());});}
-async function guard(page){const result=await page.evaluate(key=>({sentinel:window.__folderRead(key),ops:window.__folderOps}),PRODUCTION);assert.equal(result.sentinel,SENTINEL);assert(result.ops.length&&result.ops.every(op=>op.method!=='clear'&&[KEY,DRAFT].includes(op.key)),'Only exact test/draft storage keys are accessed');assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'No horizontal page overflow');}
+async function guard(page){const result=await page.evaluate(key=>({sentinel:window.__folderRead(key),ops:window.__folderOps}),PRODUCTION);assert.equal(result.sentinel,SENTINEL);assert(result.ops.length&&result.ops.every(op=>op.method!=='clear'&&[KEY,DRAFT,APPEARANCE_KEY].includes(op.key)),'Only exact test/draft storage keys are accessed');assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'No horizontal page overflow');}
 async function contextFor(data=fixture(),width=1366){const context=await browser.newContext({viewport:{width,height:900},acceptDownloads:true,isMobile:width<768,hasTouch:width<768});await initialize(context,data);return context;}
 async function test(name,fn,{data=fixture(),width=1366}={}){if(process.env.KITCHEN_FOLDER_TEST_FILTER&&!name.includes(process.env.KITCHEN_FOLDER_TEST_FILTER))return;const context=await contextFor(data,width),errors=[];watch(context,errors);const page=await context.newPage();try{await page.goto(testURL);await page.locator('#folder-filter').waitFor();await fn(page,context);for(const p of context.pages())if(!p.isClosed())await guard(p);assert.deepEqual(errors,[],'No uncaught browser errors');passed++;console.log('PASS folders:',name);}catch(error){failures.push({name,error:error.stack||error.message});console.error('FAIL folders:',name,error.message);}finally{await context.close();}}
 async function ready(page){await page.waitForFunction(()=>document.querySelector('#print-recipe')?.disabled===false);}

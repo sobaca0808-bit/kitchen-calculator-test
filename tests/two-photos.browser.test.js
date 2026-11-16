@@ -1,5 +1,6 @@
 /* PR #10 supplement: two local photos, disposable localhost contexts only. */
 'use strict';
+const APPEARANCE_KEY=require('./helpers/theme-context.js').KEY;
 const {replaceJSONFromFile}=require('./helpers/import-preview.js');
 const assert=require('node:assert/strict');
 const fs=require('node:fs/promises');
@@ -35,7 +36,7 @@ async function contextFor({width=1366,mobile=false,data=fixture()}={}){
 }
 async function guard(page){
  const proof=await page.evaluate(production=>({sentinel:window.__twoPhotoRead(production),ops:window.__twoPhotoOps}),PRODUCTION);
- assert.equal(proof.sentinel,SENTINEL);assert(proof.ops.length&&proof.ops.every(op=>op.method!=='clear'&&[KEY,DRAFT].includes(op.key)),'Only exact test/draft keys are touched');
+ assert.equal(proof.sentinel,SENTINEL);assert(proof.ops.length&&proof.ops.every(op=>op.method!=='clear'&&[KEY,DRAFT,APPEARANCE_KEY].includes(op.key)),'Only exact test/draft keys are touched');
  assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'No horizontal page overflow');
 }
 async function test(name,fn,options={}){
@@ -104,7 +105,7 @@ async function photoInfo(page,id){return page.evaluate(async id=>{const p=await 
    page.on('dialog',dialog=>dialog.accept());await page.locator(removeId(0)).click();assert.deepEqual(await sourceIds(page),[null,before.recipes[0].photoIds[1]]);assert.deepEqual(await stored(page),before);
    await page.locator('#swap-photos').click();const remaining=[before.recipes[0].photoIds[1],null];assert.deepEqual(await sourceIds(page),remaining);await save(page);await card(page);
    assert.equal(await page.locator('#card-photos [data-photo-slot]').count(),2);assert.equal(await page.locator('#card-photos img').count(),1);
-   await page.emulateMedia({media:'print'});assert.equal(await page.locator('#card-photos .recipe-photo').filter({visible:true}).count(),1);assert.equal(await page.locator('#card-photos [data-photo-slot="1"]').isVisible(),false);await page.pdf({path:'/tmp/kitchen-two-photo-single.pdf',format:'A4'});await page.emulateMedia({media:'screen'});
+   await page.emulateMedia({media:'print'});assert.equal(await page.locator('#card-photos .recipe-photo').filter({visible:true}).count(),1);assert.equal(await page.locator('#card-photos [data-photo-slot="1"]').isVisible(),false);await page.pdf({path:require('node:path').join(require('node:os').tmpdir(),'kitchen-two-photo-single.pdf'),format:'A4'});await page.emulateMedia({media:'screen'});
   });
   await test('two photo draft IDs survive actual tab close, restore and explicit save',async (page,context)=>{
    const before=await stored(page);await edit(page);await page.locator('#item-name').fill('Два незавершённых эталона');await upload(page,0,await picture(page));await upload(page,1,await picture(page,{color:'#643829'}));const pending=await sourceIds(page);
@@ -159,7 +160,7 @@ async function photoInfo(page,id){return page.evaluate(async id=>{const p=await 
   });
   await test('four print combinations show both photos or no blocks independently of prices',async page=>{
    await edit(page);await upload(page,0,await picture(page));await upload(page,1,await picture(page,{color:'#643829'}));await save(page);await card(page);
-   for(const photo of [true,false])for(const prices of [true,false]){await page.locator('#card-mode').selectOption(prices?'calculation':'chef');await page.locator('#print-photos').selectOption(photo?'both':'none');await page.waitForFunction(()=>!document.querySelector('#print-recipe')?.disabled);assert.equal(await page.locator('#card-photos img').count(),2);await page.emulateMedia({media:'print'});assert.equal(await page.locator('#card-photos').isVisible(),photo);for(const image of await page.locator('#card-photos img').all())assert.equal(await image.isVisible(),photo);assert.equal(await page.locator('.card-cost').count()>0,prices);assert.equal(await page.locator('.card-controls').isVisible(),false);if(!prices)assert.doesNotMatch(await page.locator('#recipe-card').innerText(),/₽|себестоимост/i);await page.pdf({path:`/tmp/kitchen-two-photo-${photo?'photo':'no-photo'}-${prices?'manager':'chef'}.pdf`,format:'A4'});await page.emulateMedia({media:'screen'});}
+   for(const photo of [true,false])for(const prices of [true,false]){await page.locator('#card-mode').selectOption(prices?'calculation':'chef');await page.locator('#print-photos').selectOption(photo?'both':'none');await page.waitForFunction(()=>!document.querySelector('#print-recipe')?.disabled);assert.equal(await page.locator('#card-photos img').count(),2);await page.emulateMedia({media:'print'});assert.equal(await page.locator('#card-photos').isVisible(),photo);for(const image of await page.locator('#card-photos img').all())assert.equal(await image.isVisible(),photo);assert.equal(await page.locator('.card-cost').count()>0,prices);assert.equal(await page.locator('.card-controls').isVisible(),false);if(!prices)assert.doesNotMatch(await page.locator('#recipe-card').innerText(),/₽|себестоимост/i);await page.pdf({path:require('node:path').join(require('node:os').tmpdir(),`kitchen-two-photo-${photo?'photo':'no-photo'}-${prices?'manager':'chef'}.pdf`),format:'A4'});await page.emulateMedia({media:'screen'});}
   });
   await test('quality budget retains 1920px details with bounded memory; EXIF orientation is normalized',async page=>{
    await edit(page);const source=await picture(page,{width:3000,height:2000,detail:true});await upload(page,0,source);const id=(await sourceIds(page))[0],info=await photoInfo(page,id);assert.equal(Math.max(info.width,info.height),1920);assert(info.bytes<=500*1024);assert(info.bytes>0);assert(Math.abs(info.width/info.height-1.5)<.005);

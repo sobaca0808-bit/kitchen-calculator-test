@@ -1,5 +1,6 @@
 /* Task #13: print-only compact A4 cards. Fictional fixtures, disposable loopback contexts. */
 'use strict';
+const APPEARANCE_KEY=require('./helpers/theme-context.js').KEY;
 const assert=require('node:assert/strict');
 const fs=require('node:fs/promises');
 const fsSync=require('node:fs');
@@ -67,7 +68,7 @@ async function createPage({data=fixture(),before=false,width=1366,photos=2}={}){
  await ready(page);await page.mouse.move(0,0);return {page,context,errors};
 }
 async function ready(page){await page.waitForFunction(()=>document.querySelector('#print-recipe')?.disabled===false);await page.evaluate(()=>document.fonts.ready);}
-async function guard(page){const saved=await page.evaluate(key=>({production:window.__compactRead(key),ops:window.__compactOps}),PRODUCTION);assert.equal(saved.production,SENTINEL);assert(saved.ops.length&&saved.ops.every(op=>op.method!=='clear'&&[KEY,DRAFT].includes(op.key)));}
+async function guard(page){const saved=await page.evaluate(key=>({production:window.__compactRead(key),ops:window.__compactOps}),PRODUCTION);assert.equal(saved.production,SENTINEL);assert(saved.ops.length&&saved.ops.every(op=>op.method!=='clear'&&[KEY,DRAFT,APPEARANCE_KEY].includes(op.key)));}
 async function snapshot(page){return page.evaluate(async({key,draftKey})=>{const raw=localStorage.getItem(key),data=JSON.parse(raw),ids=KitchenPhotos.ids(data.recipes.find(r=>r.id==='dish-gyro')),hashes=[];for(const id of ids)if(id){const photo=await KitchenPhotos.get(id),digest=await crypto.subtle.digest('SHA-256',await photo.blob.arrayBuffer());hashes.push([...new Uint8Array(digest)].map(n=>n.toString(16).padStart(2,'0')).join(''));}return {raw,drafts:localStorage.getItem(draftKey),ids,hashes,backup:JSON.stringify(await KitchenPhotos.exportData(data))};},{key:KEY,draftKey:DRAFT});}
 async function print(page,{form='calculation',selection='both',name}={}){await page.emulateMedia({media:'screen'});await page.locator('#card-mode').selectOption(form);await page.locator('#print-photos').selectOption(selection);await ready(page);await page.emulateMedia({media:'print'});const file=path.join(output,name+'.pdf');await page.pdf({path:file,format:'A4',preferCSSPageSize:true});return {file,...details(file)};}
 async function photosGeometry(page){return page.locator('#card-photos .photo-open').evaluateAll(nodes=>nodes.filter(el=>el.getBoundingClientRect().width>0&&el.getBoundingClientRect().height>0).map(el=>{const rect=el.getBoundingClientRect(),image=el.querySelector('img'),style=getComputedStyle(image);return {width:rect.width,height:rect.height,maxHeight:style.maxHeight,fit:style.objectFit};}));}

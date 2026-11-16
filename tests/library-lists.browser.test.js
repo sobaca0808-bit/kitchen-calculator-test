@@ -1,6 +1,7 @@
 /* Issue #6: isolated, local checks for the shared prep/dish library component.
  * Fixtures are fictional and every scenario uses a fresh browser context. */
 'use strict';
+const APPEARANCE_KEY=require('./helpers/theme-context.js').KEY;
 const assert = require('node:assert/strict');
 const { chromium } = require('playwright');
 const TEST_KEY = 'kitchen-calculator-pr2-browser-test-v1';
@@ -39,7 +40,7 @@ async function guard(page) {
 async function isolation(page, expectSentinel = true) {
   const proof = await page.evaluate(key=>({ops:window.__issue6StorageOps.slice(),sentinel:window.__readIssue6Sentinel(key)}),PRODUCTION_KEY);
   if(expectSentinel)assert.equal(proof.sentinel,SENTINEL,'Production-key placeholder is unchanged');
-  assert(proof.ops.length>0 && proof.ops.every(op=>op.method!=='clear' && [TEST_KEY,DRAFT_KEY].includes(op.key)),'Only the preview namespace is used');
+  assert(proof.ops.length>0 && proof.ops.every(op=>op.method!=='clear' && [TEST_KEY,DRAFT_KEY,APPEARANCE_KEY].includes(op.key)),'Only the preview namespace is used');
 }
 async function expectedView(page,type,name) {
   if(type==='dish') {

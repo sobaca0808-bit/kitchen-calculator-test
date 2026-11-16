@@ -1,5 +1,6 @@
 /* Two presentations of one recipe: fresh local contexts and fictional data only. */
 'use strict';
+const APPEARANCE_KEY=require('./helpers/theme-context.js').KEY;
 const {replaceJSONFromFile}=require('./helpers/import-preview.js');
 const assert=require('node:assert/strict');
 const fs=require('node:fs/promises');
@@ -56,7 +57,7 @@ function watch(context,errors){context.on('page',page=>{page.setDefaultTimeout(1
 async function guard(page){
  const proof=await page.evaluate(key=>({sentinel:window.__cardModeRead(key),ops:window.__cardModeOps}),PRODUCTION);
  assert.equal(proof.sentinel,SENTINEL);
- assert(proof.ops.length&&proof.ops.every(op=>op.method!=='clear'&&[KEY,DRAFT].includes(op.key)),'Only the exact test and draft keys are used');
+ assert(proof.ops.length&&proof.ops.every(op=>op.method!=='clear'&&[KEY,DRAFT,APPEARANCE_KEY].includes(op.key)),'Only the exact test and draft keys are used');
  assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'No horizontal page overflow');
 }
 async function test(name,fn,{data=fixture(),width=1366}={}){

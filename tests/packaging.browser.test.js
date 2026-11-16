@@ -1,6 +1,8 @@
 /* Issue #7: packaging materials are tested only with fictional data in fresh,
  * disposable browser contexts against the runner's local HTTP server. */
 'use strict';
+const APPEARANCE_KEY=require('./helpers/theme-context.js').KEY;
+const skin=require('./helpers/theme-context.js').spec;
 const {replaceJSONFromFile}=require('./helpers/import-preview.js');
 const assert=require('node:assert/strict');
 const fs=require('node:fs/promises');
@@ -44,7 +46,7 @@ async function guard(page){
 async function isolation(page,expectSentinel=true){
   const proof=await page.evaluate(key=>({ops:window.__packagingStorageOps.slice(),sentinel:window.__readPackagingSentinel(key)}),PRODUCTION_KEY);
   if(expectSentinel)assert.equal(proof.sentinel,SENTINEL,'The production placeholder remains unchanged');
-  assert(proof.ops.length>0&&proof.ops.every(op=>op.method!=='clear'&&[TEST_KEY,DRAFT_KEY].includes(op.key)),'Application storage operations stay in the preview namespace');
+  assert(proof.ops.length>0&&proof.ops.every(op=>op.method!=='clear'&&[TEST_KEY,DRAFT_KEY,APPEARANCE_KEY].includes(op.key)),'Application storage operations stay in the preview namespace');
 }
 async function noOverflow(page){
   assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'No horizontal page overflow');
@@ -135,22 +137,22 @@ async function test(name,fn,{width=1366,data=fixture(false)}={}){
       assert.doesNotMatch(await page.locator('.packaging-card').innerText(),/₽|себестоимост|закупочн|сумма|стоимость/i);
       assert.doesNotMatch(await page.locator('#recipe-card').innerText(),/₽|себестоимост/i);
       const background=await page.evaluate(async()=>{
-        const body=getComputedStyle(document.body),url=body.backgroundImage.match(/url\(["']?([^"')]+)["']?\)/);
-        const response=url?await fetch(url[1]):null;
-        return {image:body.backgroundImage,status:response?.status,type:response?.headers.get('content-type'),bytes:response?(await response.arrayBuffer()).byteLength:0,
+        const body=getComputedStyle(document.body),response=await fetch('assets/warm-kitchen.css');
+        return {image:body.backgroundImage,repeat:body.backgroundRepeat,status:response.status,type:response.headers.get('content-type'),bytes:(await response.arrayBuffer()).byteLength,
           editor:getComputedStyle(document.querySelector('.editor')).backgroundColor,input:getComputedStyle(document.querySelector('#view-portions')).backgroundColor};
       });
-      assert.match(background.image,/url\(/);assert.equal(background.status,200);assert.match(background.type,/image\/webp/);
-      assert(background.bytes>0&&background.bytes<350*1024,'Decorative background remains a small local WebP');
-      assert.equal(background.editor,'rgb(255, 255, 255)');assert.equal(background.input,'rgb(255, 255, 255)');
+      assert.match(background.image,new RegExp(skin.art.replaceAll('.','\\.')));assert.equal(background.status,200);assert.match(background.type,/text\/css/);
+      assert(background.repeat.split(',').every(value=>value.trim()==='no-repeat'),'The continuous CSS surround has no tiled images');
+      assert(background.bytes>0&&background.bytes<16*1024,'The local screen theme remains lightweight');
+      assert.equal(background.editor,skin.paper);assert.equal(background.input,skin.field);
       await page.emulateMedia({media:'print'});
       assert.equal(await page.locator('.library').isVisible(),false);assert.equal(await page.locator('.card-controls').isVisible(),false);
       assert.equal(await page.locator('.packaging-card').isVisible(),true);
       assert.equal(await page.evaluate(()=>getComputedStyle(document.body).backgroundImage),'none','The decorative pattern is not printed');
-      if(width===1366)await page.pdf({path:'/tmp/kitchen-packaging-chef.pdf',format:'A4'});
+      if(width===1366)await page.pdf({path:require('node:path').join(require('node:os').tmpdir(),'kitchen-packaging-chef.pdf'),format:'A4'});
       await page.emulateMedia({media:'screen'});await page.locator('#card-mode').selectOption('calculation');
       assert(await page.locator('.packaging-card .packaging-finance').count()>0);hasMoney(await page.locator('#recipe-card').innerText(),30);
-      if(width===1366){await page.emulateMedia({media:'print'});await page.pdf({path:'/tmp/kitchen-packaging-manager.pdf',format:'A4'});await page.emulateMedia({media:'screen'});}
+      if(width===1366){await page.emulateMedia({media:'print'});await page.pdf({path:require('node:path').join(require('node:os').tmpdir(),'kitchen-packaging-manager.pdf'),format:'A4'});await page.emulateMedia({media:'screen'});}
       await noOverflow(page);
     },{width});
 

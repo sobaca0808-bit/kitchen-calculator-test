@@ -127,6 +127,7 @@
     if (bytes(source) > MAX_TOTAL_BYTES) fail('Для черновиков требуется больше 5 МБ. Удалите ненужные черновики.');
     // A single atomic setItem preserves the previous value on a quota failure.
     storage.setItem(KEY, source);
+    if(storage.getItem(KEY)!==source)fail('Браузер не подтвердил запись черновика. Не закрывайте страницу до резервного копирования.');
     return {ok: true, error: null};
   }
   function save(record, storage) {

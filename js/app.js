@@ -8,11 +8,15 @@
   const money = n => !Number.isFinite(n) ? 'Значение слишком велико' : new Intl.NumberFormat('ru-RU', {style:'currency',currency:'RUB',minimumFractionDigits:2,maximumFractionDigits:2}).format(n);
   const num = (n, digits = 3) => n == null ? '' : new Intl.NumberFormat('ru-RU',{maximumFractionDigits:digits,useGrouping:false}).format(n);
   const unitOptions = selected => Object.entries(C.units).map(([value,u]) => `<option value="${value}" ${selected === value ? 'selected' : ''}>${u.label}</option>`).join('');
-  const loaded = S.load();
-  let state = loaded.data || (loaded.error ? {version:1,products:[],recipes:[]} : KitchenSeed.create());
+  const loaded = S.snapshot();
+  let persistedSource=loaded.source;
+  // An absent record must remain absent until an explicit save or confirmed import.
+  let state = loaded.data || S.empty();
   let recoveryRequired = !!loaded.error;
   let section = 'dish', selectedId = state.recipes.find(r => r.type === 'dish')?.id || null;
   let viewing = true, viewPortions = 1, cardMode = 'calculation';
+  let expenseEditor=null, expensePrintDetail='summary';
+  const ExpensePreferences=KitchenRecipeExpensePreferences;
   let folderFilter = 'all', folderFormId = null;
   const selectedFolderId = () => folderFilter.startsWith('folder:') ? folderFilter.slice(7) : null;
   const printPhotoChoices = {chef:'both',calculation:'both'};
@@ -28,16 +32,19 @@
   function message(text, error = false) {
     const el = $('#message'); el.textContent = text; el.className = error ? 'error' : ''; el.hidden = false;
   }
-  function persist(candidate, success, restore = false) {
+  function clearMissingStorageHelp(){
+    const help=$('#storage-help');if(help&&location.hash!=='#storage-diagnostics')help.hidden=true;
+  }
+  function persist(candidate, success, restore = false, syncPackaging=true) {
     if (recoveryRequired && !restore) {message('Сохранение заблокировано: исходное хранилище не удалось прочитать. Восстановите резервную копию через импорт JSON. Исходные данные не изменены.',true);return false;}
     let clean;
-    try { clean = P.resolveLinks(S.validate(candidate)); } catch(e) { message(e.message, true); return false; }
-    const result = S.save(clean);
-    state = clean;
+    try { clean = S.validate(candidate);if(section!=='expenses'&&syncPackaging)clean=P.resolveLinks(clean); } catch(e) { message(e.message, true); return false; }
+    const result = S.save(clean,undefined,persistedSource);
     if (!result.ok) {
       storageBlocked = true;
-      message('Не удалось сохранить в браузере: ' + result.error + ' Изменения пока в памяти. Скачайте экспорт JSON до закрытия страницы.', true);
-    } else { recoveryRequired = false; storageBlocked = false; message(success || 'Данные сохранены в этом браузере.'); }
+      message(result.commitUncertain?result.error+' Поля остаются на экране. После экспорта проверьте базу при повторном открытии.':'Не удалось сохранить в браузере: ' + result.error + ' Изменения пока в памяти. Скачайте экспорт JSON до закрытия страницы.', true);
+      return false;
+    } else { state=clean;persistedSource=S.stringify(clean);recoveryRequired = false; storageBlocked = false;clearMissingStorageHelp();message(success || 'Данные сохранены в этом браузере.'); }
     return true;
   }
   function collection() { return isCatalog() ? (state[section] || []) : state.recipes.filter(r => r.type === section); }
@@ -53,15 +60,19 @@
     if(!folderActionAllowed()) return false;
     let clean;
     try {
-      const latest = S.load();
-      if(latest.error || !latest.data || S.stringify(latest.data) !== S.stringify(state)) {
+      const latest = S.snapshot();
+      if(latest.error || latest.source!==persistedSource || S.stringify(latest.data||S.empty()) !== S.stringify(state)) {
         message('База в браузере изменилась или недоступна. Операция с папкой отменена, чтобы не перезаписать другие изменения. Сохраните текущую работу в черновик и обновите страницу.',true);return false;
       }
       clean = S.validate(candidate);
     } catch(error) {message(error.message,true);return false;}
-    const result = S.save(clean);
-    if(!result.ok) {message('Изменения папок не сохранены: '+result.error+' Прежняя база и рецепты не изменены.',true);return false;}
-    state = clean;message(success);return true;
+    const result = S.save(clean,undefined,persistedSource);
+    if(!result.ok) {
+      if(result.commitUncertain){storageBlocked=true;message(result.error+' Результат изменения папки нужно проверить после повторного открытия.',true);}
+      else message('Изменения папок не сохранены: '+result.error+' Прежняя база и рецепты не изменены.',true);
+      return false;
+    }
+    state = clean;persistedSource=S.stringify(clean);clearMissingStorageHelp();message(success);return true;
   }
   // Update just the folder fields: raw input, photo work and other draft fields stay intact.
   function refreshFolderFields() {
@@ -98,6 +109,7 @@
   }
   function currentState() {
     const next = clone(state);
+    if(section==='expenses'&&expenseEditor)next.establishmentExpenses=expenseEditor.value();
     if (draft) {
       const key = isCatalog() ? section : 'recipes';
       if (!next[key]) next[key] = [];
@@ -158,7 +170,7 @@
     if(owner && record.isNew && !confirm('Этот черновик создавался как новый рецепт, но в базе уже есть запись с тем же ID. Восстановить для редактирования? Последующее нажатие «Сохранить» заменит её содержимое.'))return;
     try {
       clearTimeout(draftTimer); section=type;selectedId=id;viewing=false;
-      draft=clone(record.data);isNew=record.isNew || !state.recipes.some(r=>r.id===id);dirty=true;
+      draft=ExpensePreferences.restorePreference(clone(record.data),state.recipes.find(r=>r.id===id));isNew=record.isNew || !state.recipes.some(r=>r.id===id);dirty=true;
       const missingFolder = type === 'dish' && draft.folderId && !(state.folders || []).some(folder=>folder.id === draft.folderId);
       if(missingFolder) delete draft.folderId;
       errors=new Map(record.errors);invalidValues=new Map(record.invalidValues);draftStatus='Черновик восстановлен · нажмите «Сохранить» для изменения карточки';
@@ -227,11 +239,14 @@
     libraryList.setAttribute('role','region');
     libraryList.setAttribute('aria-labelledby','section-title');
     libraryList.tabIndex = 0;
-    $('#section-title').textContent = labels[section][0]; $('#create').textContent = '+ ' + labels[section][1];
+    $('.library').hidden=section==='expenses';
     for (const key of ['dish','prep','products','packaging']) {
       $(`#count-${key}`).textContent = ['products','packaging'].includes(key) ? (state[key] || []).length : state.recipes.filter(r => r.type === key).length;
       $(`[data-tab="${key}"]`).setAttribute('aria-current',section === key ? 'page' : 'false');
     }
+    $('[data-tab="expenses"]')?.setAttribute('aria-current',section==='expenses'?'page':'false');
+    if(section==='expenses')return;
+    $('#section-title').textContent = labels[section][0]; $('#create').textContent = '+ ' + labels[section][1];
     const query = $('#library-search').value.toLocaleLowerCase('ru').trim();
     renderFolders(query);
     const list = collection().filter(item => (item.name+' '+(item.aliases || '')).toLocaleLowerCase('ru').includes(query) &&
@@ -270,6 +285,10 @@
   function renderEditor() {
     photoEditor?.dispose();photoEditor=null;photoPreview?.dispose();photoPreview=null;
     packagingEditor = null;
+    expenseEditor=null;
+    if(section==='expenses'){
+      expenseEditor=KitchenExpensesUI.mount(editor,{config:state.establishmentExpenses,onChange:markDirty,onSave:saveDraft});return;
+    }
     if (!draft) { editor.innerHTML = `<div class="empty-state"><h2>${section === 'dish' && collection().length ? 'Выберите рецепт из списка' : 'Начните с новой записи'}</h2><p>Откройте сохранённую запись или создайте новую<br>кнопкой в справочнике.</p></div>`; return; }
     if (section === 'dish' && viewing) renderCard();
     else if (section === 'products') renderProduct(); else if (section === 'packaging') renderPackaging(); else renderRecipe();
@@ -277,6 +296,11 @@
   function renderCard() {
     editor.innerHTML = `<div class="card-controls"><button id="back-list">← К списку</button><button id="edit-recipe">Изменить</button><button id="print-recipe">Печать</button><label>Форма карты<select id="card-mode"><option value="calculation" ${cardMode==='calculation'?'selected':''}>Калькуляционная карта</option><option value="chef" ${cardMode==='chef'?'selected':''}>Карта повара</option></select></label><label>Количество порций<input id="view-portions" type="text" inputmode="decimal" value="${esc(num(viewPortions,8))}"></label><label>Фотографии при печати<select id="print-photos"><option value="none">Без фотографий</option><option value="first">Только первая</option><option value="second">Только вторая</option><option value="both">Обе фотографии</option></select></label><p id="view-error" role="status"></p></div><article id="recipe-card" class="recipe-card"></article>`;
     const card=$('#recipe-card');
+    const expensePrintControl=document.createElement('label');expensePrintControl.className='expense-print-control';
+    expensePrintControl.innerHTML=`Статьи расходов при печати<select id="print-expense-detail"><option value="summary">Только итоги</option><option value="full">С детализацией</option></select><small>Без цен — форма «Карта повара».</small>`;
+    $('.card-controls',editor).append(expensePrintControl);
+    $('#print-expense-detail').value=expensePrintDetail;
+    $('#print-expense-detail').addEventListener('change',event=>{expensePrintDetail=event.target.value;card.dataset.printExpenseDetail=expensePrintDetail;});
     const moveControls = document.createElement('div');moveControls.className = 'recipe-folder-move';
     moveControls.innerHTML = `<label>Папка блюда<select id="move-folder">${folderOptions(draft.folderId)}</select></label><button id="move-recipe" disabled>Переместить</button>`;
     $('.card-controls',editor).append(moveControls);$('#move-folder').value = draft.folderId || '';
@@ -316,7 +340,26 @@
         // Both forms share the saved recipe and the same gallery. Presentation changes
         // neither recreate photo records nor alter their order or bytes.
         const galleryElement=$('#card-photos',card);
-        card.innerHTML=KitchenRecipeCardTemplates.render(state,model);
+        const includeExpenses=ExpensePreferences.enabled(draft),expenseResult=cardMode==='calculation'&&includeExpenses?KitchenExpenses.calculate(state,draft.id,viewPortions):undefined;
+        card.innerHTML=KitchenRecipeCardTemplates.render(state,model,{expenseResult});
+        expensePrintControl.hidden=cardMode!=='calculation'||!includeExpenses;
+        card.dataset.printExpenseDetail=expensePrintDetail;
+        if(cardMode==='calculation'){
+          $('#recipe-expense-control',card).innerHTML=KitchenExpensesUI.renderControl(state,draft.id,viewPortions,{enabled:includeExpenses,result:expenseResult});
+          $('#include-establishment-expenses',card).addEventListener('change',event=>{
+            const checked=event.target.checked;
+            try{
+              const candidate=ExpensePreferences.update(state,draft.id,checked);
+              if(!persist(candidate,checked?'Расходы включены для этого блюда. Выбор сохранён.':'Расходы отключены для этого блюда. План расходов сохранён.',false,false)){event.target.checked=includeExpenses;return;}
+              draft=clone(state.recipes.find(r=>r.id===draft.id));draw();$('#include-establishment-expenses',card).focus({preventScroll:true});
+            }catch(error){event.target.checked=includeExpenses;message(error.message,true);}
+          });
+        }
+        if(cardMode==='calculation'&&includeExpenses){
+          const financial=card.querySelector('.profitability-card');
+          (financial||card).insertAdjacentHTML(financial?'afterend':'beforeend',KitchenExpensesUI.renderCard(state,draft.id,viewPortions,{result:expenseResult,showBreakdown:false}));
+        }
+        card.querySelectorAll('.expenses-open').forEach(button=>button.onclick=()=>switchSection('expenses'));
         card.dataset.mode=cardMode;
         if(galleryElement && photoPreview) $('#card-photos',card).replaceWith(galleryElement);
         else {
@@ -403,6 +446,10 @@
       <label class="recipe-note">Способ приготовления<textarea id="technology" maxlength="10000">${esc(draft.technology)}</textarea></label>
       <details class="recipe-note" ${draft.note ? 'open' : ''}><summary>Заметка к рецепту</summary><textarea id="recipe-note" placeholder="Что нужно уточнить или учесть">${esc(draft.note)}</textarea></details><div id="summary" class="summary" aria-live="polite"></div>${section === 'dish' ? `<div class="selling-price-editor recipe-note"><label>Цена продажи блюда, ₽${numericInput('selling-price',draft.sellingPrice,'Не задана')}</label><p class="field-help">Цена за одну порцию. Показатели ниже рассчитаны только по продуктовой себестоимости, без упаковки.</p></div><div id="profitability-preview" aria-live="polite"></div>` : ''}<p id="form-error" class="inline-error" role="status"></p></div>` + actions(true);
     bindCommon(); renderRows();
+    if(section==='dish'){
+      const preview=document.createElement('div');preview.id='expenses-preview';
+      $('#profitability-preview').after(preview);
+    }
     $('#recipe-folder')?.addEventListener('change',event=>{
       if(event.target.value) draft.folderId = event.target.value;else delete draft.folderId;
       markDirty();
@@ -567,16 +614,30 @@
       invalid:errors.has('selling-price'),
       foodInvalid:[...errors.keys()].some(key=>key!=='selling-price' && !key.startsWith('pack-'))
     });
+    if(section==='dish'&&$('#expenses-preview')){
+      $('#expenses-preview').innerHTML=ExpensePreferences.enabled(draft)?KitchenExpensesUI.renderCard(currentState(),draft.id,draft.portions||1,{invalid:errors.size>0}):'';
+      $('#expenses-preview .expenses-open')?.addEventListener('click',()=>switchSection('expenses'));
+    }
     $('#form-error').textContent = errors.size ? 'Исправьте ввод: '+[...errors.values()][0] : '';
   }
   function saveDraft() {
     if(backupBusy) {message('Дождитесь завершения работы с резервной копией.',true);return false;}
+    if(section==='expenses'){
+      let candidate;try{candidate=currentState();}catch(error){message(error.message,true);editor.querySelector('[aria-invalid=true]')?.focus();return false;}
+      if(!persist(candidate,'Расходы сохранены ✓. Калькуляции блюд пересчитываются автоматически.')){
+        $('#save-state').textContent='В памяти · скачайте JSON';$('#save-item').textContent='Повторить сохранение';return false;
+      }
+      dirty=false;$('#save-state').textContent='Сохранено в браузере';$('#save-item').textContent='Сохранено ✓';$('#save-item').classList.add('saved');return true;
+    }
     if(photoEditor?.busy) {message('Дождитесь обработки фотографии перед сохранением.',true);return false;}
     if (!draft.name.trim()) {message('Введите название.',true);$('#item-name').focus();return false;}
     if (errors.size) {message('Исправьте ошибки в числовых полях перед сохранением.',true);editor.querySelector('[aria-invalid="true"]')?.focus();return false;}
     draft.name = draft.name.trim();
     const candidate = currentState();
-    if(!persist(candidate,'Сохранено ✓. Связанные калькуляции пересчитаны.')) return false;
+    if(!persist(candidate,'Сохранено ✓. Связанные калькуляции пересчитаны.')) {
+      $('#save-state').textContent='В памяти · скачайте JSON';$('#save-item').textContent='Повторить сохранение';$('#save-item').classList.remove('saved');
+      if(editingRecipe()){dirty=true;flushDraft();}return false;
+    }
     selectedId = draft.id;
     if(!storageBlocked) {
       clearTimeout(draftTimer);draftTimer=null;dirty=false;isNew=false;
@@ -624,6 +685,7 @@
   $('[data-tab="prep"]').addEventListener('click',() => switchSection('prep'));
   $('[data-tab="products"]').addEventListener('click',() => switchSection('products'));
   $('[data-tab="packaging"]').addEventListener('click',() => switchSection('packaging'));
+  $('[data-tab="expenses"]')?.addEventListener('click',() => switchSection('expenses'));
   $('#library-search').addEventListener('input',renderLibrary);
   $('#folder-filter').addEventListener('change',event=>{
     const next = event.target.value;
@@ -665,17 +727,22 @@
     if(backupBusy)return;
     if(photoEditor?.busy) {message('Дождитесь обработки фотографии перед экспортом.',true);return;}
     const hasUnfinishedRecipe=editingRecipe() && dirty;
-    if(dirty && (hasUnfinishedRecipe ? !flushDraft() : !saveDraft())) return;
+    const emergency=dirty&&(storageBlocked||recoveryRequired);
+    if(emergency&&section!=='expenses'&&(!draft?.name?.trim()||errors.size)){message('Исправьте название и числа перед экспортом введённой записи.',true);return;}
+    if(emergency&&section==='expenses'){try{expenseEditor.value();}catch(error){message(error.message,true);return;}}
+    if(emergency&&hasUnfinishedRecipe)flushDraft();
+    if(!emergency&&dirty && (hasUnfinishedRecipe ? !flushDraft() : !saveDraft())) return;
     backupBusy=true;$('#export').disabled=true;
     try {
-      const portable=await Photos.exportData(state);
+      const portable=await Photos.exportData(emergency?P.resolveLinks(S.validate(currentState())):state);
       const text = S.stringify(portable), url = URL.createObjectURL(new Blob([text],{type:'application/json;charset=utf-8'}));
       const link = document.createElement('a');link.href = url;link.download = 'kitchen-calculator-PR2-TEST-'+new Date().toISOString().slice(0,10)+'.json';link.click();setTimeout(() => URL.revokeObjectURL(url),1000);
       message('JSON с сохранёнными карточками и фотографиями подготовлен к скачиванию.'+(hasUnfinishedRecipe?' Незавершённый черновик хранится отдельно: сначала нажмите «Сохранить», чтобы включить изменения в резервную копию.':''));
+      if(emergency)message('Введённые изменения включены в скачиваемый JSON. Экспорт не выполняет новую запись в базу браузера.');
     } catch(e) {message('Экспорт не выполнен: '+e.message,true);}
     finally {backupBusy=false;$('#export').disabled=false;}
   });
-  KitchenImportUI.mount({
+  const importController=KitchenImportUI.mount({
     getState:()=>state,
     getDraftSource:()=>localStorage.getItem(D.KEY),
     canStart:()=>{
@@ -689,11 +756,11 @@
       backupBusy=value;$('#import').disabled=value;$('#export').disabled=value;
       $('.workspace').inert=value;$('#drafts-panel').inert=value;$('.tabs').inert=value;
     },
-    onApplied:data=>{
-      state=data;storageBlocked=false;recoveryRequired=false;
+    onApplied:(data,source)=>{
+      state=data;persistedSource=source;storageBlocked=false;recoveryRequired=false;clearMissingStorageHelp();
       $('#folder-form').hidden=true;folderFormId=null;
       selectedId=collection()[0]?.id || null;openSelected();
-    },message
+    },onWriteUncertain:()=>{storageBlocked=true;},message
   });
   $('#damaged-source').hidden=!recoveryRequired;
   $('#download-damaged-source').addEventListener('click',()=>{
@@ -711,10 +778,13 @@
   });
   window.addEventListener('pagehide',()=>flushDraft());
   document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')flushDraft();});
+  window.addEventListener('storage',event=>{
+    if(event.key===S.KEY&&event.newValue!==persistedSource){storageBlocked=true;message('База изменилась в другой вкладке. Сохранение старой версии заблокировано. Введённые поля остаются на экране: скачайте JSON с изменениями перед обновлением страницы.',true);}
+  });
   openSelected();
   if(loaded.error) message('Не удалось прочитать сохранённые данные: '+loaded.error+' Исходная запись не перезаписана. Автоматическая запись и импорт заблокированы. Скачайте исходную запись для восстановления; фотографии и черновики остаются в браузере.',true);
   else if(!loaded.data) {
-    const saved = S.save(state);
-    if(!saved.ok) {storageBlocked = true;if($('#save-state')) $('#save-state').textContent = 'В памяти · скачайте JSON';message('Браузер не разрешил сохранение: '+saved.error+' Скачивайте JSON перед закрытием страницы.',true);}
+    message('По этому адресу в данном браузере сохранённая база отсутствует. Можно импортировать свой JSON. Если вы уже работали здесь, проверьте сохранение и другие локальные источники. Демо-данные не записаны.');
   }
+  globalThis.KitchenPersistenceDiagnostics?.mount({missing:loaded.source===null,failed:!!loaded.error,openImport:importController.openCandidate,message});
 })();

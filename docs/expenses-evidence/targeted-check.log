@@ -1,0 +1,18 @@
+PASS establishment expenses: berry 1366: visible navigation, live monthly allocation, separate margins, scaling and chef protection
+PASS establishment expenses: berry 390: visible navigation, live monthly allocation, separate margins, scaling and chef protection
+PASS establishment expenses: graphite 1366: visible navigation, live monthly allocation, separate margins, scaling and chef protection
+PASS establishment expenses: graphite 390: visible navigation, live monthly allocation, separate margins, scaling and chef protection
+PASS establishment expenses: sage 1366: visible navigation, live monthly allocation, separate margins, scaling and chef protection
+PASS establishment expenses: sage 390: visible navigation, live monthly allocation, separate margins, scaling and chef protection
+PASS establishment expenses: changing expenses, forecasts, sale price, procurement and prep output recalculates from originals
+PASS establishment expenses: empty fields, invalid sales volume and valid zeros do not fabricate full costs or percentages
+PASS establishment expenses: unsaved expense navigation requires confirmation and the fixed save stays reachable at 320px
+PASS establishment expenses: quota and stale tab preserve the database and allow emergency JSON with proposed expenses
+PASS establishment expenses: JSON exports expenses; conflicts require a choice and backup preserves the former plan
+PASS establishment expenses: photographs and independent recipe draft survive expense changes, reload and JSON export
+PASS establishment expenses: saving an expense plan never changes recipe packaging identity metadata
+PASS establishment expenses: reopening the expense form preserves raw decimal precision instead of rounding saved inputs
+PASS establishment expenses: A4 calculation includes opted-in expense details; chef print and toggle-off exclude them
+PASS establishment expenses: full browser restarts 1366
+PASS establishment expenses: full browser restarts 390
+17 establishment-expense browser scenarios passed; 0 failures.

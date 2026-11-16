@@ -1,0 +1,225 @@
+[graphite] PASS safe merge: file preview and cancellation leave saved data byte-identical and preserve all draft fields
+[sage] PASS safe merge: file preview and cancellation leave saved data byte-identical and preserve all draft fields
+[berry] PASS safe merge: file preview and cancellation leave saved data byte-identical and preserve all draft fields
+[graphite] PASS safe merge: default merge adds a complete connected graph and retains every local record and extension
+[sage] PASS safe merge: default merge adds a complete connected graph and retains every local record and extension
+[berry] PASS safe merge: default merge adds a complete connected graph and retains every local record and extension
+[graphite] PASS safe merge: repeating the same merged file skips records without multiplying identities
+[sage] PASS safe merge: repeating the same merged file skips records without multiplying identities
+[berry] PASS safe merge: repeating the same merged file skips records without multiplying identities
+[graphite] PASS safe merge: a changed price is an explicit conflict and local choice keeps the saved graph
+[sage] PASS safe merge: a changed price is an explicit conflict and local choice keeps the saved graph
+[berry] PASS safe merge: a changed price is an explicit conflict and local choice keeps the saved graph
+[graphite] PASS safe merge: keep both preserves old recipes and remaps imported dependent preparations and dishes
+[sage] PASS safe merge: keep both preserves old recipes and remaps imported dependent preparations and dishes
+[berry] PASS safe merge: keep both preserves old recipes and remaps imported dependent preparations and dishes
+[graphite] PASS safe merge: equal names with different IDs and different composition never imply entity identity
+[sage] PASS safe merge: equal names with different IDs and different composition never imply entity identity
+[berry] PASS safe merge: equal names with different IDs and different composition never imply entity identity
+[graphite] PASS safe merge: cross-kind IDs and ingredient-row collisions are remapped without broken folder links
+[sage] PASS safe merge: cross-kind IDs and ingredient-row collisions are remapped without broken folder links
+[berry] PASS safe merge: cross-kind IDs and ingredient-row collisions are remapped without broken folder links
+[graphite] PASS safe merge: root extension conflicts require an explicit choice and preserve unrelated extension data
+[sage] PASS safe merge: root extension conflicts require an explicit choice and preserve unrelated extension data
+[berry] PASS safe merge: root extension conflicts require an explicit choice and preserve unrelated extension data
+[graphite] PASS safe merge: explicit replacement warns and makes a portable downloadable backup before removing local-only records
+[sage] PASS safe merge: explicit replacement warns and makes a portable downloadable backup before removing local-only records
+[berry] PASS safe merge: explicit replacement warns and makes a portable downloadable backup before removing local-only records
+[sage] PASS safe merge: merge preserves existing photo references and bytes and exports imported photos with prices and folders
+[berry] PASS safe merge: merge preserves existing photo references and bytes and exports imported photos with prices and folders
+[graphite] PASS safe merge: merge preserves existing photo references and bytes and exports imported photos with prices and folders
+[graphite] PASS safe merge: backup-storage failure prevents both merge and replacement without touching main data or drafts
+[sage] PASS safe merge: backup-storage failure prevents both merge and replacement without touching main data or drafts
+[berry] PASS safe merge: backup-storage failure prevents both merge and replacement without touching main data or drafts
+[graphite] PASS safe merge: main-storage quota keeps original data and images and leaves the automatic backup downloadable
+[berry] PASS safe merge: main-storage quota keeps original data and images and leaves the automatic backup downloadable
+[sage] PASS safe merge: main-storage quota keeps original data and images and leaves the automatic backup downloadable
+[graphite] PASS safe merge: new-photo staging failure leaves saved recipes, old images and drafts untouched
+[berry] PASS safe merge: new-photo staging failure leaves saved recipes, old images and drafts untouched
+[graphite] PASS safe merge: a database changed after preview is never overwritten by applying an obsolete plan
+[sage] PASS safe merge: new-photo staging failure leaves saved recipes, old images and drafts untouched
+[berry] PASS safe merge: a database changed after preview is never overwritten by applying an obsolete plan
+[sage] PASS safe merge: a database changed after preview is never overwritten by applying an obsolete plan
+[graphite] PASS safe merge: a change during asynchronous photo staging rolls back new images and preserves the other-tab database
+[berry] PASS safe merge: a change during asynchronous photo staging rolls back new images and preserves the other-tab database
+[graphite] PASS safe merge: malformed, unsupported and oversized JSON never replaces the current database
+[sage] PASS safe merge: a change during asynchronous photo staging rolls back new images and preserves the other-tab database
+[berry] PASS safe merge: malformed, unsupported and oversized JSON never replaces the current database
+[graphite] PASS safe merge: legacy JSON without folders, selling price or photos merges into an empty database
+[berry] PASS safe merge: legacy JSON without folders, selling price or photos merges into an empty database
+[sage] PASS safe merge: malformed, unsupported and oversized JSON never replaces the current database
+[graphite] PASS safe merge: an empty incoming database deletes nothing in merge mode and empties only through explicit replacement with backup
+[sage] PASS safe merge: legacy JSON without folders, selling price or photos merges into an empty database
+[berry] PASS safe merge: an empty incoming database deletes nothing in merge mode and empties only through explicit replacement with backup
+[sage] PASS safe merge: an empty incoming database deletes nothing in merge mode and empties only through explicit replacement with backup
+[graphite] PASS safe merge: retained drafts cannot overwrite a replacement entity of another type or silently replace a same-type new record
+[berry] PASS safe merge: retained drafts cannot overwrite a replacement entity of another type or silently replace a same-type new record
+[graphite] PASS safe merge: an error after a successful commit reports saved data accurately and retains the automatic backup
+[sage] PASS safe merge: retained drafts cannot overwrite a replacement entity of another type or silently replace a same-type new record
+[graphite] PASS safe merge: unknown portable photo metadata is rejected explicitly instead of being silently discarded
+[berry] PASS safe merge: an error after a successful commit reports saved data accurately and retains the automatic backup
+[sage] PASS safe merge: an error after a successful commit reports saved data accurately and retains the automatic backup
+[berry] PASS safe merge: unknown portable photo metadata is rejected explicitly instead of being silently discarded
+[sage] PASS safe merge: unknown portable photo metadata is rejected explicitly instead of being silently discarded
+[graphite] PASS safe merge: large connected import preview is usable without horizontal scrolling at 320px
+[berry] PASS safe merge: large connected import preview is usable without horizontal scrolling at 320px
+[sage] PASS safe merge: large connected import preview is usable without horizontal scrolling at 320px
+[graphite] PASS safe merge: large connected import preview is usable without horizontal scrolling at 390px
+[berry] PASS safe merge: large connected import preview is usable without horizontal scrolling at 390px
+[sage] PASS safe merge: large connected import preview is usable without horizontal scrolling at 390px
+[graphite] PASS safe merge: large connected import preview is usable without horizontal scrolling at 1366px
+[berry] PASS safe merge: large connected import preview is usable without horizontal scrolling at 1366px
+[sage] PASS safe merge: large connected import preview is usable without horizontal scrolling at 1366px
+[graphite] PASS safe merge: automatic backup and merged data survive an actual Chromium restart
+[graphite] 25 safe-JSON-merge browser scenarios passed; 0 failures.
+[berry] PASS safe merge: automatic backup and merged data survive an actual Chromium restart
+[berry] 25 safe-JSON-merge browser scenarios passed; 0 failures.
+[sage] PASS safe merge: automatic backup and merged data survive an actual Chromium restart
+[sage] 25 safe-JSON-merge browser scenarios passed; 0 failures.
+[graphite] PASS import transaction: actual backup database survives reload with portable photos and exact original sources
+[graphite] PASS import transaction: metadata write failure aborts the full backup write in the same IndexedDB transaction
+[berry] PASS import transaction: actual backup database survives reload with portable photos and exact original sources
+[berry] PASS import transaction: metadata write failure aborts the full backup write in the same IndexedDB transaction
+[graphite] PASS import transaction: backup quota blocks apply and preserves a previous complete backup
+[sage] PASS import transaction: actual backup database survives reload with portable photos and exact original sources
+[berry] PASS import transaction: backup quota blocks apply and preserves a previous complete backup
+[sage] PASS import transaction: metadata write failure aborts the full backup write in the same IndexedDB transaction
+[graphite] PASS import transaction: main localStorage quota rolls back staged images while retaining old photo and durable backup
+[berry] PASS import transaction: main localStorage quota rolls back staged images while retaining old photo and durable backup
+[sage] PASS import transaction: backup quota blocks apply and preserves a previous complete backup
+[graphite] PASS import transaction: second real photo add failure removes only the first newly staged photo
+[berry] PASS import transaction: second real photo add failure removes only the first newly staged photo
+[sage] PASS import transaction: main localStorage quota rolls back staged images while retaining old photo and durable backup
+[graphite] PASS import transaction: external change during actual photo staging is retained and new photos are rolled back
+[berry] PASS import transaction: external change during actual photo staging is retained and new photos are rolled back
+[sage] PASS import transaction: second real photo add failure removes only the first newly staged photo
+[graphite] PASS import transaction: durable retention keeps the three newest actual backups without touching main or drafts
+[berry] PASS import transaction: durable retention keeps the three newest actual backups without touching main or drafts
+[sage] PASS import transaction: external change during actual photo staging is retained and new photos are rolled back
+[sage] PASS import transaction: durable retention keeps the three newest actual backups without touching main or drafts
+[graphite] PASS import transaction: backup database and binary photos survive an actual Chromium restart
+[graphite] 8 import-transaction browser scenarios passed; 0 failures.
+[berry] PASS import transaction: backup database and binary photos survive an actual Chromium restart
+[berry] 8 import-transaction browser scenarios passed; 0 failures.
+[sage] PASS import transaction: backup database and binary photos survive an actual Chromium restart
+[sage] 8 import-transaction browser scenarios passed; 0 failures.
+[berry] PASS interface controls: long editors keep their own actions available without page overflow at 1366px
+[graphite] PASS interface controls: long editors keep their own actions available without page overflow at 1366px
+[sage] PASS interface controls: long editors keep their own actions available without page overflow at 1366px
+[berry] PASS interface controls: long editors keep their own actions available without page overflow at 1024px
+[graphite] PASS interface controls: long editors keep their own actions available without page overflow at 1024px
+[sage] PASS interface controls: long editors keep their own actions available without page overflow at 1024px
+[berry] PASS interface controls: long editors keep their own actions available without page overflow at 768px
+[graphite] PASS interface controls: long editors keep their own actions available without page overflow at 768px
+[sage] PASS interface controls: long editors keep their own actions available without page overflow at 768px
+[berry] PASS interface controls: long editors keep their own actions available without page overflow at 390px
+[graphite] PASS interface controls: long editors keep their own actions available without page overflow at 390px
+[sage] PASS interface controls: long editors keep their own actions available without page overflow at 390px
+[berry] PASS interface controls: long editors keep their own actions available without page overflow at 320px
+[graphite] PASS interface controls: long editors keep their own actions available without page overflow at 320px
+[sage] PASS interface controls: long editors keep their own actions available without page overflow at 320px
+[berry] PASS interface controls: ingredient actions follow the current prep and dish instead of a stale editor
+[graphite] PASS interface controls: ingredient actions follow the current prep and dish instead of a stale editor
+[sage] PASS interface controls: ingredient actions follow the current prep and dish instead of a stale editor
+[berry] PASS interface controls: actions adapt to viewport changes and focused fields remain reachable
+[graphite] PASS interface controls: actions adapt to viewport changes and focused fields remain reachable
+[sage] PASS interface controls: actions adapt to viewport changes and focused fields remain reachable
+[berry] PASS interface controls: import preview disables the editor bar and cancellation restores the same draft
+[graphite] PASS interface controls: import preview disables the editor bar and cancellation restores the same draft
+[sage] PASS interface controls: import preview disables the editor bar and cancellation restores the same draft
+[berry] PASS interface controls: backup disclosure folds after merge and retains data and photos through toggles and reload
+[berry] 9 interface-control browser scenarios passed; 0 failures.
+[graphite] PASS interface controls: backup disclosure folds after merge and retains data and photos through toggles and reload
+[graphite] 9 interface-control browser scenarios passed; 0 failures.
+[sage] PASS interface controls: backup disclosure folds after merge and retains data and photos through toggles and reload
+[sage] 9 interface-control browser scenarios passed; 0 failures.
+[berry] PASS warm theme: main editors remain readable and usable at 320px
+[graphite] PASS warm theme: main editors remain readable and usable at 320px
+[sage] PASS warm theme: main editors remain readable and usable at 320px
+[berry] PASS warm theme: main editors remain readable and usable at 390px
+[graphite] PASS warm theme: main editors remain readable and usable at 390px
+[sage] PASS warm theme: main editors remain readable and usable at 390px
+[graphite] PASS warm theme: main editors remain readable and usable at 768px
+[berry] PASS warm theme: main editors remain readable and usable at 768px
+[sage] PASS warm theme: main editors remain readable and usable at 768px
+[berry] PASS warm theme: main editors remain readable and usable at 1366px
+[graphite] PASS warm theme: main editors remain readable and usable at 1366px
+[sage] PASS warm theme: main editors remain readable and usable at 1366px
+[berry] PASS warm theme: buttons, selectors and keyboard focus have distinct accessible states
+[graphite] PASS warm theme: buttons, selectors and keyboard focus have distinct accessible states
+[sage] PASS warm theme: buttons, selectors and keyboard focus have distinct accessible states
+[berry] PASS warm theme: empty photo areas stay compact and loaded photographs keep their proportions at 320px
+[graphite] PASS warm theme: empty photo areas stay compact and loaded photographs keep their proportions at 320px
+[sage] PASS warm theme: empty photo areas stay compact and loaded photographs keep their proportions at 320px
+[berry] PASS warm theme: empty photo areas stay compact and loaded photographs keep their proportions at 390px
+[graphite] PASS warm theme: empty photo areas stay compact and loaded photographs keep their proportions at 390px
+[sage] PASS warm theme: empty photo areas stay compact and loaded photographs keep their proportions at 390px
+[berry] PASS warm theme: empty photo areas stay compact and loaded photographs keep their proportions at 1366px
+[graphite] PASS warm theme: empty photo areas stay compact and loaded photographs keep their proportions at 1366px
+[sage] PASS warm theme: empty photo areas stay compact and loaded photographs keep their proportions at 1366px
+[berry] PASS warm theme: long recipe, fixed actions and both photographs keep their data and proportions
+[graphite] PASS warm theme: long recipe, fixed actions and both photographs keep their data and proportions
+[berry] PASS warm theme: import preview uses the same palette without writing data at 390px
+[sage] PASS warm theme: long recipe, fixed actions and both photographs keep their data and proportions
+[graphite] PASS warm theme: import preview uses the same palette without writing data at 390px
+[berry] PASS warm theme: import preview uses the same palette without writing data at 1366px
+[sage] PASS warm theme: import preview uses the same palette without writing data at 390px
+[graphite] PASS warm theme: import preview uses the same palette without writing data at 1366px
+[sage] PASS warm theme: import preview uses the same palette without writing data at 1366px
+[berry] PASS warm theme: before and after comparison is captured from the same fixture at 390px
+[graphite] PASS warm theme: before and after comparison is captured from the same fixture at 390px
+[sage] PASS warm theme: before and after comparison is captured from the same fixture at 390px
+[berry] PASS warm theme: before and after comparison is captured from the same fixture at 1366px
+[graphite] PASS warm theme: before and after comparison is captured from the same fixture at 1366px
+[sage] PASS warm theme: before and after comparison is captured from the same fixture at 1366px
+[berry] PASS warm theme: both A4 forms and all four photo choices print identically with and without the screen theme
+[berry] 14 warm-theme browser scenarios passed; 0 failures.
+REMAINING_THEME_PASS berry
+[graphite] PASS warm theme: both A4 forms and all four photo choices print identically with and without the screen theme
+[graphite] 14 warm-theme browser scenarios passed; 0 failures.
+REMAINING_THEME_PASS graphite
+[sage] PASS warm theme: both A4 forms and all four photo choices print identically with and without the screen theme
+[sage] 14 warm-theme browser scenarios passed; 0 failures.
+REMAINING_THEME_PASS sage
+[shared] PASS appearance: berry: main, card and editor remain readable at 1366px
+[shared] PASS appearance: berry: main, card and editor remain readable at 390px
+[shared] PASS appearance: graphite: main, card and editor remain readable at 1366px
+[shared] PASS appearance: graphite: main, card and editor remain readable at 390px
+[shared] PASS appearance: sage: main, card and editor remain readable at 1366px
+[shared] PASS appearance: sage: main, card and editor remain readable at 390px
+[shared] PASS appearance: approved berry pixels are preserved outside the new control at 1366px
+[shared] PASS appearance: approved berry pixels are preserved outside the new control at 390px
+[shared] PASS appearance: palette keyboard, Escape, outside click and mobile popover stay accessible
+[shared] PASS appearance: switching every theme preserves saved JSON, photo bytes, DOM nodes and geometry
+[shared] PASS appearance: theme switching keeps an unsaved recipe and its draft recoverable
+[shared] PASS appearance: invalid saved preference falls back without rewriting data
+[shared] PASS appearance: preference quota applies the theme only in memory and preserves the saved database
+[shared] PASS appearance: denied localStorage still permits safe in-memory appearance without exceptions
+[shared] PASS appearance: appearance synchronizes between tabs without rewriting recipes
+[shared] PASS appearance: a real Chromium restart retains preference, recipe and photograph
+[shared] PASS appearance: initial load requests only the selected illustration, including after reload
+[shared] PASS appearance: all themes keep the palette and artwork out of A4 printing
+[shared] 18 appearance browser scenarios passed; 0 failures.
+[shared] PASS preview persistence: absent preview stays empty despite valuable records in other namespaces; first folder saves explicitly
+[shared] PASS preview persistence: a saved preview opens itself with no migration, write or recovery panel
+[shared] PASS preview persistence: corruption remains exact, raw export works and import stays blocked
+[shared] PASS preview persistence: diagnosis of both different databases is read-only, with individual exports
+[shared] PASS preview persistence: explicit recovery reuses merge preview and mandatory backup; donor photos and drafts stay unchanged
+[shared] PASS preview persistence: conflicting prices require a choice and both versions can be kept
+[shared] PASS preview persistence: cancel recovery leaves both databases unchanged without a backup write
+[shared] PASS preview persistence: a donor changed after preview aborts recovery and keeps the new donor data
+[shared] PASS preview persistence: stale save is rejected even if no storage event was delivered; input can be exported
+[shared] PASS preview persistence: quota never looks saved and keeps the last database plus editable input
+[shared] PASS preview persistence: silent failed writes are detected instead of reporting success
+[shared] PASS preview persistence: missing foreign photo blocks recovery and does not create a foreign database
+[shared] PASS preview persistence: unconfirmed import keeps committed photo references and reloads the actual saved database
+[shared] PASS preview persistence: denied storage does not replace anything and has an explicit diagnosis
+[shared] PASS preview persistence: diagnostics are opt-in on a healthy database and hidden in A4
+[shared] PASS preview persistence: berry: product, price, prep, dish, folder, packaging, both photos and draft survive three Chrome restarts at 1366px
+[shared] PASS preview persistence: berry: product, price, prep, dish, folder, packaging, both photos and draft survive three Chrome restarts at 390px
+[shared] PASS preview persistence: graphite: product, price, prep, dish, folder, packaging, both photos and draft survive three Chrome restarts at 1366px
+[shared] PASS preview persistence: graphite: product, price, prep, dish, folder, packaging, both photos and draft survive three Chrome restarts at 390px
+[shared] PASS preview persistence: sage: product, price, prep, dish, folder, packaging, both photos and draft survive three Chrome restarts at 1366px
+[shared] PASS preview persistence: sage: product, price, prep, dish, folder, packaging, both photos and draft survive three Chrome restarts at 390px
+[shared] 21 preview-persistence browser scenarios passed; 0 failures.
+ALL_REMAINING_CHECKS_PASS

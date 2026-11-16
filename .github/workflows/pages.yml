@@ -1,34 +1,84 @@
-name: Publish Kitchen Calculator to GitHub Pages
-
+name: Publish approved Kitchen Calculator release
 on:
   push:
     branches: [main]
   workflow_dispatch:
-
 permissions:
   contents: read
   pages: write
   id-token: write
-
 concurrency:
   group: github-pages
-  cancel-in-progress: true
-
+  cancel-in-progress: false
 jobs:
   deploy:
+    runs-on: ubuntu-latest
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Configure Pages
-        uses: actions/configure-pages@v5
-      - name: Upload site
-        uses: actions/upload-pages-artifact@v3
+      - uses: actions/checkout@v4
         with:
-          path: .
-      - name: Deploy
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify repository, main and approved ancestors
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          test '${{ github.repository }}' = sobaca0808-bit/kitchen-calculator-test
+          test "$(gh api repos/${{ github.repository }}/git/ref/heads/main --jq .object.sha)" = '${{ github.sha }}'
+          for PARENT in 04c98fb20444859454fc18fd6f3d6e0429818f8b 1a68adffd2046b758b683af3b516adf944081149 1c1fcc057370f04a0451bf62ef6241a1edeb7587 6cf49ce304b9ddf0e3c6de2d780537f12cbf8e7b; do
+            git merge-base --is-ancestor "$PARENT" HEAD
+          done
+      - name: Verify all logic, storage and JSON checks on merged main
+        run: node --test tests/{calculations,storage,storage-extensions,json-merge,import-transaction,folders,recipe-view,recipe-card-model,profitability,preview-isolation,pages,packaging,drafts,photos,photo-print-selection,appearance,preview-persistence,establishment-expenses,recipe-expense-preferences}.test.js
+      - name: Build approved root and preserve all five previous test sites
+        run: python3 scripts/release-pages.py --output "$RUNNER_TEMP/release-site" --proof "$RUNNER_TEMP/release-proof.json" --legacy-runtime "$RUNNER_TEMP/legacy-runtime.json"
+      - name: Install disposable Chrome and print tooling
+        run: |
+          npm install --prefix "$RUNNER_TEMP/release-tools" --ignore-scripts --no-audit --no-fund playwright@1.62.1
+          sudo apt-get update -qq
+          sudo apt-get install -y poppler-utils
+      - name: Verify unchanged old site and legacy-data upgrade before publication
+        env:
+          NODE_PATH: ${{ runner.temp }}/release-tools/node_modules
+          CHROMIUM_PATH: /usr/bin/google-chrome
+          KITCHEN_RELEASE_RUNTIME_ROOT: ${{ runner.temp }}/release-site
+          KITCHEN_RELEASE_LEGACY_RUNTIME: ${{ runner.temp }}/legacy-runtime.json
+          KITCHEN_RELEASE_ARTIFACTS: ${{ runner.temp }}/release-local-proof
+        run: |
+          python3 scripts/verify-release.py "$RUNNER_TEMP/release-proof.json" --phase before
+          node tests/release-upgrade.browser.test.js
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: ${{ runner.temp }}/release-site
+      - name: Verify main immediately before deployment
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: test "$(gh api repos/${{ github.repository }}/git/ref/heads/main --jq .object.sha)" = '${{ github.sha }}'
+      - name: Publish at the existing permanent URL
         id: deployment
         uses: actions/deploy-pages@v4
+      - name: Verify published source and unchanged previous sandboxes
+        run: python3 scripts/verify-release.py "$RUNNER_TEMP/release-proof.json" --phase after
+      - name: Verify actual HTTPS application, JSON, photos, A4 and browser restarts
+        env:
+          NODE_PATH: ${{ runner.temp }}/release-tools/node_modules
+          CHROMIUM_PATH: /usr/bin/google-chrome
+          KITCHEN_RELEASE_URL: https://sobaca0808-bit.github.io/kitchen-calculator-test/
+          KITCHEN_RELEASE_LEGACY_RUNTIME: ${{ runner.temp }}/legacy-runtime.json
+          KITCHEN_RELEASE_ARTIFACTS: ${{ runner.temp }}/release-live-proof
+        run: |
+          node tests/release-upgrade.browser.test.js
+          node scripts/check-release.cjs
+      - name: Save release evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: kitchen-release-proof
+          path: |
+            ${{ runner.temp }}/release-proof.json
+            ${{ runner.temp }}/release-site/release-version.json
+            ${{ runner.temp }}/release-local-proof
+            ${{ runner.temp }}/release-live-proof

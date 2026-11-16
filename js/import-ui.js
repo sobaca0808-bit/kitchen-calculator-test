@@ -3,7 +3,8 @@
   const S=root.KitchenStorage, Photos=root.KitchenPhotos, Merge=root.KitchenJSONMerge;
   const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const labels={products:'Продукты',product:'Продукт',packaging:'Упаковка',folders:'Папки',folder:'Папка',prep:'Полуфабрикат',dish:'Блюдо',recipes:'Рецепты',extension:'Дополнительное поле'};
-  function mount({getState,canStart,setBusy,onApplied,message,getDraftSource=()=>null}) {
+  const entryName=entry=>entry.kind==='extension'&&entry.id==='establishmentExpenses'?'Расходы заведения':entry.name||entry.id||entry.key;
+  function mount({getState,canStart,setBusy,onApplied,message,getDraftSource=()=>null,onWriteUncertain=()=>{}}) {
     const $=selector=>document.querySelector(selector), service=root.KitchenImportTransaction.create();
     const panel=$('#import-panel');let preview=null,version=0,applying=false,planning=false;
     function setBackupsExpanded(expanded) {
@@ -63,12 +64,12 @@
       $('#import-replace-warning').hidden=preview.mode!=='replace';
       $('#import-conflicts').innerHTML=(plan.conflicts||[]).map(conflict=>{
         const options=conflict.options||['local','both'];
-        return `<section class="import-conflict" data-conflict-key="${esc(conflict.key)}"><h3>${esc(labels[conflict.kind]||conflict.kind)}: ${esc(conflict.name||conflict.id||conflict.key)}</h3><p>${esc(conflict.reason)}</p><label>Решение<select data-conflict-choice="${esc(conflict.key)}"><option value="">Выберите действие…</option>${options.map(value=>`<option value="${esc(value)}" ${conflict.choice===value?'selected':''}>${esc(choiceLabel(value))}</option>`).join('')}</select></label><details><summary>Сравнить содержимое</summary><p class="field-help">Большие поля показаны сокращённо, данные фото — без длинной строки изображения. Сам файл обрабатывается полностью.</p><div class="import-comparison"><div><h4>Текущая версия</h4><pre>${esc(readable(conflict.local))}</pre></div><div><h4>Из файла</h4><pre>${esc(readable(conflict.incoming))}</pre></div></div></details></section>`;
+        return `<section class="import-conflict" data-conflict-key="${esc(conflict.key)}"><h3>${esc(labels[conflict.kind]||conflict.kind)}: ${esc(entryName(conflict))}</h3><p>${esc(conflict.reason)}</p><label>Решение<select data-conflict-choice="${esc(conflict.key)}"><option value="">Выберите действие…</option>${options.map(value=>`<option value="${esc(value)}" ${conflict.choice===value?'selected':''}>${esc(choiceLabel(value))}</option>`).join('')}</select></label><details><summary>Сравнить содержимое</summary><p class="field-help">Большие поля показаны сокращённо, данные фото — без длинной строки изображения. Сам файл обрабатывается полностью.</p><div class="import-comparison"><div><h4>Текущая версия</h4><pre>${esc(readable(conflict.local))}</pre></div><div><h4>Из файла</h4><pre>${esc(readable(conflict.incoming))}</pre></div></div></details></section>`;
       }).join('');
       $('#import-warnings').innerHTML=(plan.warnings||[]).map(warning=>`<li>${esc(typeof warning==='string'?warning:warning.text)}</li>`).join('');
       $('#import-warnings').hidden=!(plan.warnings||[]).length;
       const rows=plan.rows||[];
-      $('#import-details').innerHTML=rows.slice(0,200).map(row=>`<li>${esc(labels[row.kind]||row.kind)} · ${esc(row.name||row.id)} — ${esc({added:'добавить',updated:'обновить',skipped:'пропустить',removed:'удалить'}[row.action]||row.action)}${row.reason?' · '+esc(row.reason):''}</li>`).join('')+(rows.length>200?`<li>Ещё ${rows.length-200} позиций. Итоги выше учитывают весь файл.</li>`:'');
+      $('#import-details').innerHTML=rows.slice(0,200).map(row=>`<li>${esc(labels[row.kind]||row.kind)} · ${esc(entryName(row))} — ${esc({added:'добавить',updated:'обновить',skipped:'пропустить',removed:'удалить'}[row.action]||row.action)}${row.reason?' · '+esc(row.reason):''}</li>`).join('')+(rows.length>200?`<li>Ещё ${rows.length-200} позиций. Итоги выше учитывают весь файл.</li>`:'');
       panel.querySelectorAll('[data-conflict-choice]').forEach(select=>select.addEventListener('change',()=>{
         if(!preview||applying)return;
         preview.choices[select.dataset.conflictChoice]=select.value;draw();
@@ -92,27 +93,35 @@
     }
     $('#import-mode').addEventListener('change',()=>{if(preview&&!applying){preview.mode=$('#import-mode').value;preview.choices={};draw();}});
     $('#import').addEventListener('click',()=>{$('#import-file').value='';$('#import-file').click();});
-    $('#import-file').addEventListener('change',async event=>{
-      const file=event.target.files[0];if(!file||preview||applying||!canStart())return;
+    async function openCandidate(candidate,fileName='Выбранная локальная база',checkSource=()=>{}) {
+      if(preview||applying||!canStart())return false;
       setBusy(true);panel.hidden=false;panel.setAttribute('aria-busy','true');planning=true;
-      $('#import-apply').disabled=true;$('#import-mode').disabled=true;$('#import-mode').value='merge';$('#import-file-name').textContent=file.name;
+      $('#import-apply').disabled=true;$('#import-mode').disabled=true;$('#import-mode').value='merge';$('#import-file-name').textContent=fileName;
       $('#import-conflicts').innerHTML='';$('#import-summary').innerHTML='';$('#import-details').innerHTML='';$('#import-warnings').hidden=true;$('#import-error').textContent='';$('#import-progress').textContent='Читаем файл и текущие фотографии…';$('#import-replace-warning').hidden=true;
       const token=++version;
       try {
-        if(file.size>S.MAX_IMPORT_BYTES)throw Error('Файл больше 50 МБ.');
-        const candidate=S.parseJSON(await file.text());
+        checkSource();candidate=S.validate(candidate);
         const expectedSource=source(),current=S.validate(getState()),saved=S.load();
-        if(saved.error||!saved.data||S.stringify(saved.data)!==S.stringify(current))throw Error('Текущая база изменилась или недоступна. Сохраните черновик и обновите страницу.');
+        if(saved.error||S.stringify(saved.data||S.empty())!==S.stringify(current))throw Error('Текущая база изменилась или недоступна. Сохраните черновик и обновите страницу.');
         const portable=await Photos.exportData(current),incoming=await Photos.exportData(candidate);
         if(token!==version)return;
         if(source()!==expectedSource)throw Error('База изменилась в другой вкладке. Повторите просмотр после обновления страницы.');
-        preview={source:expectedSource,current,portable,incoming,fileName:file.name,mode:'merge',choices:{},plan:null};
+        checkSource();preview={source:expectedSource,current,portable,incoming,fileName,checkSource,mode:'merge',choices:{},plan:null};
         $('#import-mode').disabled=false;
         await draw();
+        return true;
       } catch(error) {
         if(token!==version)return;
         preview=null;panel.hidden=true;$('#import-mode').disabled=false;setBusy(false);message('Импорт отменён: '+error.message+' Основная база не записана.',true);
       } finally {if(!preview&&token===version){planning=false;panel.setAttribute('aria-busy','false');}}
+      return false;
+    }
+    $('#import-file').addEventListener('change',async event=>{
+      const file=event.target.files[0];if(!file||preview||applying)return;
+      try {
+        if(file.size>S.MAX_IMPORT_BYTES)throw Error('Файл больше 50 МБ.');
+        await openCandidate(S.parseJSON(await file.text()),file.name);
+      } catch(error) {message('Импорт отменён: '+error.message+' Основная база не записана.',true);}
     });
     $('#import-apply').addEventListener('click',async()=>{
       const current=preview;
@@ -123,15 +132,17 @@
       $('#import-progress').textContent='Создаём резервную копию, затем применяем проверенные изменения…';
       let appliedResult=null;
       try {
+        current.checkSource();
         const result=await service.apply({candidate:current.plan.data,currentState:current.current,expectedSource:current.source,mode:current.mode,draftSource:getDraftSource()});
         appliedResult=result;
-        onApplied(result.data);
+        onApplied(result.data,result.noOp?current.source:S.stringify(result.data));
         preview=null;panel.hidden=true;
         message(result.noOp?'Объединение выполнено: новых изменений нет.':current.mode==='replace'?'База заменена. Резервная копия сохранена.':'Объединение выполнено. Резервная копия сохранена.');
       } catch(error) {
-        $('#import-error').textContent=error.message;$('#import-progress').textContent='Применение отменено. Исходная база не перезаписана. Отмените просмотр и выберите файл заново.';
+        $('#import-error').textContent=error.message;$('#import-progress').textContent=error.commitUncertain?'Результат записи не подтверждён. Проверьте базу после обновления; резервная копия сохранена.':'Применение отменено. Исходная база не перезаписана. Отмените просмотр и выберите файл заново.';
         current.plan=null;preview=null;panel.hidden=true;
         if(appliedResult)message((appliedResult.noOp?'Новых изменений нет, база не перезаписывалась.':'Данные уже сохранены; резервная копия до импорта осталась в браузере.')+' Не удалось обновить экран: '+error.message+' Обновите страницу, чтобы увидеть сохранённую базу.',true);
+        else if(error.commitUncertain){onWriteUncertain();message(error.message+' Не повторяйте запись из старой формы: сначала скачайте доступную копию и проверьте базу после обновления.',true);}
         else message('Импорт отменён: '+error.message+' Исходная база не перезаписана.',true);
       } finally {
         applying=false;panel.setAttribute('aria-busy','false');$('#import-cancel').disabled=false;$('#import-mode').disabled=false;
@@ -141,7 +152,7 @@
       }
     });
     refreshBackups(true);
-    return {close,refreshBackups};
+    return {close,refreshBackups,openCandidate};
   }
   root.KitchenImportUI={mount};
 })(typeof globalThis!=='undefined'?globalThis:this);

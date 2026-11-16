@@ -1,6 +1,7 @@
 /* Focused Issue #4 checks. scripts/check-preview.mjs supplies a loopback URL.
  * Every scenario uses a fresh browser context and fictional test-namespace data. */
 'use strict';
+const APPEARANCE_KEY=require('./helpers/theme-context.js').KEY;
 const assert = require('node:assert/strict');
 const { chromium } = require('playwright');
 
@@ -48,7 +49,7 @@ async function checkStorageIsolation(page, expectSentinel = true) {
     return { ops, sentinel: window.__readProductListSentinel(key) };
   }, PRODUCTION_KEY);
   if (expectSentinel) assert.equal(proof.sentinel, SENTINEL, 'The fictional production-key sentinel is unchanged');
-  assert(proof.ops.length > 0 && proof.ops.every(op => op.method !== 'clear' && [PREVIEW_KEY,DRAFT_KEY].includes(op.key)), 'Application storage operations remain inside the test namespace');
+  assert(proof.ops.length > 0 && proof.ops.every(op => op.method !== 'clear' && [PREVIEW_KEY,DRAFT_KEY,APPEARANCE_KEY].includes(op.key)), 'Application storage operations remain inside the test namespace');
 }
 async function listStyles(page) {
   return page.locator('#library-list').evaluate(list => {

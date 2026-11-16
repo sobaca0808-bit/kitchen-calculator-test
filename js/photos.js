@@ -181,19 +181,19 @@
       if(image.naturalWidth!==record.width || image.naturalHeight!==record.height || Math.max(record.width,record.height)>S.MAX_PHOTO_SIDE)throw Error('Размер фотографии не соответствует данным резервной копии.');
     } finally {image.src='';}
   }
-  async function portablePhoto(id) {
-    const record=await get(id);await validateBlob(record);
+  async function portablePhoto(id,reader=get) {
+    const record=await reader(id);await validateBlob(record);
     return {dataUrl:await readDataURL(record.blob),width:record.width,height:record.height,mime:record.mime};
   }
-  async function exportData(state) {
+  async function exportData(state,reader=get) {
     const data=S.validate(state);
     for(const recipe of data.recipes) {
       if(recipe.photoIds !== undefined) {
         recipe.photos=[];
-        for(const id of recipe.photoIds)recipe.photos.push(id ? await portablePhoto(id) : null);
+        for(const id of recipe.photoIds)recipe.photos.push(id ? await portablePhoto(id,reader) : null);
         delete recipe.photoIds;
       } else if(recipe.photoId) {
-        recipe.photo=await portablePhoto(recipe.photoId);delete recipe.photoId;
+        recipe.photo=await portablePhoto(recipe.photoId,reader);delete recipe.photoId;
       }
     }
     // Apply the same portable-file budget as import, so every export can be restored.

@@ -1,0 +1,153 @@
+/* PR 20, fresh kitchen: screen only. A4 and every data/calculation module are unchanged. */
+@media screen {
+  :root {
+    --ink:#343a38;
+    --muted:#59615b;
+    --green:#a65b77;
+    --soft:#e8f0e5;
+    --line:#e1d9db;
+    --paper:#fffdf9;
+    --amber:#765238;
+    --amber-bg:#faf0e6;
+    --red:#a13d4e;
+    --linen:#eef3eb;
+    --field:#fffefd;
+    --bronze:#a7835c;
+    --sage:#b8cbb4;
+    --rose:#f4d9e2;
+    --berry:#a65b77;
+    --control-line:#858f86;
+    --focus:#914662;
+    color-scheme:light;
+    background:#fff9f4;
+  }
+  body {
+    background-color:#fff9f4;
+    background-image:linear-gradient(#fff9f454,#fff9f454),url('watercolor-kitchen.webp');
+    background-size:cover,100% auto;
+    background-position:center top;
+    background-repeat:no-repeat;
+    background-attachment:fixed;
+  }
+  button {
+    background:var(--linen);color:var(--ink);border-color:#b5c6ae;
+    border-radius:9px;box-shadow:0 1px 2px #343a3807;
+  }
+  button:hover { background:#e2ecdd;border-color:#82967a; }
+  button:active { background:#d6e4cf;box-shadow:none; }
+  button.primary { background:var(--berry);border-color:var(--berry);color:var(--paper); }
+  button.primary:hover { background:#944c68;border-color:#944c68; }
+  button.primary:active { background:#813c57;border-color:#813c57; }
+  button.saved,button.saved:hover { background:#536d4d;border-color:#536d4d;color:var(--paper);box-shadow:0 0 0 3px #b8cbb438; }
+  button.danger,button.remove-row { background:#fff0f1;color:var(--red);border-color:#c7848e; }
+  button.danger:hover,button.remove-row:hover { background:#f8e0e4;border-color:var(--red); }
+  button.danger:active,button.remove-row:active { background:#f0ccd3;border-color:var(--red); }
+  button:disabled,button:disabled:hover { opacity:1;background:#f0eeed;color:#646761;border-color:#c7cac2;box-shadow:none;cursor:default; }
+  input:not(.name-input),textarea,select { background:var(--field);color:var(--ink);border-color:var(--control-line); }
+  select { background:var(--linen);cursor:pointer; }
+  input::placeholder,textarea::placeholder { color:#69716b;opacity:1; }
+  input:focus,textarea:focus,select:focus { border-color:var(--focus);box-shadow:0 0 0 3px #a65b7722; }
+  button:focus-visible,a:focus-visible,summary:focus-visible { outline:3px solid var(--focus);outline-offset:3px; }
+  input[aria-invalid=true],select[aria-invalid=true],textarea[aria-invalid=true] { border-color:var(--red);background:#fff0f1; }
+  input[aria-invalid=true]:focus,select[aria-invalid=true]:focus,textarea[aria-invalid=true]:focus { box-shadow:0 0 0 3px #a13d4e22; }
+  input[type=checkbox],input[type=radio] { accent-color:var(--berry); }
+
+  .brand { color:var(--ink);background:var(--paper);padding:9px 12px;border:1px solid #eadfe4;border-radius:15px;box-shadow:0 3px 12px #a65b7709; }
+  .brand-icon { background:var(--berry);color:var(--paper);border-radius:11px;box-shadow:none; }
+  .brand small,.library-title .eyebrow,.local-note,.page-footer { color:var(--muted); }
+  .library-title h1 { color:var(--ink); }
+  .library-title { background:var(--paper);border-radius:9px;box-shadow:0 0 0 7px var(--paper); }
+  .test-notice { background:#fbf0f4;color:#70465a;border-bottom:1px solid #ead3dc; }
+  .tabs { background:var(--paper);border:1px solid #eadfe4;border-radius:13px;padding:5px;gap:5px;box-shadow:0 3px 12px #a65b7707; }
+  .tabs button { color:#53644d;background:transparent;border-radius:8px;border-bottom-color:transparent;box-shadow:none; }
+  .tabs button:hover { background:var(--linen); }
+  .tabs button[aria-current=page] { background:var(--rose);color:#763a53;border-bottom-color:#bf8a9f; }
+  .tabs span { background:var(--soft);color:var(--ink); }
+  .tabs button[aria-current=page] span { background:var(--paper);color:#763a53; }
+  .backup-actions .quiet { background:var(--paper);color:var(--ink);border-color:#c5cebf; }
+  .backup-actions .quiet:hover { background:var(--linen); }
+  .local-note { background:var(--paper);border:1px solid #e4e9df;padding:10px;border-radius:10px; }
+  .page-footer { background:#fff9f4; }
+
+  .editor,.drafts-panel,.folder-tools,.import-panel,.import-backups {
+    background:var(--paper);border-color:var(--line);box-shadow:0 5px 22px #a65b7709;
+  }
+  .editor { border-radius:15px; }
+  .editor-head { background:#fcf0f4;border-bottom-color:#ead8df;border-radius:13px 13px 0 0; }
+  .name-input { background:transparent;color:var(--ink);border-bottom-color:#d8b1c1; }
+  .name-input:focus { border-color:var(--focus); }
+  .badge,.prep-label { background:var(--soft);color:#455c3f;border-color:#a5bb9d; }
+  .badge.incomplete { background:var(--amber-bg);color:var(--amber); }
+  .compact-library .compact-list { background:var(--paper);border-color:#c7d1c1;border-radius:10px;box-shadow:0 3px 12px #536d4d06; }
+  .compact-library .library-row { background:var(--paper);border-bottom-color:#e1e7dd; }
+  .compact-library .library-row:hover { background:#f1f6ee; }
+  .compact-library .library-row.active { background:#f9e8ef;border-color:#c18ba1;box-shadow:inset 3px 0 var(--berry),inset 0 0 0 1px #d2a5b7; }
+  .compact-library .library-row.active:hover { background:#f4dfe8; }
+  .compact-library .library-row:focus-visible,.compact-library .compact-list:focus-visible { outline-color:var(--focus); }
+  .folder-tools { border-color:#dce4d6; }
+  .extra-grid,.yield-panel { background:#f2f6ee;border-color:#b8cbb0; }
+  .ingredient-row { background:var(--paper);border-color:#ccd6c6; }
+  .suggestions { background:var(--paper);border-color:var(--control-line);box-shadow:0 5px 18px #536d4d16; }
+  .suggestion { background:var(--paper); }
+  .suggestion:hover,.suggestion[aria-selected=true] { background:var(--soft); }
+  .ingredient-tag,.draft-status { color:#4b6643; }
+  .draft-status.inline-error { color:var(--red); }
+  .base-price,.summary { background:var(--soft);border-color:#afc2a7; }
+  .summary.incomplete { background:var(--amber-bg);border-color:#d5bd9c; }
+  .summary-value { color:#81405b; }
+  .summary-status { background:var(--paper);color:#724c36;border-color:#c6a47c; }
+  .issues,.draft-note { color:var(--amber); }
+  .form-actions { background:#fffdf9fa;border-top-color:#d9bdc9;box-shadow:0 -3px 14px #a65b770b;backdrop-filter:none; }
+  .mobile-summary { color:var(--muted); }
+  .mobile-summary strong { color:var(--ink); }
+  #message { background:var(--soft);color:#35542f;border-color:#a9bf9f; }
+  #message.error { background:#fff0f1;color:#933249;border-color:#c7848e; }
+
+  .recipe-card h1 { color:var(--ink); }
+  .recipe-card .eyebrow { color:#88415e; }
+  .recipe-card th { background:var(--soft);color:var(--ink); }
+  .recipe-card th,.recipe-card td { border-color:#bdcbb5; }
+  .recipe-card .technology,.recipe-card .notes { border-color:#dcc8b1; }
+  .packaging-panel,.packaging-row { background:var(--paper);border-color:#dce4d6; }
+  .packaging-subtotal { background:var(--soft);border-color:#afc2a7; }
+  .packaging-checkbox input { accent-color:var(--berry); }
+  .profitability-card { background:var(--paper);border-color:#e7ced8; }
+  .profitability-grid>div { background:#fcf0f4; }
+  .profitability-grid dd { color:var(--ink); }
+
+  .photo-frame-button,.photo-open,.photo-slot[data-empty=true] { background:#f6f8f2;border-color:#bdcbb5; }
+  .photo-frame-button:hover,.photo-open:hover { border-color:var(--berry);background:#f8f0f4; }
+  .photo-frame-button:not(:has(img)) { aspect-ratio:auto;min-height:86px; }
+  .photo-frame-button:not(:has(img)),.photo-slot[data-empty=true] { border-style:dashed; }
+  .photo-frame-button:not(:has(img)) .photo-empty { color:#7d425b; }
+  .photo-slot[data-empty=true] { min-height:64px;aspect-ratio:auto;align-self:start; }
+  .recipe-photos:not(:has(img)) { margin:12px 0;gap:12px; }
+  .recipe-photos:has(img) .photo-slot[data-empty=true] { display:none; }
+  .recipe-photos:has(img):has(.photo-slot[data-empty=true]) { grid-template-columns:minmax(0,1fr); }
+  .recipe-photos:has(img):has(.photo-slot[data-empty=true]) .photo-slot[data-empty=false] { max-width:560px;justify-self:center; }
+  .photo-empty { color:var(--muted); }
+  .photo-editor { background:#fdfbf9; }
+  .photo-editor h3 { color:#81405b; }
+  .photo-slot-actions button { min-height:40px; }
+  .photo-viewer { background:var(--paper);border-color:#d5dcd0;box-shadow:0 10px 40px #343a3845; }
+  .photo-viewer::backdrop { background:#29342ec9; }
+  .photo-viewer-stage { background:#303a35; }
+  .import-summary>div { background:var(--soft); }
+  .import-warning { background:var(--amber-bg);color:var(--amber); }
+  .import-comparison pre { background:#f2f6ee;color:var(--ink); }
+  .import-actions { background:var(--paper);border-top-color:var(--line); }
+  .import-conflict { border-color:#c6d2be; }
+  #toggle-import-backups { background:transparent;color:var(--ink);box-shadow:none; }
+  #toggle-import-backups:hover { background:var(--linen); }
+  .backup-toggle-icon { color:var(--berry); }
+}
+@media screen and (max-width:760px) {
+  body { background-size:cover,100% auto; }
+  .brand { gap:8px;padding:7px 8px;border-radius:12px; }
+  .brand-icon { flex-shrink:0; }
+  .tabs { display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px;padding:4px; }
+  .tabs button { min-height:44px;padding:8px 4px; }
+  .recipe-photos:not(:has(img)) { grid-template-columns:repeat(2,minmax(0,1fr));gap:10px; }
+  .photo-frame-button:not(:has(img)) { min-height:74px; }
+  .photo-slot-actions button { min-height:44px; }
+}

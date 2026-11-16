@@ -1,0 +1,57 @@
+name: Unified release candidate checks
+on:
+  push:
+    branches: [release/unified-review]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify all approved branches are already included exactly once
+        run: |
+          for PARENT in 63443c53d2c7a99060584d54eae0e9c779475405 04c98fb20444859454fc18fd6f3d6e0429818f8b 1a68adffd2046b758b683af3b516adf944081149 1c1fcc057370f04a0451bf62ef6241a1edeb7587 6cf49ce304b9ddf0e3c6de2d780537f12cbf8e7b; do
+            git merge-base --is-ancestor "$PARENT" HEAD
+          done
+          git diff --exit-code 6cf49ce -- index.html styles.css js assets
+      - name: Install disposable browser and A4 tooling
+        run: |
+          npm install --prefix "$RUNNER_TEMP/unified-tools" --ignore-scripts --no-audit --no-fund playwright@1.62.1
+          sudo apt-get update -qq
+          sudo apt-get install -y poppler-utils
+      - name: Build the release without changing any existing storage name or sandbox
+        run: python3 scripts/release-pages.py --output "$RUNNER_TEMP/release-site" --proof "$RUNNER_TEMP/release-proof.json" --legacy-runtime "$RUNNER_TEMP/legacy-runtime.json"
+      - name: Verify release packaging, legacy upgrade and full browser restarts locally
+        env:
+          NODE_PATH: ${{ runner.temp }}/unified-tools/node_modules
+          CHROMIUM_PATH: /usr/bin/google-chrome
+          KITCHEN_RELEASE_RUNTIME_ROOT: ${{ runner.temp }}/release-site
+          KITCHEN_RELEASE_LEGACY_RUNTIME: ${{ runner.temp }}/legacy-runtime.json
+          KITCHEN_RELEASE_ARTIFACTS: ${{ runner.temp }}/release-preflight
+        run: |
+          node tests/release-upgrade.browser.test.js
+          node scripts/check-release.cjs
+      - name: Run complete logic and browser checks in all three themes
+        shell: bash
+        env:
+          NODE_PATH: ${{ runner.temp }}/unified-tools/node_modules
+          CHROMIUM_PATH: /usr/bin/google-chrome
+          KITCHEN_TEST_ARTIFACT_ROOT: ${{ runner.temp }}/unified-proof
+        run: node scripts/check-preview.mjs 2>&1 | tee "$RUNNER_TEMP/unified-full-check.log"
+      - name: Save compact final-check evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: unified-release-checks
+          path: |
+            ${{ runner.temp }}/unified-full-check.log
+            ${{ runner.temp }}/unified-proof/expenses
+            ${{ runner.temp }}/unified-proof/persistence/persistence-proof.json
+            ${{ runner.temp }}/unified-proof/persistence/fixed-lifecycle.json
+            ${{ runner.temp }}/release-proof.json
+            ${{ runner.temp }}/release-preflight

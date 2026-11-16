@@ -1,5 +1,6 @@
 /* Issue #16: real IndexedDB transaction checks on a blank disposable loopback page. */
 'use strict';
+const APPEARANCE_KEY=require('./helpers/theme-context.js').KEY;
 const assert=require('node:assert/strict');
 const fs=require('node:fs/promises');
 const os=require('node:os');
@@ -32,7 +33,7 @@ async function setup(page,withPhoto=false){return page.evaluate(async withPhoto=
   const staged=await KitchenPhotos.prepareImport(data);const result=KitchenStorage.save(staged.data);if(!result.ok)throw Error(result.error);
   return {data:staged.data,source:localStorage.getItem(KitchenStorage.KEY),portable:await KitchenPhotos.exportData(staged.data)};
 },withPhoto);}
-async function guard(page){const result=await page.evaluate(({key,draft,production})=>({sentinel:__txRead(production),draft:__txRead(draft),ops:__txOps}),{key:KEY,draft:DRAFT,production:PRODUCTION});assert.equal(result.sentinel,SENTINEL);assert.equal(result.draft,'fictional independent draft');assert(result.ops.every(op=>op.method!=='clear'&&[KEY,DRAFT].includes(op.key)),'Only the exact test and draft keys are accessed');}
+async function guard(page){const result=await page.evaluate(({key,draft,production})=>({sentinel:__txRead(production),draft:__txRead(draft),ops:__txOps}),{key:KEY,draft:DRAFT,production:PRODUCTION});assert.equal(result.sentinel,SENTINEL);assert.equal(result.draft,'fictional independent draft');assert(result.ops.every(op=>op.method!=='clear'&&[KEY,DRAFT,APPEARANCE_KEY].includes(op.key)),'Only the exact test and draft keys are accessed');}
 async function scenario(name,fn){const context=await browser.newContext();const errors=[];context.on('page',page=>page.on('pageerror',error=>errors.push(error.message)));const page=await blank(context);try{await fn(page);await guard(page);assert.deepEqual(errors,[]);passed++;console.log('PASS import transaction:',name);}catch(error){failures.push({name,error:error.stack||error.message});console.error('FAIL import transaction:',name,error.message);}finally{await context.close();}}
 (async()=>{
  try{
