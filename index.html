@@ -6,6 +6,11 @@
   <meta name="theme-color" content="#fff9f4">
   <title>ТЕСТ PR №2 — Кухонный калькулятор</title>
   <meta name="robots" content="noindex, nofollow">
+  <!-- PWA:HEAD -->
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+  <link rel="stylesheet" href="assets/pwa.css">
+  <!-- /PWA:HEAD -->
   <script src="js/appearance.js"></script>
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="assets/folders.css">
@@ -37,12 +42,28 @@
   <script defer src="js/persistence-diagnostics.js?v=issue21-storage-1"></script>
   <script defer src="js/editor-actions.js"></script>
   <script defer src="js/app.js?v=recipe-expenses-1"></script>
+  <!-- PWA:SCRIPT -->
+  <script defer src="js/pwa.js"></script>
+  <!-- /PWA:SCRIPT -->
 </head>
 <body>
   <p class="test-notice" role="note">ТЕСТ PR №2 · Отдельное хранилище. Рабочие продукты и рецепты здесь не используются.</p>
   <header class="app-header">
     <a class="brand" href="index.html" aria-label="Кухонный калькулятор, главная"><span class="brand-icon" aria-hidden="true">К</span><span>Кухонный <b>калькулятор</b><small>Себестоимость начинается с продуктов</small></span></a>
     <div class="backup-actions">
+      <!-- PWA:CONTROL -->
+      <div id="pwa-control" class="pwa-control" hidden>
+        <button id="pwa-toggle" class="quiet" type="button" aria-expanded="false" aria-controls="pwa-panel" aria-haspopup="dialog">Приложение</button>
+        <section id="pwa-panel" class="pwa-panel" role="dialog" aria-label="Установка и автономный режим" hidden>
+          <button id="pwa-close" class="quiet" type="button" aria-label="Закрыть окно приложения">×</button>
+          <h2>Кухонный калькулятор</h2><p id="pwa-status" role="status" aria-live="polite"></p>
+          <div class="pwa-panel-actions"><button id="pwa-install" class="primary" type="button" hidden>Установить приложение</button><button id="pwa-check" class="quiet" type="button">Проверить обновления</button></div>
+          <details><summary>Как установить на Android</summary><ol><li>Откройте этот адрес в обычном Chrome с интернетом.</li><li>Нажмите «Установить приложение» либо откройте меню Chrome ⋮ → «Установить приложение» или «Добавить на главный экран».</li><li>Запускайте калькулятор через появившуюся иконку. Дождитесь готовности автономной копии перед работой без сети.</li></ol></details>
+          <details><summary>Данные и перенос через JSON</summary><p>В разных браузерах, профилях или способах установки хранилище может отличаться. Если после установки библиотека пуста, откройте прежнюю версию, нажмите «Экспорт JSON», затем выберите этот файл через «Импорт JSON» в приложении. Проверьте список изменений перед применением. Ничего не переносится и не заменяется автоматически.</p></details>
+          <details><summary>Как обновляется приложение</summary><p>Обновление загружается отдельно. Текущая форма не перезагружается. Сохраните работу и закройте все окна этого приложения; новая версия откроется при следующем запуске. Обновление не удаляет рецепты, фотографии или резервные копии.</p></details>
+        </section>
+      </div>
+      <!-- /PWA:CONTROL -->
       <div id="appearance-control" class="appearance-control">
         <button id="appearance-toggle" class="quiet appearance-toggle" type="button" aria-expanded="false" aria-controls="appearance-panel" aria-haspopup="dialog"><svg aria-hidden="true" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 3a9 9 0 1 0 0 18h1a2 2 0 0 0 1.7-3.1 1.7 1.7 0 0 1 1.4-2.6H18a3 3 0 0 0 3-3.1A9 9 0 0 0 12 3Z"/><circle cx="7.5" cy="10" r=".8"/><circle cx="11" cy="6.8" r=".8"/><circle cx="15.5" cy="8" r=".8"/><circle cx="6.8" cy="14.5" r=".8"/></svg><span>Оформление</span></button>
         <section id="appearance-panel" class="appearance-panel" role="dialog" aria-label="Оформление калькулятора" hidden>
@@ -58,6 +79,9 @@
       <button id="export" class="quiet">↓ Экспорт JSON</button><button id="import" class="quiet">↑ Импорт JSON</button><input id="import-file" type="file" accept=".json,application/json" hidden>
     </div>
   </header>
+  <!-- PWA:NOTICE -->
+  <section id="pwa-update-notice" class="pwa-update-notice" role="status" hidden><p>Обновление готово. Сохраните работу и закройте все окна этого приложения. Новая версия откроется при следующем запуске.</p><button id="pwa-update-help" class="quiet" type="button">Как обновить</button></section>
+  <!-- /PWA:NOTICE -->
   <div id="message" role="status" aria-live="polite" hidden></div>
   <nav class="tabs" aria-label="Разделы"><button data-tab="dish">Мои рецепты <span id="count-dish"></span></button><button data-tab="prep">Полуфабрикаты <span id="count-prep"></span></button><button data-tab="products">Продукты <span id="count-products"></span></button><button data-tab="packaging">Упаковка и фасовка <span id="count-packaging"></span></button><button data-tab="expenses">Расходы заведения</button></nav>
   <section id="import-panel" class="import-panel" aria-label="Предварительный просмотр импорта" aria-busy="false" hidden>
