@@ -1,0 +1,19 @@
+2026-11-16T15:12:29.8996382Z ℹ tests 253
+2026-11-16T15:12:29.8996816Z ℹ pass 253
+2026-11-16T15:12:29.8997078Z ℹ fail 0
+2026-11-16T15:12:30.0624860Z Ran 6 tests in 0.009s
+2026-11-16T15:12:53.0757704Z {"legacy_publishers_finished": [43893839515], "sha": "b7e391d2273c7a412fb8506da8d15133773fc355"}
+2026-11-16T15:12:54.7537139Z {"phase": "before", "verified_https_files": 36, "missing_test_files": 175, "mode": "approved-raw-main", "old_test_sites_unchanged": false, "url": "https://sobaca0808-bit.github.io/kitchen-calculator-test/"}
+2026-11-16T15:13:12.9565038Z PASS RELEASE UPGRADE: 1366 old main -> current release -> complete browser restart; exact data, photos, backup, draft and own keys preserved
+2026-11-16T15:13:15.9505367Z PASS RELEASE UPGRADE: 390 old main -> current release -> complete browser restart; exact data, photos, backup, draft and own keys preserved
+2026-11-16T15:13:44.1026250Z {"phase": "after", "verified_https_files": 212, "missing_test_files": 0, "mode": "published-release", "old_test_sites_unchanged": true, "url": "https://sobaca0808-bit.github.io/kitchen-calculator-test/"}
+2026-11-16T15:13:47.8117367Z PASS RELEASE UPGRADE: 1366 old main -> current release -> complete browser restart; exact data, photos, backup, draft and own keys preserved
+2026-11-16T15:13:50.7659810Z PASS RELEASE UPGRADE: 390 old main -> current release -> complete browser restart; exact data, photos, backup, draft and own keys preserved
+2026-11-16T15:14:24.8076049Z 25 establishment-expense browser scenarios passed; 0 failures.
+2026-11-16T15:14:31.7219213Z PASS RELEASE lifecycle: berry 1366 three full Chrome starts; JSON, photos, drafts and no foreign storage access
+2026-11-16T15:14:38.5138679Z PASS RELEASE lifecycle: berry 390 three full Chrome starts; JSON, photos, drafts and no foreign storage access
+2026-11-16T15:14:45.4616858Z PASS RELEASE lifecycle: graphite 1366 three full Chrome starts; JSON, photos, drafts and no foreign storage access
+2026-11-16T15:14:52.3294417Z PASS RELEASE lifecycle: graphite 390 three full Chrome starts; JSON, photos, drafts and no foreign storage access
+2026-11-16T15:14:59.3832473Z PASS RELEASE lifecycle: sage 1366 three full Chrome starts; JSON, photos, drafts and no foreign storage access
+2026-11-16T15:15:06.1684492Z PASS RELEASE lifecycle: sage 390 three full Chrome starts; JSON, photos, drafts and no foreign storage access
+2026-11-16T15:15:06.1685906Z PASS RELEASE: https://sobaca0808-bit.github.io/kitchen-calculator-test/ 25 expense scenarios and 6 full lifecycle scenarios

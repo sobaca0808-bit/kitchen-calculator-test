@@ -1,0 +1,31 @@
+{
+  "date": "2026-11-16",
+  "url": "https://sobaca0808-bit.github.io/kitchen-calculator-test/",
+  "main_commit": "b7e391d2273c7a412fb8506da8d15133773fc355",
+  "pr25_merge": "67adc3c9b97596f9cef45900c399cc05e7b5afcb",
+  "pr26_merge": "b7e391d2273c7a412fb8506da8d15133773fc355",
+  "source_checks": 43888386072,
+  "publication_fix_checks": 43893177192,
+  "successful_release": 43893839927,
+  "release_job": 133391903100,
+  "artifact": {
+    "id": 14238760968,
+    "sha256": "7492a45d2441b3ca25d517a2183107bbf1a800930d2884e498c8772b421137d8"
+  },
+  "tests": {
+    "node": 253,
+    "browser_regression_before_release": 715,
+    "publication_guards": 6,
+    "live_expenses": 25,
+    "live_lifecycle": 6,
+    "live_legacy_upgrade": 2,
+    "live_browser_total": 33,
+    "verified_https_files": 212,
+    "restored_test_files": 180,
+    "preserved_test_https": 175
+  },
+  "production_repository_main_unchanged": "f92297802db64cdaf336f9f48658d29c19e12ef0",
+  "user_data_copied_or_cleared": false,
+  "pages_build_type": "legacy; explicit workflow waits for automatic publisher; settings change was denied with 403",
+  "physical_phone_acceptance": "User confirmed final candidate before release; automated release checks use mobile Chrome emulation"
+}

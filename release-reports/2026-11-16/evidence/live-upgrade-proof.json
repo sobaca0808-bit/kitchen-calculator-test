@@ -1,0 +1,30 @@
+[
+  {
+    "width": 1366,
+    "url": "https://sobaca0808-bit.github.io/kitchen-calculator-test/",
+    "passed": true,
+    "legacySetup": "intercepted previous-main fixture in a disposable profile",
+    "upgradeTransport": "real HTTPS; no application response overrides",
+    "chromeStarts": 3,
+    "exactLegacyDataPreserved": true,
+    "photos": 2,
+    "backups": 1,
+    "draftPreserved": true,
+    "foreignStorageViolations": [],
+    "consoleErrors": []
+  },
+  {
+    "width": 390,
+    "url": "https://sobaca0808-bit.github.io/kitchen-calculator-test/",
+    "passed": true,
+    "legacySetup": "intercepted previous-main fixture in a disposable profile",
+    "upgradeTransport": "real HTTPS; no application response overrides",
+    "chromeStarts": 3,
+    "exactLegacyDataPreserved": true,
+    "photos": 2,
+    "backups": 1,
+    "draftPreserved": true,
+    "foreignStorageViolations": [],
+    "consoleErrors": []
+  }
+]
