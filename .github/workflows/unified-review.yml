@@ -25,6 +25,7 @@ jobs:
           sudo apt-get update -qq
           sudo apt-get install -y poppler-utils
       - name: Run complete logic and browser checks in all three themes
+        shell: bash
         env:
           NODE_PATH: ${{ runner.temp }}/unified-tools/node_modules
           CHROMIUM_PATH: /usr/bin/google-chrome
