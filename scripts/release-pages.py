@@ -62,6 +62,28 @@ def namespaces(read_file):
     return {key: re.search(r'const ' + constant + r" = '([^']+)'", read_file(file).decode())[1]
             for key, (file, constant) in files.items()}
 
+def prior_main_runtime(source, storage_names):
+    """Expected HTTPS bytes of the latest published main release before this change.
+
+    PR checks read origin/main; a new main deployment reads the first parent.
+    Never trust a live site's self-reported digest as the source of truth.
+    """
+    remote_main = subprocess.check_output(
+        ['git', '-C', str(ROOT), 'rev-parse', 'origin/main'], text=True).strip()
+    prior = (subprocess.check_output(['git', '-C', str(ROOT), 'rev-parse', source + '^'],
+                                    text=True).strip() if source == remote_main else remote_main)
+    prior_files = runtime(lambda file: read(prior, file))
+    assert len(prior_files) == 36
+    prior_source_hashes = {file: sha(read(prior, file)) for file in prior_files}
+    prior_released = dict(prior_source_hashes)
+    prior_released['index.html'] = sha(release_html(read(prior, 'index.html').decode(), prior).encode())
+    prior_version = {'repository': 'sobaca0808-bit/kitchen-calculator-test', 'source_commit': prior,
+                     'approved_runtime_commit': APPROVED, 'url': SITE, 'storage_names': storage_names,
+                     'source_runtime': prior_source_hashes, 'runtime': dict(prior_released)}
+    prior_released['release-version.json'] = sha(
+        (json.dumps(prior_version, ensure_ascii=False, indent=2) + '\n').encode())
+    return prior_released
+
 def build(output, proof, legacy_runtime, source):
     assert re.fullmatch('[0-9a-f]{40}', source) and not output.exists()
     for parent in [PREVIOUS, APPROVED]:
@@ -149,6 +171,7 @@ def build(output, proof, legacy_runtime, source):
             (output / 'release-version.json').write_text(json.dumps(version, ensure_ascii=False, indent=2) + '\n')
             released['release-version.json'] = sha((output / 'release-version.json').read_bytes())
             result = {'source_commit': source, 'url': SITE, 'previous_main': PREVIOUS, 'preservation_commit': HOST,
+                      'prior_main_release_https': prior_main_runtime(source, current_names),
                       'storage_names': current_names, 'previous_root_https': before_root,
                       'approved_source_https': source_hashes,
                       'preserved_test_https': protected_http, 'preserved_test_files': protected_files,
