@@ -40,6 +40,12 @@ def runtime(read_file):
         for asset in re.findall(r'url\(["\']?([^"\')]+)', read_file(name).decode()):
             assert not asset.startswith(('/', 'data:')) and '://' not in asset
             files.add(str(Path(name).parent / asset))
+    if 'manifest.webmanifest' in files:
+        manifest = json.loads(read_file('manifest.webmanifest'))
+        for icon in manifest['icons']:
+            path = Path(icon['src']);assert not path.is_absolute() and '..' not in path.parts
+            files.add(path.as_posix())
+        files.add('sw.js')
     return sorted(files)
 
 def release_html(html, source):
@@ -64,7 +70,12 @@ def build(output, proof, legacy_runtime, source):
     assert re.fullmatch('[0-9a-f]{40}', source) and not output.exists()
     for parent in [PREVIOUS, APPROVED]:
         run('git', '-C', str(ROOT), 'merge-base', '--is-ancestor', parent, source)
-    run('git', '-C', str(ROOT), 'diff', '--exit-code', APPROVED, source, '--', 'index.html', 'styles.css', 'js', 'assets')
+    # Only the added PWA controls/resources may differ from the accepted app.
+    for file in runtime(lambda name: read(APPROVED, name)):
+        if file != 'index.html': assert read(source, file) == read(APPROVED, file), 'Calculator core changed: ' + file
+    source_html = read(source, 'index.html').decode()
+    normalized = re.sub(r'(?ms)^[ \t]*<!-- PWA:([A-Z]+) -->\n.*?^[ \t]*<!-- /PWA:\1 -->\n', '', source_html)
+    assert normalized == read(APPROVED, 'index.html').decode(), 'Only the PWA HTML additions are allowed'
     current_names = namespaces(lambda file: read(source, file))
     assert current_names == namespaces(lambda file: read(APPROVED, file))
     for key, file, constant in [('book', 'js/storage.js', 'KEY'), ('drafts', 'js/drafts.js', 'KEY'),
@@ -113,12 +124,16 @@ def build(output, proof, legacy_runtime, source):
                         protected_files[relative] = sha(file.read_bytes())
                         assert sha((output / relative).read_bytes()) == protected_files[relative]
             files = runtime(lambda file: read(source, file))
-            assert len(files) == 36
+            has_pwa = 'manifest.webmanifest' in files
+            assert len(files) == (43 if has_pwa else 36)
             html = release_html(read(source, 'index.html').decode(), source)
             (output / 'index.html').write_text(html)
+            if has_pwa:
+                run('python3', str(output / 'scripts/build-pwa.py'), '--root', str(output), '--source', source)
             source_hashes = {file: sha(read(source, file)) for file in files}
             released = {file: sha((output / file).read_bytes()) for file in files}
-            assert all(released[file] == source_hashes[file] for file in files if file != 'index.html')
+            assert all(released[file] == source_hashes[file] for file in files if file not in ['index.html', 'sw.js'])
+            if has_pwa: released['pwa-version.json'] = sha((output / 'pwa-version.json').read_bytes())
             version = {'repository': 'sobaca0808-bit/kitchen-calculator-test', 'source_commit': source,
                        'approved_runtime_commit': APPROVED, 'url': SITE, 'storage_names': current_names,
                        'source_runtime': source_hashes, 'runtime': released}
@@ -132,7 +147,7 @@ def build(output, proof, legacy_runtime, source):
             proof.write_text(json.dumps(result, ensure_ascii=False, indent=2) + '\n')
             legacy_runtime.write_text(json.dumps({'files': {file: base64.b64encode((old / file).read_bytes()).decode()
                                                           for file in before_root}, 'keys': current_names}) + '\n')
-            print(json.dumps({'source_commit': source, 'url': SITE, 'root_runtime_files': 36,
+            print(json.dumps({'source_commit': source, 'url': SITE, 'root_runtime_files': len(files),
                               'preserved_test_files': len(protected_files), 'preserved_test_https': len(protected_http),
                               'release_https': len(released), 'original_storage_names_preserved': True}))
         finally:

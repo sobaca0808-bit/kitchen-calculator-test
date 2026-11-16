@@ -22,6 +22,7 @@ function run(args,env=process.env) {
 }
 const runtimeFiles=new Map([
   ['/','index.html'],['/index.html','index.html'],['/styles.css','styles.css'],['/assets/folders.css','assets/folders.css'],['/assets/import.css','assets/import.css'],['/assets/editor-actions.css','assets/editor-actions.css'],['/assets/warm-kitchen.css','assets/warm-kitchen.css'],['/assets/food-pattern.svg','assets/food-pattern.svg'],
+  ['/manifest.webmanifest','manifest.webmanifest'],['/icons/icon-192.png','icons/icon-192.png'],['/icons/icon-512.png','icons/icon-512.png'],['/icons/maskable-512.png','icons/maskable-512.png'],['/assets/pwa.css','assets/pwa.css'],['/js/pwa.js','js/pwa.js'],
   ['/assets/appearance.css','assets/appearance.css'],['/assets/graphite-kitchen.webp','assets/graphite-kitchen.webp'],['/assets/sage-kitchen.webp','assets/sage-kitchen.webp'],
   ['/js/persistence-diagnostics.js','js/persistence-diagnostics.js'],['/js/recipe-expense-preferences.js','js/recipe-expense-preferences.js'],
   ['/assets/establishment-expenses.css','assets/establishment-expenses.css'],['/js/establishment-expenses.js','js/establishment-expenses.js'],['/js/establishment-expenses-ui.js','js/establishment-expenses-ui.js'],
@@ -35,7 +36,7 @@ const server=createServer(async(req,res)=>{
   if(req.method!=='GET' || !file){res.writeHead(404);res.end();return;}
   try {
     const body=await readFile(resolve(root,file));
-    const type=file.endsWith('.html')?'text/html':file.endsWith('.css')?'text/css':file.endsWith('.svg')?'image/svg+xml':file.endsWith('.webp')?'image/webp':'text/javascript';
+    const type=file.endsWith('.html')?'text/html':file.endsWith('.css')?'text/css':file.endsWith('.svg')?'image/svg+xml':file.endsWith('.webmanifest')?'application/manifest+json':file.endsWith('.png')?'image/png':file.endsWith('.webp')?'image/webp':'text/javascript';
     res.writeHead(200,{'Content-Type':type+'; charset=utf-8','Cache-Control':'no-store'});res.end(body);
   } catch {res.writeHead(500);res.end('Cannot read test asset');}
 });
