@@ -1,0 +1,24 @@
+name: Use the approved Pages workflow as the single publisher
+on:
+  push:
+    branches: [ops/pages-workflow-source]
+permissions:
+  contents: read
+  pages: write
+jobs:
+  configure:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Keep the same URL and disable the competing legacy branch build
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          test '${{ github.repository }}' = sobaca0808-bit/kitchen-calculator-test
+          PAGES_MODE="$(gh api repos/${{ github.repository }}/pages --jq .build_type)"
+          printf 'Previous Pages build type: %s\n' "$PAGES_MODE"
+          if test "$PAGES_MODE" != workflow; then
+            gh api --method PUT repos/${{ github.repository }}/pages -f build_type=workflow > /dev/null
+          fi
+          test "$(gh api repos/${{ github.repository }}/pages --jq .build_type)" = workflow
+          test "$(gh api repos/${{ github.repository }}/pages --jq .html_url)" = https://sobaca0808-bit.github.io/kitchen-calculator-test/
+          printf 'Pages now uses one explicit workflow; the permanent URL is unchanged.\n'
