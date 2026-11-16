@@ -6,6 +6,7 @@ permissions:
   contents: read
 jobs:
   check:
+    timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -45,14 +46,6 @@ jobs:
       - name: Verify the eventual main release can package PWA without changing storage
         if: ${{ !cancelled() }}
         run: python3 scripts/release-pages.py --output "$RUNNER_TEMP/release-site" --proof "$RUNNER_TEMP/release-proof.json" --legacy-runtime "$RUNNER_TEMP/legacy-runtime.json"
-      - name: Run complete calculator regressions in all three themes
-        if: ${{ !cancelled() }}
-        shell: bash
-        env:
-          NODE_PATH: ${{ runner.temp }}/pwa-tools/node_modules
-          CHROMIUM_PATH: /usr/bin/google-chrome
-          KITCHEN_TEST_ARTIFACT_ROOT: ${{ runner.temp }}/pwa-regressions
-        run: node scripts/check-preview.mjs 2>&1 | tee "$RUNNER_TEMP/pwa-regressions.log"
       - name: Save PWA evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -63,3 +56,28 @@ jobs:
             ${{ runner.temp }}/pwa-native-proof
             ${{ runner.temp }}/release-proof.json
             ${{ runner.temp }}/pwa-regressions.log
+  regressions:
+    timeout-minutes: 25
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Install disposable regression tooling
+        run: |
+          npm install --prefix "$RUNNER_TEMP/pwa-tools" --ignore-scripts --no-audit --no-fund playwright@1.62.1
+          sudo apt-get update -qq
+          sudo apt-get install -y poppler-utils
+      - name: Run complete calculator regressions in all three themes
+        shell: bash
+        env:
+          NODE_PATH: ${{ runner.temp }}/pwa-tools/node_modules
+          CHROMIUM_PATH: /usr/bin/google-chrome
+          KITCHEN_TEST_ARTIFACT_ROOT: ${{ runner.temp }}/pwa-regressions
+        run: node scripts/check-preview.mjs 2>&1 | tee "$RUNNER_TEMP/pwa-regressions.log"
+      - name: Save regression evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pwa-regression-proof
+          path: ${{ runner.temp }}/pwa-regressions.log
