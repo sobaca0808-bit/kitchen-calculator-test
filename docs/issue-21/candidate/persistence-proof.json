@@ -1,0 +1,107 @@
+[
+  {
+    "name": "absent preview stays empty despite valuable records in other namespaces; first folder saves explicitly",
+    "passed": true,
+    "consoleErrors": []
+  },
+  {
+    "name": "a saved preview opens itself with no migration, write or recovery panel",
+    "passed": true,
+    "consoleErrors": []
+  },
+  {
+    "name": "corruption remains exact, raw export works and import stays blocked",
+    "passed": true,
+    "consoleErrors": []
+  },
+  {
+    "name": "diagnosis of both different databases is read-only, with individual exports",
+    "passed": true,
+    "consoleErrors": []
+  },
+  {
+    "name": "explicit recovery reuses merge preview and mandatory backup; donor photos and drafts stay unchanged",
+    "passed": true,
+    "consoleErrors": []
+  },
+  {
+    "name": "conflicting prices require a choice and both versions can be kept",
+    "passed": true,
+    "consoleErrors": []
+  },
+  {
+    "name": "cancel recovery leaves both databases unchanged without a backup write",
+    "passed": true,
+    "consoleErrors": []
+  },
+  {
+    "name": "a donor changed after preview aborts recovery and keeps the new donor data",
+    "passed": true,
+    "consoleErrors": []
+  },
+  {
+    "name": "stale save is rejected even if no storage event was delivered; input can be exported",
+    "passed": true,
+    "consoleErrors": []
+  },
+  {
+    "name": "quota never looks saved and keeps the last database plus editable input",
+    "passed": true,
+    "consoleErrors": []
+  },
+  {
+    "name": "silent failed writes are detected instead of reporting success",
+    "passed": true,
+    "consoleErrors": []
+  },
+  {
+    "name": "missing foreign photo blocks recovery and does not create a foreign database",
+    "passed": true,
+    "consoleErrors": []
+  },
+  {
+    "name": "unconfirmed import keeps committed photo references and reloads the actual saved database",
+    "passed": true,
+    "consoleErrors": []
+  },
+  {
+    "name": "denied storage does not replace anything and has an explicit diagnosis",
+    "passed": true,
+    "consoleErrors": []
+  },
+  {
+    "name": "diagnostics are opt-in on a healthy database and hidden in A4",
+    "passed": true,
+    "consoleErrors": []
+  },
+  {
+    "name": "berry: product, price, prep, dish, folder, packaging, both photos and draft survive three Chrome restarts at 1366px",
+    "passed": true,
+    "consoleErrors": []
+  },
+  {
+    "name": "berry: product, price, prep, dish, folder, packaging, both photos and draft survive three Chrome restarts at 390px",
+    "passed": true,
+    "consoleErrors": []
+  },
+  {
+    "name": "graphite: product, price, prep, dish, folder, packaging, both photos and draft survive three Chrome restarts at 1366px",
+    "passed": true,
+    "consoleErrors": []
+  },
+  {
+    "name": "graphite: product, price, prep, dish, folder, packaging, both photos and draft survive three Chrome restarts at 390px",
+    "passed": true,
+    "consoleErrors": []
+  },
+  {
+    "name": "sage: product, price, prep, dish, folder, packaging, both photos and draft survive three Chrome restarts at 1366px",
+    "passed": true,
+    "consoleErrors": []
+  },
+  {
+    "name": "sage: product, price, prep, dish, folder, packaging, both photos and draft survive three Chrome restarts at 390px",
+    "passed": true,
+    "consoleErrors": []
+  }
+]

@@ -1,0 +1,200 @@
+[
+  {
+    "url": "https://sobaca0808-bit.github.io/kitchen-calculator-test/preview/",
+    "width": 1366,
+    "theme": "berry",
+    "cycles": [
+      {
+        "cycle": 1,
+        "contents": {
+          "price": 137.5,
+          "name": "Проверка 21 · Подача риса",
+          "folderId": "folder-f44ab474-cf10-4da7-96f5-f2bc5d931365",
+          "folderName": "Проверка 21 · Учебная кухня",
+          "prep": "Проверка 21 · Отварной рис",
+          "photoCount": 2,
+          "sellingPrice": 249,
+          "cost": 27.500000000000004,
+          "packaging": 6,
+          "draft": true
+        },
+        "rawSha256": "c6e8e3ac596e095fe2cd9b640bd32d81555726d653846adb62cf9203a8949950",
+        "photoHashes": [
+          "8d41cd02555409fbd417a8cbf5d3effbd3b83d76ea47423db12ae2fa23e9a6a8",
+          "7f0fa360a52e4b2945530d0edf3279134ba51b8041a6a010c2a0a6980a2b8165"
+        ],
+        "draftCount": 1,
+        "rootNamespaces": {
+          "book": "kitchen-calculator-pr2-browser-test-v1",
+          "drafts": "kitchen-calculator-pr2-browser-drafts-v1",
+          "photos": "kitchen-calculator-test-photos-v1"
+        },
+        "exportVerifiedBy": "browser-download",
+        "closedChromeProcess": true
+      },
+      {
+        "cycle": 2,
+        "contents": {
+          "price": 138.5,
+          "name": "Проверка 21 · Подача риса",
+          "folderId": "folder-f44ab474-cf10-4da7-96f5-f2bc5d931365",
+          "folderName": "Проверка 21 · Учебная кухня",
+          "prep": "Проверка 21 · Отварной рис",
+          "photoCount": 2,
+          "sellingPrice": 249,
+          "cost": 27.700000000000003,
+          "packaging": 6,
+          "draft": true
+        },
+        "rawSha256": "d40a7831195c5f4fcbc46d24a2c8595edfa760b18463c21edf249fcda613a73b",
+        "photoHashes": [
+          "8d41cd02555409fbd417a8cbf5d3effbd3b83d76ea47423db12ae2fa23e9a6a8",
+          "7f0fa360a52e4b2945530d0edf3279134ba51b8041a6a010c2a0a6980a2b8165"
+        ],
+        "draftCount": 1,
+        "exportVerifiedBy": "browser-download",
+        "closedChromeProcess": true
+      },
+      {
+        "cycle": 3,
+        "contents": {
+          "price": 139.5,
+          "name": "Проверка 21 · Подача риса",
+          "folderId": "folder-f44ab474-cf10-4da7-96f5-f2bc5d931365",
+          "folderName": "Проверка 21 · Учебная кухня",
+          "prep": "Проверка 21 · Отварной рис",
+          "photoCount": 2,
+          "sellingPrice": 249,
+          "cost": 27.900000000000002,
+          "packaging": 6,
+          "draft": true
+        },
+        "rawSha256": "b5e6063b81b457df2e47cfcbfeae622e0d4c0793251ef4c7cdf77ddbeb7c5da3",
+        "photoHashes": [
+          "8d41cd02555409fbd417a8cbf5d3effbd3b83d76ea47423db12ae2fa23e9a6a8",
+          "7f0fa360a52e4b2945530d0edf3279134ba51b8041a6a010c2a0a6980a2b8165"
+        ],
+        "draftCount": 1,
+        "exportVerifiedBy": "browser-download",
+        "closedChromeProcess": true
+      }
+    ],
+    "errors": [],
+    "profileSeeded": false,
+    "isolatedDriverPerRestart": true,
+    "runtimeTransport": "http",
+    "initialRecordPresent": false,
+    "wroteInitialDatabase": true,
+    "initialProducts": 12,
+    "initialRecipes": 3,
+    "staleOverwriteObserved": true,
+    "staleSaveMessage": "Сохранено ✓. Связанные калькуляции пересчитаны.",
+    "namespaces": {
+      "book": "kitchen-calculator-preview-v1",
+      "drafts": "kitchen-calculator-preview-drafts-v1",
+      "photos": "kitchen-calculator-preview-photos-v1",
+      "backups": "kitchen-calculator-preview-import-backups-v1",
+      "appearance": "kitchen-calculator-appearance-preview-v1"
+    },
+    "passed": true
+  },
+  {
+    "url": "https://sobaca0808-bit.github.io/kitchen-calculator-test/preview/",
+    "width": 390,
+    "theme": "berry",
+    "cycles": [
+      {
+        "cycle": 1,
+        "contents": {
+          "price": 137.5,
+          "name": "Проверка 21 · Подача риса",
+          "folderId": "folder-79b208b8-69c0-4a8d-be55-db3b0c54b125",
+          "folderName": "Проверка 21 · Учебная кухня",
+          "prep": "Проверка 21 · Отварной рис",
+          "photoCount": 2,
+          "sellingPrice": 249,
+          "cost": 27.500000000000004,
+          "packaging": 6,
+          "draft": true
+        },
+        "rawSha256": "c5c98940c2fdbd739fd5e2339a027182574e19d1c2508e5a8c6753b7c927e6bf",
+        "photoHashes": [
+          "8d41cd02555409fbd417a8cbf5d3effbd3b83d76ea47423db12ae2fa23e9a6a8",
+          "7f0fa360a52e4b2945530d0edf3279134ba51b8041a6a010c2a0a6980a2b8165"
+        ],
+        "draftCount": 1,
+        "rootNamespaces": {
+          "book": "kitchen-calculator-pr2-browser-test-v1",
+          "drafts": "kitchen-calculator-pr2-browser-drafts-v1",
+          "photos": "kitchen-calculator-test-photos-v1"
+        },
+        "exportVerifiedBy": "browser-download",
+        "closedChromeProcess": true
+      },
+      {
+        "cycle": 2,
+        "contents": {
+          "price": 138.5,
+          "name": "Проверка 21 · Подача риса",
+          "folderId": "folder-79b208b8-69c0-4a8d-be55-db3b0c54b125",
+          "folderName": "Проверка 21 · Учебная кухня",
+          "prep": "Проверка 21 · Отварной рис",
+          "photoCount": 2,
+          "sellingPrice": 249,
+          "cost": 27.700000000000003,
+          "packaging": 6,
+          "draft": true
+        },
+        "rawSha256": "a3cf16e81e38ab7310ab6e1ae078b270a68039441e047b17a6d71d6e8a859143",
+        "photoHashes": [
+          "8d41cd02555409fbd417a8cbf5d3effbd3b83d76ea47423db12ae2fa23e9a6a8",
+          "7f0fa360a52e4b2945530d0edf3279134ba51b8041a6a010c2a0a6980a2b8165"
+        ],
+        "draftCount": 1,
+        "exportVerifiedBy": "browser-download",
+        "closedChromeProcess": true
+      },
+      {
+        "cycle": 3,
+        "contents": {
+          "price": 139.5,
+          "name": "Проверка 21 · Подача риса",
+          "folderId": "folder-79b208b8-69c0-4a8d-be55-db3b0c54b125",
+          "folderName": "Проверка 21 · Учебная кухня",
+          "prep": "Проверка 21 · Отварной рис",
+          "photoCount": 2,
+          "sellingPrice": 249,
+          "cost": 27.900000000000002,
+          "packaging": 6,
+          "draft": true
+        },
+        "rawSha256": "314650b28947872aa7bd34848901b907c1270ddb38329d533c901542a4753b68",
+        "photoHashes": [
+          "8d41cd02555409fbd417a8cbf5d3effbd3b83d76ea47423db12ae2fa23e9a6a8",
+          "7f0fa360a52e4b2945530d0edf3279134ba51b8041a6a010c2a0a6980a2b8165"
+        ],
+        "draftCount": 1,
+        "exportVerifiedBy": "browser-download",
+        "closedChromeProcess": true
+      }
+    ],
+    "errors": [],
+    "profileSeeded": false,
+    "isolatedDriverPerRestart": true,
+    "runtimeTransport": "http",
+    "initialRecordPresent": false,
+    "wroteInitialDatabase": true,
+    "initialProducts": 12,
+    "initialRecipes": 3,
+    "staleOverwriteObserved": true,
+    "staleSaveMessage": "Сохранено ✓. Связанные калькуляции пересчитаны.",
+    "namespaces": {
+      "book": "kitchen-calculator-preview-v1",
+      "drafts": "kitchen-calculator-preview-drafts-v1",
+      "photos": "kitchen-calculator-preview-photos-v1",
+      "backups": "kitchen-calculator-preview-import-backups-v1",
+      "appearance": "kitchen-calculator-appearance-preview-v1"
+    },
+    "passed": true
+  }
+]

@@ -1,0 +1,22 @@
+{
+  "date": "2026-11-16",
+  "timezone": "Europe/Moscow",
+  "testedCandidateCommit": "7093609aa753866aac7b7da1f14312519266d10b",
+  "workflowRun": 43776804548,
+  "candidateJob": 133004810172,
+  "publishedAuditJob": 133004809997,
+  "publishedSourceCommit": "04c98fb20444859454fc18fd6f3d6e0429818f8b",
+  "publishedRootCommit": "63443c53d2c7a99060584d54eae0e9c779475405",
+  "candidateArtifact": {
+    "id": 14187025590,
+    "zipSha256": "ad3ce685918808502197a6fe49cb6ed565c242b17569e742d48723c0715911d5"
+  },
+  "publishedArtifact": {
+    "id": 14186488563,
+    "zipSha256": "31ca9c534a3ca1b82f69e11493a59201d6fc577513e5f2042b345e27285e5399"
+  },
+  "publishedChanged": false,
+  "candidateDeployment": false,
+  "physicalAndroidTested": false,
+  "syntheticDataOnly": true
+}

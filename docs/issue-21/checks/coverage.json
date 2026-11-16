@@ -1,0 +1,43 @@
+{
+  "node": {
+    "passed": 223,
+    "failed": 0,
+    "skipped": 0
+  },
+  "browser": {
+    "passed": 690,
+    "failedRemaining": 0,
+    "originalCasesRetained": 669,
+    "newCases": 21,
+    "themes": {
+      "berry": {
+        "broadRunPassed": 161,
+        "completionRunPassed": 56,
+        "totalDistinctPassed": 217
+      },
+      "graphite": {
+        "broadRunPassed": 161,
+        "completionRunPassed": 56,
+        "totalDistinctPassed": 217
+      },
+      "sage": {
+        "broadRunPassed": 161,
+        "completionRunPassed": 56,
+        "totalDistinctPassed": 217
+      }
+    },
+    "shared": {
+      "appearance": 18,
+      "preview persistence": 21
+    }
+  },
+  "initialBroadRun": {
+    "exitCode": 1,
+    "reason": "Old script-route test mock did not match the new query string; fixed without weakening assertions."
+  },
+  "completionRun": {
+    "exitCode": 0,
+    "marker": "ALL_REMAINING_CHECKS_PASS"
+  },
+  "singleSuccessfulFullRunClaimed": false
+}
