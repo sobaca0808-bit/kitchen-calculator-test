@@ -3,6 +3,8 @@
   const E=root.KitchenExpenses,C=root.KitchenCalc,S=root.KitchenStorage;
   const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const num=value=>value==null?'':new Intl.NumberFormat('ru-RU',{maximumFractionDigits:8,useGrouping:false}).format(value);
+  // Raw inputs round-trip the saved number; only displayed money is rounded.
+  const inputNumber=value=>value==null?'':new Intl.NumberFormat('ru-RU',{maximumSignificantDigits:21,useGrouping:false}).format(value);
   const money=value=>typeof value==='number'&&Number.isFinite(value)?new Intl.NumberFormat('ru-RU',{style:'currency',currency:'RUB',minimumFractionDigits:2,maximumFractionDigits:2}).format(Math.abs(value)<.005?0:value):'—';
   const percent=value=>value==null?'—':new Intl.NumberFormat('ru-RU',{maximumFractionDigits:2}).format(value)+' %';
   function metric(key,label,value,format=money){return `<div><dt>${esc(label)}</dt><dd data-expense="${key}">${esc(format(value))}</dd></div>`;}
@@ -15,7 +17,7 @@
   }
   function mount(host,{config,onChange,onSave}){
     const initial=config||{method:'planned-portions',period:'',plannedPortions:null,rent:null,utilities:null,payroll:null,other:null};
-    const input=(key,label)=>`<label>${esc(label)}<input id="expense-${key}" data-expense-field="${key}" type="text" inputmode="${key==='plannedPortions'?'numeric':'decimal'}" autocomplete="off" value="${esc(num(initial[key]))}" placeholder="Не задано"></label>`;
+    const input=(key,label)=>`<label>${esc(label)}<input id="expense-${key}" data-expense-field="${key}" type="text" inputmode="${key==='plannedPortions'?'numeric':'decimal'}" autocomplete="off" value="${esc(inputNumber(initial[key]))}" placeholder="Не задано"></label>`;
     host.innerHTML=`<div class="editor-head"><div class="editor-topline"><span class="badge">План на месяц</span><span id="save-state" class="save-state">${config?'Сохранено в браузере':'Не задано'}</span></div><h1>Расходы заведения</h1><p class="intro">Месячные расходы делятся поровну на плановое количество продаваемых порций всех блюд. Это средняя плановая оценка.</p></div><div class="editor-content expense-form"><div class="product-grid"><label>Расчётный месяц<input id="expense-period" type="month" value="${esc(initial.period)}"></label>${input('plannedPortions','План продаж за месяц, порций')}${E.categories.map(c=>input(c.key,c.label+' за месяц, ₽')).join('')}</div><p class="field-help">Если по статье расходов нет, введите 0. Пустое поле означает «Не задано». Закупочные продукты и упаковку сюда не включайте: они уже есть в калькуляции. Расходы не начисляются на полуфабрикаты повторно.</p><div id="expense-allocation" aria-live="polite"></div><p id="expense-form-error" class="inline-error" role="status"></p><p class="field-help">Итоги пересчитываются при вводе. Для применения к блюдам нажмите «Сохранить расходы». Рецепты и закупочные цены не меняются.</p></div><div class="form-actions"><button id="save-item" class="primary">Сохранить расходы</button></div>`;
     const $=selector=>host.querySelector(selector);
     function value(){
