@@ -1,6 +1,6 @@
 {
-  "url": "http://127.0.0.1:36829/kitchen-calculator-test/",
-  "passed": 15,
+  "url": "http://127.0.0.1:42335/kitchen-calculator-test/",
+  "passed": 17,
   "failed": 0,
   "scenarios": [
     {
@@ -71,6 +71,18 @@
     },
     {
       "name": "photographs and independent recipe draft survive expense changes, reload and JSON export",
+      "passed": true,
+      "consoleErrors": [],
+      "foreignStorageViolations": []
+    },
+    {
+      "name": "saving an expense plan never changes recipe packaging identity metadata",
+      "passed": true,
+      "consoleErrors": [],
+      "foreignStorageViolations": []
+    },
+    {
+      "name": "reopening the expense form preserves raw decimal precision instead of rounding saved inputs",
       "passed": true,
       "consoleErrors": [],
       "foreignStorageViolations": []

@@ -1,21 +1,20 @@
 {
-  "nodePassed": 242,
-  "browserPassed": 705,
-  "themeCases": {
-    "berry": 217,
-    "graphite": 217,
-    "sage": 217
+  "fullCommand": {
+    "nodePassed": 242,
+    "browserPassed": 705,
+    "exitCode": 0
   },
-  "sharedCases": {
-    "appearance": 18,
-    "establishment expenses": 15,
-    "preview persistence": 21
+  "targetedNewSuite": {
+    "passed": 17,
+    "failed": 0,
+    "exitCode": 0
   },
-  "fullCommandExitCode": 0,
-  "oldBrowserCasesRetained": 690,
-  "newBrowserCases": 15,
+  "browserDistinctPassed": 707,
+  "originalBrowserCasesRetained": 690,
   "newNodeCases": 19,
-  "runtimeCICommit": "1a9937bb8a7887dd3ce785b36711fef57ba55966",
-  "runtimeCIRun": 43840766673,
-  "physicalAndroidTested": false
+  "newBrowserCases": 17,
+  "runtimeCICommit": "aed462db0dfe3abe923880c0c4fda0dd3867fd5d",
+  "runtimeCIRun": 43843609461,
+  "physicalAndroidTested": false,
+  "singleFull707RunClaimed": false
 }
