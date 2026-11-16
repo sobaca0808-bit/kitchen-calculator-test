@@ -5,6 +5,7 @@ async function start(versions){
  let selected=0;const requests=[];
  const server=createServer(async(req,res)=>{
   const url=new URL(req.url,'http://localhost');requests.push(url.pathname);
+  if(url.pathname==='/favicon.ico'){res.writeHead(204);res.end();return;}
   if(url.pathname==='/kitchen-calculator-test/'){res.writeHead(200,{'Content-Type':'text/html'});res.end('<!doctype html><html><title>Unchanged main sentinel</title><p>Main</p></html>');return;}
   const file=url.pathname.startsWith(mount)?url.pathname.slice(mount.length)||'index.html':null;
   if(req.method!=='GET'||!file||file.includes('..')){res.writeHead(404);res.end();return;}

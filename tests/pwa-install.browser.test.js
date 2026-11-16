@@ -20,7 +20,6 @@ async function appWindow(excluded){
  if(url)assert([LIVE,'https://sobaca0808-bit.github.io/kitchen-calculator-test/'].includes(url));else{assert(process.env.KITCHEN_PWA_V1);server=await start([process.env.KITCHEN_PWA_V1]);url=server.url;}
  profile=await fs.mkdtemp(path.join(os.tmpdir(),'pwa-installed-profile-'));
  context=await chromium.launchPersistentContext(path.join(profile,'chrome'),{executablePath:process.env.CHROMIUM_PATH||'/usr/bin/chromium',headless:false,args:['--no-sandbox'],viewport:{width:1280,height:900},env:{...process.env,XDG_DATA_HOME:path.join(profile,'xdg-data'),XDG_CONFIG_HOME:path.join(profile,'xdg-config'),XDG_CACHE_HOME:path.join(profile,'xdg-cache')}});
- await context.route('**/favicon.ico',r=>r.fulfill({status:204,body:''}));
  const page=await context.newPage();await page.goto(url);await page.evaluate(()=>navigator.serviceWorker.ready);await page.reload();await page.waitForFunction(()=>!!navigator.serviceWorker.controller);
  await page.locator('[data-tab=products]').click();await page.locator('#create').click();await page.locator('#item-name').fill('Установка PWA · тестовый продукт');await page.locator('#price').fill('123');await page.locator('#packQuantity').fill('1');await page.locator('#save-item').click();await page.waitForFunction(()=>document.querySelector('#save-item').textContent.includes('Сохранено ✓'));
  const expected=await page.evaluate(()=>localStorage.getItem(KitchenStorage.KEY)),session=await context.newCDPSession(page);
