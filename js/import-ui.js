@@ -3,6 +3,7 @@
   const S=root.KitchenStorage, Photos=root.KitchenPhotos, Merge=root.KitchenJSONMerge;
   const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const labels={products:'Продукты',product:'Продукт',packaging:'Упаковка',folders:'Папки',folder:'Папка',prep:'Полуфабрикат',dish:'Блюдо',recipes:'Рецепты',extension:'Дополнительное поле'};
+  const entryName=entry=>entry.kind==='extension'&&entry.id==='establishmentExpenses'?'Расходы заведения':entry.name||entry.id||entry.key;
   function mount({getState,canStart,setBusy,onApplied,message,getDraftSource=()=>null,onWriteUncertain=()=>{}}) {
     const $=selector=>document.querySelector(selector), service=root.KitchenImportTransaction.create();
     const panel=$('#import-panel');let preview=null,version=0,applying=false,planning=false;
@@ -63,12 +64,12 @@
       $('#import-replace-warning').hidden=preview.mode!=='replace';
       $('#import-conflicts').innerHTML=(plan.conflicts||[]).map(conflict=>{
         const options=conflict.options||['local','both'];
-        return `<section class="import-conflict" data-conflict-key="${esc(conflict.key)}"><h3>${esc(labels[conflict.kind]||conflict.kind)}: ${esc(conflict.name||conflict.id||conflict.key)}</h3><p>${esc(conflict.reason)}</p><label>Решение<select data-conflict-choice="${esc(conflict.key)}"><option value="">Выберите действие…</option>${options.map(value=>`<option value="${esc(value)}" ${conflict.choice===value?'selected':''}>${esc(choiceLabel(value))}</option>`).join('')}</select></label><details><summary>Сравнить содержимое</summary><p class="field-help">Большие поля показаны сокращённо, данные фото — без длинной строки изображения. Сам файл обрабатывается полностью.</p><div class="import-comparison"><div><h4>Текущая версия</h4><pre>${esc(readable(conflict.local))}</pre></div><div><h4>Из файла</h4><pre>${esc(readable(conflict.incoming))}</pre></div></div></details></section>`;
+        return `<section class="import-conflict" data-conflict-key="${esc(conflict.key)}"><h3>${esc(labels[conflict.kind]||conflict.kind)}: ${esc(entryName(conflict))}</h3><p>${esc(conflict.reason)}</p><label>Решение<select data-conflict-choice="${esc(conflict.key)}"><option value="">Выберите действие…</option>${options.map(value=>`<option value="${esc(value)}" ${conflict.choice===value?'selected':''}>${esc(choiceLabel(value))}</option>`).join('')}</select></label><details><summary>Сравнить содержимое</summary><p class="field-help">Большие поля показаны сокращённо, данные фото — без длинной строки изображения. Сам файл обрабатывается полностью.</p><div class="import-comparison"><div><h4>Текущая версия</h4><pre>${esc(readable(conflict.local))}</pre></div><div><h4>Из файла</h4><pre>${esc(readable(conflict.incoming))}</pre></div></div></details></section>`;
       }).join('');
       $('#import-warnings').innerHTML=(plan.warnings||[]).map(warning=>`<li>${esc(typeof warning==='string'?warning:warning.text)}</li>`).join('');
       $('#import-warnings').hidden=!(plan.warnings||[]).length;
       const rows=plan.rows||[];
-      $('#import-details').innerHTML=rows.slice(0,200).map(row=>`<li>${esc(labels[row.kind]||row.kind)} · ${esc(row.name||row.id)} — ${esc({added:'добавить',updated:'обновить',skipped:'пропустить',removed:'удалить'}[row.action]||row.action)}${row.reason?' · '+esc(row.reason):''}</li>`).join('')+(rows.length>200?`<li>Ещё ${rows.length-200} позиций. Итоги выше учитывают весь файл.</li>`:'');
+      $('#import-details').innerHTML=rows.slice(0,200).map(row=>`<li>${esc(labels[row.kind]||row.kind)} · ${esc(entryName(row))} — ${esc({added:'добавить',updated:'обновить',skipped:'пропустить',removed:'удалить'}[row.action]||row.action)}${row.reason?' · '+esc(row.reason):''}</li>`).join('')+(rows.length>200?`<li>Ещё ${rows.length-200} позиций. Итоги выше учитывают весь файл.</li>`:'');
       panel.querySelectorAll('[data-conflict-choice]').forEach(select=>select.addEventListener('change',()=>{
         if(!preview||applying)return;
         preview.choices[select.dataset.conflictChoice]=select.value;draw();

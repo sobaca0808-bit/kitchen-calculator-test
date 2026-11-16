@@ -1,0 +1,19 @@
+@media screen {
+  .tabs { flex-wrap:wrap; }
+  .workspace[data-section=expenses] { grid-template-columns:minmax(0,1fr); }
+  .workspace[data-section=expenses]>.library { display:none; }
+  .expense-form { max-width:1000px; }
+  .expenses-toggle { display:flex;align-items:center;gap:9px;min-height:44px;flex-wrap:wrap; }
+  .expenses-toggle input { width:22px;height:22px;margin:0;accent-color:var(--berry,var(--green)); }
+  .expenses-toggle[hidden] { display:none!important; }
+  .establishment-costs .expenses-open { margin-top:10px; }
+  .establishment-costs dd { overflow-wrap:anywhere; }
+  @media(max-width:760px) { .tabs [data-tab=expenses] { grid-column:1/-1; } }
+}
+.expense-breakdown { table-layout:fixed;width:100%; }
+.expense-breakdown th,.expense-breakdown td { overflow-wrap:anywhere; }
+@media print {
+  .establishment-costs .expenses-open { display:none!important; }
+  .establishment-costs tr,.establishment-costs .profitability-grid>div { break-inside:avoid; }
+  .establishment-costs th { color:black;background:none; }
+}
