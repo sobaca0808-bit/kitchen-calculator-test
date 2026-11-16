@@ -4,20 +4,46 @@ from concurrent.futures import ThreadPoolExecutor
 import hashlib
 import json
 import time
+from urllib.error import HTTPError
 from urllib.request import Request, urlopen
 
-def verify(proof, phase):
-    expected = {**proof['preserved_test_https'], **proof['previous_root_https' if phase == 'before' else 'release_https']}
+def check_files(proof, expected, allow_missing=False):
     def check(item):
         file, digest = item
         request = Request(proof['url'] + file + '?release-check=' + proof['source_commit'],
                           headers={'Cache-Control': 'no-cache', 'User-Agent': 'Kitchen-Release-Verification'})
-        with urlopen(request, timeout=30) as response:
-            assert response.status == 200 and response.url.startswith(proof['url']), file
-            assert hashlib.sha256(response.read()).hexdigest() == digest, 'Unexpected HTTPS bytes: ' + file
+        try:
+            with urlopen(request, timeout=30) as response:
+                assert response.status == 200 and response.url.startswith(proof['url']), file
+                assert hashlib.sha256(response.read()).hexdigest() == digest, 'Unexpected HTTPS bytes: ' + file
+                return 1
+        except HTTPError as error:
+            if allow_missing and error.code == 404: return 0
+            raise
     with ThreadPoolExecutor(max_workers=8) as pool:
-        list(pool.map(check, expected.items()))
-    return len(expected)
+        found = sum(pool.map(check, expected.items()))
+    return found, len(expected) - found
+
+def verify(proof, phase):
+    protected = proof['preserved_test_https']
+    if phase == 'after':
+        found, missing = check_files(proof, {**protected, **proof['release_https']})
+        return {'verified_https_files': found, 'missing_test_files': missing, 'mode': 'published-release'}
+    # GitHub's legacy branch publisher may already have exposed the exact approved
+    # raw main and removed sandbox directories. Recognize only those known bytes;
+    # never accept changed existing sandbox files or an unknown root application.
+    for mode, expected, allow_missing in [
+        ('previous-main', proof['previous_root_https'], False),
+        ('same-release', proof['release_https'], False),
+        ('approved-raw-main', proof['approved_source_https'], True),
+    ]:
+        try:
+            root_found, _ = check_files(proof, expected)
+        except (HTTPError, AssertionError):
+            continue
+        found, missing = check_files(proof, protected, allow_missing=allow_missing)
+        return {'verified_https_files': root_found + found, 'missing_test_files': missing, 'mode': mode}
+    raise AssertionError('The current root does not match a known approved release; publication stopped.')
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -27,9 +53,9 @@ if __name__ == '__main__':
     proof = json.load(open(args.proof))
     for attempt in range(1 if args.phase == 'before' else 8):
         try:
-            count = verify(proof, args.phase)
-            print(json.dumps({'phase': args.phase, 'verified_https_files': count,
-                              'old_test_sites_unchanged': True, 'url': proof['url']}))
+            result = verify(proof, args.phase)
+            print(json.dumps({'phase': args.phase, **result,
+                              'old_test_sites_unchanged': result['missing_test_files'] == 0, 'url': proof['url']}))
             break
         except Exception:
             if args.phase == 'before' or attempt == 7: raise
