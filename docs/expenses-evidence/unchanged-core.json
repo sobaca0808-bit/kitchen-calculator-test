@@ -1,0 +1,18 @@
+{
+  "js/calculations.js": "86f10f10f2bf50d72b34471baa05f1e9431edfd44767b0f65593cf8674acc99a",
+  "js/packaging.js": "4cfc62028ea6df17c8389285995f199e5f97bcf17b0c4e3761779dfdd52e7df3",
+  "js/profitability.js": "c85ce8efc61518dd4aee4d259dd3f704641c5e736340e2a5c4f6773ec132c31f",
+  "js/profitability-view.js": "6aee3ee679297cfa9326bd89e0f1fdc21d0189cd3e6743d43aa505b4a903872e",
+  "js/recipe-view.js": "113056db3a2d54bec616ab5803c9a25f13d3d115d4656cba0f8b7a38301c02f9",
+  "js/recipe-card-model.js": "337ad6d512356a22fa7f4f9d091e97b4e25747c4af8298c79e5a393928f38136",
+  "js/recipe-card-templates.js": "f238a9bb20b15b79ea2ee6ae4a719aed2e17813a9ca7d3a06161ee0cac4d4785",
+  "js/photos.js": "f117c4bd62e9db1dec06260c028a023ef1a1f7397a69f51b6126f0224360d4ae",
+  "js/drafts.js": "e098aac74bf8f8443113910cfd1f66002f450a600694bbdb64ad01401a3437ed",
+  "js/json-merge.js": "a3bca8b844c328e2ae9db30f1eb1eeba0807d1400d4ba974f1406cdf413bb177",
+  "js/import-transaction.js": "3c3e4dc107b9750fc7b6ac7af18a3638183f5f235c1ff385765937dea44de72e",
+  "js/folders.js": "fe3d4881e750079f731184c28f25ad3948459535f820a4872540dc929a130bae",
+  "js/appearance.js": "cf7688f87031ef30dc92c4b93563a3f4a425b503257e8b8ee54a4f545fe3c078",
+  "styles.css": "99a75564b834aae581fc03819fb2be7d5da5662241b1c49b7df70834196c8250",
+  "assets/warm-kitchen.css": "f3e073c418d12c81619dc09130ecba0c6cdad46cf6214b23ae9e6466a7739002",
+  "assets/appearance.css": "bdc3c153fdec43baf9389b8d597a4e73010a5a767c83fb3ecbcb185150451dba"
+}

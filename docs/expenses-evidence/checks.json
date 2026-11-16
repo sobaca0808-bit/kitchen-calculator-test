@@ -1,0 +1,21 @@
+{
+  "nodePassed": 242,
+  "browserPassed": 705,
+  "themeCases": {
+    "berry": 217,
+    "graphite": 217,
+    "sage": 217
+  },
+  "sharedCases": {
+    "appearance": 18,
+    "establishment expenses": 15,
+    "preview persistence": 21
+  },
+  "fullCommandExitCode": 0,
+  "oldBrowserCasesRetained": 690,
+  "newBrowserCases": 15,
+  "newNodeCases": 19,
+  "runtimeCICommit": "1a9937bb8a7887dd3ce785b36711fef57ba55966",
+  "runtimeCIRun": 43840766673,
+  "physicalAndroidTested": false
+}
