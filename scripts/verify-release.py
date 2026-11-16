@@ -7,7 +7,7 @@ import time
 from urllib.error import HTTPError
 from urllib.request import Request, urlopen
 
-def check_files(proof, expected, allow_missing=False):
+def check_files(proof, expected, allow_missing=False, allow_unavailable_pwa=False):
     def check(item):
         file, digest = item
         request = Request(proof['url'] + file + '?release-check=' + proof['source_commit'],
@@ -18,7 +18,12 @@ def check_files(proof, expected, allow_missing=False):
                 assert hashlib.sha256(response.read()).hexdigest() == digest, 'Unexpected HTTPS bytes: ' + file
                 return 1
         except HTTPError as error:
-            if allow_missing and error.code == 404: return 0
+            # GitHub Pages may serve a 503 for a directory removed by a later
+            # deployment. Only the isolated PWA recovery probe accepts this as
+            # an absent resource; all root and legacy checks remain strict.
+            if allow_missing and (error.code == 404 or
+                                  (allow_unavailable_pwa and error.code == 503)):
+                return 0
             raise
     with ThreadPoolExecutor(max_workers=8) as pool:
         found = sum(pool.map(check, expected.items()))
@@ -48,7 +53,8 @@ def verify(proof, phase):
         # The previous release may have removed the PWA entirely. Accept either
         # the complete pinned build or an entirely absent build, never a partial
         # or altered set of PWA files.
-        pwa_found, pwa_missing = check_files(proof, pwa, allow_missing=True)
+        pwa_found, pwa_missing = check_files(
+            proof, pwa, allow_missing=True, allow_unavailable_pwa=True)
         assert pwa_found == 0 or pwa_missing == 0, 'Partial PWA publication'
         return {'verified_https_files': root_found + found + pwa_found,
                 'missing_test_files': missing, 'missing_pwa_files': pwa_missing,
