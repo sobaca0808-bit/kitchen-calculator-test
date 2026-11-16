@@ -37,7 +37,7 @@
   function persist(candidate, success, restore = false) {
     if (recoveryRequired && !restore) {message('Сохранение заблокировано: исходное хранилище не удалось прочитать. Восстановите резервную копию через импорт JSON. Исходные данные не изменены.',true);return false;}
     let clean;
-    try { clean = P.resolveLinks(S.validate(candidate)); } catch(e) { message(e.message, true); return false; }
+    try { clean = S.validate(candidate);if(section!=='expenses')clean=P.resolveLinks(clean); } catch(e) { message(e.message, true); return false; }
     const result = S.save(clean,undefined,persistedSource);
     if (!result.ok) {
       storageBlocked = true;
