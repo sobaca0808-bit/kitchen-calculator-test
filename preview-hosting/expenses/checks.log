@@ -1,0 +1,26 @@
+2026-11-16T09:57:56.1618002Z {"unchanged_existing_files": 182, "protected_https_files": 57, "candidate_https_files": 33, "url": "https://sobaca0808-bit.github.io/kitchen-calculator-test/pr-22/"}
+2026-11-16T09:57:56.3343108Z {"unchanged_existing_files": 216, "protected_https_files": 90, "candidate_https_files": 36, "url": "https://sobaca0808-bit.github.io/kitchen-calculator-test/expenses/"}
+2026-11-16T09:57:57.6518297Z {"phase": "before", "verified_https_files": 90, "root_and_preview_unchanged": true, "test_url": "https://sobaca0808-bit.github.io/kitchen-calculator-test/expenses/"}
+2026-11-16T09:58:10.4067441Z {"phase": "after", "verified_https_files": 126, "root_and_preview_unchanged": true, "test_url": "https://sobaca0808-bit.github.io/kitchen-calculator-test/expenses/"}
+2026-11-16T09:58:43.8070993Z Browser checks: 20 passed, 0 failed.
+2026-11-16T09:59:04.6638087Z Browser checks: 20 passed, 0 failed.
+2026-11-16T09:59:24.7612249Z Browser checks: 20 passed, 0 failed.
+2026-11-16T10:00:11.9701318Z PASS PR22 link: https://sobaca0808-bit.github.io/kitchen-calculator-test/pr-22/ 6 scenarios, 18 full Chrome starts
+2026-11-16T10:00:13.9646762Z PASS establishment expenses: berry 1366: visible navigation, live monthly allocation, separate margins, scaling and chef protection
+2026-11-16T10:00:15.1943061Z PASS establishment expenses: berry 390: visible navigation, live monthly allocation, separate margins, scaling and chef protection
+2026-11-16T10:00:16.3648387Z PASS establishment expenses: graphite 1366: visible navigation, live monthly allocation, separate margins, scaling and chef protection
+2026-11-16T10:00:17.4444640Z PASS establishment expenses: graphite 390: visible navigation, live monthly allocation, separate margins, scaling and chef protection
+2026-11-16T10:00:18.6100670Z PASS establishment expenses: sage 1366: visible navigation, live monthly allocation, separate margins, scaling and chef protection
+2026-11-16T10:00:19.6611512Z PASS establishment expenses: sage 390: visible navigation, live monthly allocation, separate margins, scaling and chef protection
+2026-11-16T10:00:21.0443143Z PASS establishment expenses: changing expenses, forecasts, sale price, procurement and prep output recalculates from originals
+2026-11-16T10:00:22.1129321Z PASS establishment expenses: empty fields, invalid sales volume and valid zeros do not fabricate full costs or percentages
+2026-11-16T10:00:22.8793585Z PASS establishment expenses: unsaved expense navigation requires confirmation and the fixed save stays reachable at 320px
+2026-11-16T10:00:23.8911645Z PASS establishment expenses: quota and stale tab preserve the database and allow emergency JSON with proposed expenses
+2026-11-16T10:00:24.7878158Z PASS establishment expenses: JSON exports expenses; conflicts require a choice and backup preserves the former plan
+2026-11-16T10:00:25.7611078Z PASS establishment expenses: photographs and independent recipe draft survive expense changes, reload and JSON export
+2026-11-16T10:00:26.4140604Z PASS establishment expenses: saving an expense plan never changes recipe packaging identity metadata
+2026-11-16T10:00:27.1096695Z PASS establishment expenses: reopening the expense form preserves raw decimal precision instead of rounding saved inputs
+2026-11-16T10:00:28.2426201Z PASS establishment expenses: A4 calculation includes opted-in expense details; chef print and toggle-off exclude them
+2026-11-16T10:00:30.6383268Z PASS establishment expenses: full browser restarts 1366
+2026-11-16T10:00:33.4463622Z PASS establishment expenses: full browser restarts 390
+2026-11-16T10:00:33.4548683Z 17 establishment-expense browser scenarios passed; 0 failures.

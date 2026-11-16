@@ -1,0 +1,21 @@
+{
+  "date": "2026-11-16",
+  "timezone": "Europe/Moscow",
+  "url": "https://sobaca0808-bit.github.io/kitchen-calculator-test/expenses/",
+  "source_commit": "1c1fcc057370f04a0451bf62ef6241a1edeb7587",
+  "runtime_ci_commit": "aed462db0dfe3abe923880c0c4fda0dd3867fd5d",
+  "hosting_commit": "8cccd70d549b91cd90817941e9602ae509e113da",
+  "workflow_run": 43844481272,
+  "job": 133221101192,
+  "artifact": 14214322521,
+  "artifact_sha256": "d3439c576f0cdaa6a61a775fdae85a80c761c268b1eb127dea3b6b9bfe6c85a4",
+  "published_browser_passed": 17,
+  "published_browser_failed": 0,
+  "expense_browser_restarts": 6,
+  "protected_https_files": 90,
+  "total_https_files_verified": 126,
+  "main_unchanged": "63443c53d2c7a99060584d54eae0e9c779475405",
+  "pr20_unchanged": "04c98fb20444859454fc18fd6f3d6e0429818f8b",
+  "pr22_unchanged": "1a68adffd2046b758b683af3b516adf944081149",
+  "physical_android_tested": false
+}
