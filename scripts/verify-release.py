@@ -37,6 +37,7 @@ def verify(proof, phase):
     for mode, expected, allow_missing in [
         ('previous-main', proof['previous_root_https'], False),
         ('same-release', proof['release_https'], False),
+        ('prior-main-release', proof['prior_main_release_https'], False),
         ('approved-raw-main', proof['approved_source_https'], True),
     ]:
         try:
