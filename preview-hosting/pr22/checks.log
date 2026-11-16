@@ -1,0 +1,17 @@
+2026-11-16T06:38:34.3626675Z {"unchanged_existing_files": 182, "protected_https_files": 57, "candidate_https_files": 33, "url": "https://sobaca0808-bit.github.io/kitchen-calculator-test/pr-22/"}
+2026-11-16T06:38:35.1907315Z {"phase": "before", "verified_https_files": 57, "root_and_preview_unchanged": true, "test_url": "https://sobaca0808-bit.github.io/kitchen-calculator-test/pr-22/"}
+2026-11-16T06:38:46.3715938Z {"phase": "after", "verified_https_files": 90, "root_and_preview_unchanged": true, "test_url": "https://sobaca0808-bit.github.io/kitchen-calculator-test/pr-22/"}
+2026-11-16T06:39:20.1338798Z Browser checks: 20 passed, 0 failed.
+2026-11-16T06:39:41.4993656Z Browser checks: 20 passed, 0 failed.
+2026-11-16T06:40:02.7290086Z Browser checks: 20 passed, 0 failed.
+2026-11-16T06:40:06.7818453Z PASS isolated three-theme published preview at 1366px
+2026-11-16T06:40:10.0080280Z PASS isolated three-theme published preview at 390px
+2026-11-16T06:40:17.4120318Z PASS PR22 published isolated persistence: berry 1366 three full Chrome starts; JSON, prices, folders, photos, drafts and stale-tab protection
+2026-11-16T06:40:24.1049227Z PASS PR22 published isolated persistence: berry 390 three full Chrome starts; JSON, prices, folders, photos, drafts and stale-tab protection
+2026-11-16T06:40:30.9964942Z PASS PR22 published isolated persistence: graphite 1366 three full Chrome starts; JSON, prices, folders, photos, drafts and stale-tab protection
+2026-11-16T06:40:37.7714598Z PASS PR22 published isolated persistence: graphite 390 three full Chrome starts; JSON, prices, folders, photos, drafts and stale-tab protection
+2026-11-16T06:40:46.0015465Z PASS PR22 published isolated persistence: sage 1366 three full Chrome starts; JSON, prices, folders, photos, drafts and stale-tab protection
+2026-11-16T06:40:52.7387131Z PASS PR22 published isolated persistence: sage 390 three full Chrome starts; JSON, prices, folders, photos, drafts and stale-tab protection
+2026-11-16T06:40:52.7388691Z PASS PR22 link: https://sobaca0808-bit.github.io/kitchen-calculator-test/pr-22/ 6 scenarios, 18 full Chrome starts
+2026-11-16T06:40:55.1430840Z HTTPS file hashes and desktop/mobile Chrome checks passed.
+2026-11-16T06:40:55.1433100Z Three themes, desktop/mobile, 18 full Chrome starts and JSON downloads passed.

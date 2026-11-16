@@ -1,0 +1,20 @@
+{
+  "date": "2026-11-16",
+  "timezone": "Europe/Moscow",
+  "url": "https://sobaca0808-bit.github.io/kitchen-calculator-test/pr-22/",
+  "source_commit": "1a68adffd2046b758b683af3b516adf944081149",
+  "hosting_commit": "8d022031ef44542041f084d070cfccb07611a86a",
+  "workflow_run": 43818124963,
+  "job": 133134743599,
+  "artifact": 14203511724,
+  "artifact_sha256": "c6c348c6c19ff2d425c429f1320bac28766b7816245bae323aaeaf7f3a581113",
+  "protected_https_files": 57,
+  "verified_after_https_files": 90,
+  "chrome_scenarios": 6,
+  "chrome_starts": 18,
+  "real_json_downloads": 18,
+  "foreign_storage_violations": 0,
+  "unchanged_preview_source": "04c98fb20444859454fc18fd6f3d6e0429818f8b",
+  "unchanged_main": "63443c53d2c7a99060584d54eae0e9c779475405",
+  "physical_android_tested": false
+}
