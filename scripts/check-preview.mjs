@@ -21,6 +21,7 @@ function run(args,env=process.env) {
   });
 }
 const runtimeFiles=new Map([
+  ['/assets/sintez-matte.svg','assets/sintez-matte.svg'],
   ...['favicon.ico','icon-16.png','icon-32.png','icon-180.png'].map(name=>['/icons/sintez/'+name,'icons/sintez/'+name]),
   ['/assets/sintez-intro.css','assets/sintez-intro.css'],['/js/sintez-intro.js','js/sintez-intro.js'],
   ...['01_intro','02_home','03_chef','04_business'].map(name=>['/assets/sintez-intro/'+name+'.jpg','assets/sintez-intro/'+name+'.jpg']),
