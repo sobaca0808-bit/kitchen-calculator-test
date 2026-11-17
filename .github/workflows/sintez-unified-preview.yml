@@ -18,8 +18,8 @@ jobs:
     env:
       APPROVED_MAIN: 9f45d0206022d5cfb66352b5a1518b3ff9a50abc
       MERGED_HOME: 59fce080ea4e8dd90dc8cd86e2361323bc81cd3a
-      UNIFIED_SOURCE: 55b47a6b13b76fbb29dd1a50baadaee84b981a17
-      CHECK_RUN: '44150738500'
+      UNIFIED_SOURCE: 2df8a74b86fdb297eaf4098d1d8d1ee5b2e96548
+      CHECK_RUN: '44151155688'
     environment:
       name: github-pages
       url: https://sobaca0808-bit.github.io/kitchen-calculator-test/sintez-release/presentation.html
