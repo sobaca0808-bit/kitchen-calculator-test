@@ -45,10 +45,12 @@ jobs:
           KITCHEN_SINTEZ_RUNTIME_ROOT: ${{ runner.temp }}/unified-site/sintez-release
           KITCHEN_INTRO_ARTIFACTS: ${{ runner.temp }}/intro-proof
           KITCHEN_SINTEZ_ARTIFACTS: ${{ runner.temp }}/home-proof
+          KITCHEN_ENTRY_ARTIFACTS: ${{ runner.temp }}/entry-proof
         run: |
           export KITCHEN_SINTEZ_KEYS="$(python3 -c 'import json,os;print(json.dumps(json.load(open(os.environ["KITCHEN_SINTEZ_RUNTIME_ROOT"]+"/pwa-version.json"))["storage_names"]))')"
           node tests/sintez-intro.browser.test.js
           node tests/sintez-home.browser.test.js
+          node tests/sintez-entry.browser.test.js
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -60,6 +62,7 @@ jobs:
             ${{ runner.temp }}/unified-release-proof.json
             ${{ runner.temp }}/intro-proof
             ${{ runner.temp }}/home-proof
+            ${{ runner.temp }}/entry-proof
             ${{ runner.temp }}/unified-site/pwa/manifest.webmanifest
             ${{ runner.temp }}/unified-site/pwa/pwa-version.json
   regressions:
@@ -110,6 +113,7 @@ jobs:
           SINTEZ_PWA_OLD: ${{ runner.temp }}/pwa-versions/old
           SINTEZ_PWA_NEW: ${{ runner.temp }}/pwa-versions/new
           SINTEZ_PWA_PREVIEW: ${{ runner.temp }}/pwa-versions/preview
+          SINTEZ_PWA_PRIOR_PREVIEW: ${{ runner.temp }}/pwa-versions/prior-preview
           SINTEZ_PWA_BAD: ${{ runner.temp }}/pwa-versions/bad
           SINTEZ_PWA_ARTIFACTS: ${{ runner.temp }}/pwa-proof
         run: xvfb-run -a -s '-screen 0 1440x1000x24' node tests/sintez-pwa-upgrade.browser.test.js
@@ -143,6 +147,7 @@ jobs:
           SINTEZ_PWA_OLD: ${{ runner.temp }}/pwa-versions/old
           SINTEZ_PWA_NEW: ${{ runner.temp }}/pwa-versions/new
           SINTEZ_PWA_PREVIEW: ${{ runner.temp }}/pwa-versions/preview
+          SINTEZ_PWA_PRIOR_PREVIEW: ${{ runner.temp }}/pwa-versions/prior-preview
           SINTEZ_PWA_BAD: ${{ runner.temp }}/pwa-versions/bad
           SINTEZ_PWA_ARTIFACTS: ${{ runner.temp }}/pwa-proof
         run: node tests/sintez-pwa-upgrade.browser.test.js

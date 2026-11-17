@@ -14,6 +14,9 @@
   const fullscreen = dialog.querySelector('[data-intro-fullscreen]');
   const fullscreenTarget = dialog.querySelector('.sx-intro-shell');
   const status = document.getElementById('sintez-presentation-status');
+  const install = dialog.querySelector('[data-intro-install]');
+  const installHelp = dialog.querySelector('[data-intro-install-help]');
+  const installStatus = dialog.querySelector('[data-intro-install-status]');
   let current = 0, timer = null, returnFocus = null, scroll = 0, mode = 'first';
   let gesture = null;
 
@@ -31,7 +34,9 @@
     dots.forEach((dot, i) => dot.setAttribute('aria-current', i === current ? 'step' : 'false'));
     previous.disabled = current === 0;
     if (moveFocus) next.focus({preventScroll: true});
-    next.textContent = current === slides.length - 1 ? 'Начать работу →' : 'Далее →';
+    next.textContent = current === slides.length - 1 ? 'Открыть программу' : 'Далее →';
+    install.hidden = current !== slides.length - 1;
+    installHelp.hidden = true;
     dialog.querySelector('[data-intro-count]').textContent = (current + 1) + ' / ' + slides.length;
     dialog.querySelector('[data-intro-announcement]').textContent = 'Слайд ' + (current + 1) + ' из ' + slides.length + ': ' + slides[current].dataset.introSlide;
     if (current === slides.length - 1) pause();
@@ -73,9 +78,32 @@
   next.addEventListener('click', () => current === slides.length - 1 ? close(true) : move(1));
   dialog.querySelector('[data-intro-skip]').addEventListener('click', () => close(true));
   replay.addEventListener('click', () => open());
+  // Reuse the real existing PWA client and its retained browser prompt. Never
+  // manufacture a prompt, installation success or a second manifest identity.
+  install.addEventListener('click', () => {
+    pause(); installHelp.hidden = false;
+    const actualInstall = document.getElementById('pwa-install');
+    const installed = matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+    if (installed) installStatus.textContent = 'Приложение уже открыто в отдельном окне. Можно продолжить работу.';
+    else if (actualInstall && !actualInstall.hidden) {
+      installStatus.textContent = 'Запрошено системное окно установки. Подтвердите установку в браузере. Если вы закрыли окно, повторите через меню браузера.';
+      actualInstall.click(); // Synchronous: keep this real user's activation.
+    } else installStatus.textContent = 'Системная кнопка установки сейчас недоступна. Используйте инструкцию для вашего устройства ниже; установка не подтверждена.';
+    dialog.querySelector('[data-intro-install-close]').focus({preventScroll:true});
+    installHelp.scrollIntoView({block:'nearest',behavior:'instant'});
+  });
+  function closeInstallHelp() { installHelp.hidden = true; install.focus({preventScroll:true}); }
+  dialog.querySelector('[data-intro-install-close]').addEventListener('click', closeInstallHelp);
+  window.addEventListener('appinstalled', () => {
+    installStatus.textContent = 'Браузер подтвердил установку приложения. Запускайте его через появившийся ярлык.';
+  });
   dots.forEach((dot, i) => dot.addEventListener('click', () => { pause(); show(i); }));
   dialog.addEventListener('cancel', event => { event.preventDefault(); close(); });
   dialog.addEventListener('keydown', event => {
+    if (event.key === 'Escape' && !installHelp.hidden) {
+      event.preventDefault(); event.stopPropagation(); closeInstallHelp(); return;
+    }
+    if (event.target.closest('[data-intro-install-help]')) return;
     if (event.key === 'Escape') { event.stopPropagation(); return; }
     if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
     event.preventDefault(); event.stopPropagation(); pause();
@@ -111,7 +139,7 @@
     fullscreen.setAttribute('aria-pressed', String(document.fullscreenElement === fullscreenTarget));
   });
   window.addEventListener('popstate', event => {
-    if (['first', 'replay'].includes(event.state?.[HISTORY])) open(false, event.state[HISTORY]);
+    if (['first', 'replay', 'public'].includes(event.state?.[HISTORY])) open(false, event.state[HISTORY]);
     else close(false, false);
   });
 
@@ -119,7 +147,10 @@
   // error means this is NOT a first run. Never initialize, migrate or clear data.
   const url = new URL(location.href);
   const direct = url.searchParams.has('section') || url.hash || ['import', 'restore', 'recovery'].some(key => url.searchParams.has(key));
-  if (!direct) {
+  const publicEntry = url.pathname.endsWith('/presentation.html') || url.searchParams.get('presentation') === '1';
+  const installedStart = url.searchParams.get('source') === 'pwa' || matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+  if (!direct && publicEntry) open(!history.state?.[HISTORY], 'public');
+  else if (!direct && !installedStart) {
     try {
       const existing = [KitchenStorage.KEY, KitchenDrafts.KEY, KitchenAppearance.KEY].some(key => localStorage.getItem(key) !== null);
       if (!existing && localStorage.getItem(KEY) === null) open(!history.state?.[HISTORY], 'first');

@@ -83,7 +83,7 @@ async function settings(page) { await page.locator('#sintez-shell [data-sintez-r
         }
         if ([1366,390].includes(width)) await page.screenshot({path:path.join(output, 'slide-' + (i+1) + '-' + width + '.png'),animations:'disabled'});
       }
-      assert.match(await page.locator('[data-intro-next]').textContent(), /Начать работу/);
+      assert.match(await page.locator('[data-intro-next]').textContent(), /Открыть программу/);
       await page.keyboard.press('Home');assert.equal(await title(page).textContent(),names[0]);
       assert(await page.locator('[data-intro-previous]').isDisabled());
       await page.keyboard.press('ArrowRight');assert.equal(await title(page).textContent(),names[1]);

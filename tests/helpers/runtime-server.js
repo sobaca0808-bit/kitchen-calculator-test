@@ -1,7 +1,7 @@
 'use strict';
 const fs=require('node:fs/promises'),path=require('node:path'),{createServer}=require('node:http');
 async function start(root,{home=false}={}){
- const html=await fs.readFile(path.join(root,'index.html'),'utf8'),allowed=new Set(['index.html',...Array.from(html.matchAll(/<(?:script|link|img)\b[^>]*\b(?:src|href)=["']([^"']+)/g),m=>new URL(m[1],'http://localhost/').pathname.slice(1))]);
+ const html=await fs.readFile(path.join(root,'index.html'),'utf8'),allowed=new Set(['index.html','presentation.html',...Array.from(html.matchAll(/<(?:script|link|img)\b[^>]*\b(?:src|href)=["']([^"']+)/g),m=>new URL(m[1],'http://localhost/').pathname.slice(1))]);
  for(const file of [...allowed].filter(f=>f.endsWith('.css')))for(const m of (await fs.readFile(path.join(root,file),'utf8')).matchAll(/url\(["']?([^"')]+)/g))allowed.add(path.posix.join(path.posix.dirname(file),m[1]));
  let mount='/kitchen-calculator-test/';
  if(allowed.has('manifest.webmanifest')){const manifest=JSON.parse(await fs.readFile(path.join(root,'manifest.webmanifest'),'utf8'));for(const icon of manifest.icons)allowed.add(icon.src);allowed.add('sw.js');allowed.add('pwa-version.json');mount=manifest.id;}

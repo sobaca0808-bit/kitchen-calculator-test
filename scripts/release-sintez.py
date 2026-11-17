@@ -7,10 +7,10 @@ stand remains independent of their namespaces and of later main commits.
 import argparse,importlib.util,json,shutil,subprocess,tempfile,hashlib
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
-HOST='08f80c5385d0d52163cbb3593062cb458f54a1c3'
+HOST='fde0c56f205a4748daa1d2a8504c674283a2e850'
 MAIN='9f45d0206022d5cfb66352b5a1518b3ff9a50abc'
 INTRO='b0e1b3340dc2e376e53a1fcbfa0834edda3265fb'
-CANDIDATE_TAG='release/sintez-unified-candidate-v1'
+CANDIDATE_TAG='release/sintez-unified-candidate-v2'
 URL='https://sobaca0808-bit.github.io/kitchen-calculator-test/'
 def run(*args):subprocess.run(args,check=True)
 def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
@@ -19,9 +19,9 @@ def module(root):
 def baseline(output,proof):
     with tempfile.TemporaryDirectory(prefix='sintez-baseline-') as folder:
         host=Path(folder)/'hosting';run('git','-C',str(ROOT),'worktree','add','--detach',str(host),HOST)
-        try:run('python3',str(host/'preview-hosting/sintez-intro/build.py'),'--pages',str(output),'--proof',str(proof),'--source',INTRO)
+        try:run('python3',str(host/'preview-hosting/sintez-release/build.py'),'--pages',str(output),'--proof',str(proof),'--source','c41efaaf76c1d0e8d51efd092bf96ac1fd3a7765')
         finally:run('git','-C',str(ROOT),'worktree','remove','--force',str(host))
-    old=json.loads(proof.read_text());expected={**old['protected_https'],**old['candidate_https']};assert len(expected)==341
+    old=json.loads(proof.read_text());expected={**old['preserved_https'],**old['release_https']};assert len(expected)==400
     return expected
 def build(output,proof,source,preview_source):
     assert not output.exists()
@@ -31,7 +31,9 @@ def build(output,proof,source,preview_source):
         temp=Path(folder);before=baseline(output,temp/'baseline.json')
         original_files={p.relative_to(output).as_posix():sha(p) for p in output.rglob('*') if p.is_file()}
         candidate=temp/'candidate';run('git','-C',str(ROOT),'worktree','add','--detach',str(candidate),preview_source)
-        try:preview=module(candidate).package(output/'sintez-release',preview_source,'preview',candidate)
+        try:
+            preview=module(candidate).package(temp/'preview',preview_source,'preview',candidate)
+            shutil.copytree(temp/'preview',output/'sintez-release',dirs_exist_ok=True)
         finally:run('git','-C',str(ROOT),'worktree','remove','--force',str(candidate))
         preview_http={'sintez-release/'+name:digest for name,digest in preview['files'].items()};preview_http['sintez-release/pwa-version.json']=sha(output/'sintez-release/pwa-version.json')
         before.update(preview_http)

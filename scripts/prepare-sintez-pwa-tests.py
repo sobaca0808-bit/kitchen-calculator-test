@@ -18,6 +18,11 @@ if __name__=='__main__':
         load('old_pwa_builder',old/'scripts/build-pwa-preview.py').build(a.output/'old',OLD,root=old)
     pack=load('new_sintez_package',ROOT/'scripts/sintez-package.py')
     pack.package(a.output/'new',source,'pwa');pack.package(a.output/'preview',source,'preview')
+    with tempfile.TemporaryDirectory(prefix='sintez-prior-preview-') as folder:
+        prior=Path(folder)/'source';ref='c41efaaf76c1d0e8d51efd092bf96ac1fd3a7765'
+        subprocess.run(['git','-C',str(ROOT),'worktree','add','--detach',str(prior),ref],check=True)
+        try:load('prior_preview_package',prior/'scripts/sintez-package.py').package(a.output/'prior-preview',ref,'preview',prior)
+        finally:subprocess.run(['git','-C',str(ROOT),'worktree','remove','--force',str(prior)],check=True)
     shutil.copytree(a.output/'new',a.output/'bad')
     file=a.output/'bad/sw.js';text=file.read_text();match=re.search(r'const BUILD = (.*); // PWA_BUILD',text);config=json.loads(match[1]);config['revision']=hashlib.sha256(b'corrupt fixture only').hexdigest();file.write_text(text[:match.start(1)]+json.dumps(config,separators=(',',':'))+text[match.end(1):])
     file=a.output/'bad/js/app.js';file.write_text(file.read_text()+'\n/* intentional test-only digest mismatch */\n')

@@ -5,7 +5,7 @@ const {execFileSync}=require('node:child_process'),{chromium}=require('playwrigh
 const {start}=require('./helpers/pwa-server');
 const {snapshot}=require('./helpers/persistence-lifecycle');
 const design=require('./helpers/design-fixture');
-const oldRoot=process.env.SINTEZ_PWA_OLD,newRoot=process.env.SINTEZ_PWA_NEW,previewRoot=process.env.SINTEZ_PWA_PREVIEW,badRoot=process.env.SINTEZ_PWA_BAD;
+const oldRoot=process.env.SINTEZ_PWA_OLD,newRoot=process.env.SINTEZ_PWA_NEW,previewRoot=process.env.SINTEZ_PWA_PREVIEW,badRoot=process.env.SINTEZ_PWA_BAD,priorPreview=process.env.SINTEZ_PWA_PRIOR_PREVIEW;
 const output=process.env.SINTEZ_PWA_ARTIFACTS||path.join(os.tmpdir(),'sintez-pwa-upgrade');
 const headful=process.env.KITCHEN_PWA_HEADFUL==='1';
 const launch={executablePath:process.env.CHROMIUM_PATH||'/usr/bin/chromium',headless:!headful,args:['--no-sandbox']};
@@ -75,6 +75,20 @@ async function closeAll(){await context?.close();context=null;await browser?.clo
   assert.equal((await status(page)).revision,version.revision);assert.equal((await snapshot(page)).raw,offline.raw);await foreign(page);assert.deepEqual(errors,[]);
   results.push({name:'corrupt update rejected atomically without changing active shell, draft or database',passed:true});
   await closeAll();
+  assert(priorPreview,'A real previous SINTEZ worker is required for the public-entry regression');
+  server=await start([priorPreview,previewRoot],{mount:'/kitchen-calculator-test/sintez-release/'});browser=await chromium.launch(launch);context=await browser.newContext();
+  page=await context.newPage();const fixtureURL=new URL('__entry_fixture__',server.url).href;
+  await page.route(fixtureURL,r=>r.fulfill({contentType:'text/html',body:'<!doctype html><title>Synthetic previous SINTEZ</title>'}));await page.goto(fixtureURL);
+  const book=JSON.stringify(design());await page.evaluate(book=>{localStorage.setItem('kitchen-calculator-sintez-preview-v1',book);localStorage.setItem('kitchen-calculator-sintez-appearance-v1','sage');},book);
+  await page.goto(server.url);await ready(page);await page.reload();await page.waitForFunction(()=>!!navigator.serviceWorker.controller);const priorRevision=(await status(page)).revision,priorTime=await page.evaluate(()=>performance.timeOrigin);
+  server.select(1);const publicPage=await context.newPage();await publicPage.goto(server.url+'presentation.html');
+  assert(await publicPage.locator('#sintez-presentation').isVisible());assert.equal(await publicPage.locator('.sx-intro-slide.is-active h2').textContent(),'СИНТЕЗ МЕРЫ');
+  assert.equal((await status(publicPage)).revision,priorRevision,'The old worker must still control both pages');assert.equal(await page.evaluate(()=>performance.timeOrigin),priorTime);
+  await publicPage.keyboard.press('End');assert(await publicPage.locator('[data-intro-install]').isVisible());await publicPage.locator('[data-intro-next]').click();await publicPage.waitForFunction(()=>!history.state?.sintezPresentationV1);
+  assert(await publicPage.locator('#sintez-home').isVisible());assert.equal(await publicPage.evaluate(()=>localStorage.getItem('kitchen-calculator-sintez-preview-v1')),book);assert.equal(await publicPage.evaluate(()=>localStorage.getItem('kitchen-calculator-sintez-appearance-v1')),'sage');
+  await publicPage.goto(server.url+'presentation.html');assert(await publicPage.locator('#sintez-presentation').isVisible());assert.equal(await publicPage.locator('.sx-intro-slide.is-active h2').textContent(),'СИНТЕЗ МЕРЫ');
+  results.push({name:'new public URL and entry assets bypass the real previous worker while an old window stays open; no forced activation, reload or data change',passed:true});
+  await closeAll();
   if(headful){
     server=await start([oldRoot,newRoot]);profile=await fs.mkdtemp(path.join(os.tmpdir(),'sintez-installed-'));
     context=await chromium.launchPersistentContext(path.join(profile,'chrome'),{...launch,viewport:{width:1280,height:900},env:{...process.env,XDG_DATA_HOME:path.join(profile,'xdg-data'),XDG_CONFIG_HOME:path.join(profile,'xdg-config'),XDG_CACHE_HOME:path.join(profile,'xdg-cache')}});
@@ -94,8 +108,9 @@ async function closeAll(){await context?.close();context=null;await browser?.clo
     server=await start([previewRoot],{mount:'/kitchen-calculator-test/sintez-release/'});profile=await fs.mkdtemp(path.join(os.tmpdir(),'sintez-new-install-'));
     context=await chromium.launchPersistentContext(path.join(profile,'chrome'),{...launch,viewport:{width:1280,height:900},env:{...process.env,XDG_DATA_HOME:path.join(profile,'xdg-data'),XDG_CONFIG_HOME:path.join(profile,'xdg-config'),XDG_CACHE_HOME:path.join(profile,'xdg-cache')}});
     page=await context.newPage();await page.goto(server.url);await ready(page);await page.locator('[data-intro-skip]').click();await page.waitForFunction(()=>!history.state?.sintezPresentationV1);
+    await page.evaluate(()=>localStorage.removeItem('kitchen-calculator-sintez-presentation-seen-v1')); // Synthetic profile only: prove a marker is not required for a shortcut.
     const c=await context.newCDPSession(page);assert.deepEqual((await c.send('Page.getInstallabilityErrors')).installabilityErrors,[]);await c.send('PWA.install',{manifestId:server.url,installUrlOrBundleUrl:server.url});await c.send('PWA.changeAppUserSettings',{manifestId:server.url,displayMode:'standalone'});await c.send('PWA.launch',{manifestId:server.url});
-    const freshApp=await appWindow(context,page);await freshApp.waitForLoadState();assert(await freshApp.evaluate(()=>matchMedia('(display-mode: standalone)').matches));assert.equal(await freshApp.title(),'СИНТЕЗ МЕРЫ — кухонный калькулятор');await freshApp.bringToFront();await screen(path.join(output,'new-branded-installed-desktop.png'));
+    const freshApp=await appWindow(context,page);await freshApp.waitForLoadState();assert(await freshApp.evaluate(()=>matchMedia('(display-mode: standalone)').matches));assert.equal(await freshApp.title(),'СИНТЕЗ МЕРЫ — кухонный калькулятор');assert(await freshApp.locator('#sintez-presentation').isHidden());assert(await freshApp.locator('#sintez-home').isVisible());assert.equal(await freshApp.evaluate(()=>localStorage.getItem('kitchen-calculator-sintez-presentation-seen-v1')),null);await freshApp.bringToFront();await screen(path.join(output,'new-branded-installed-desktop.png'));
     await page.goto('chrome://apps');await page.waitForTimeout(1500);await page.bringToFront();await screen(path.join(output,'chrome-apps-approved-icon.png'));await page.screenshot({path:path.join(output,'chrome-apps-approved-icon-content.png'),fullPage:true});
     results.push({name:'fresh real branded PWA installation and native Chrome apps icon screenshot',passed:true,platform:process.platform});
   }

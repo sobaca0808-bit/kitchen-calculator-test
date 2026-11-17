@@ -45,10 +45,12 @@ jobs:
           KITCHEN_SINTEZ_RUNTIME_ROOT: ${{ runner.temp }}/release-site/sintez-release
           KITCHEN_INTRO_ARTIFACTS: ${{ runner.temp }}/intro-proof
           KITCHEN_SINTEZ_ARTIFACTS: ${{ runner.temp }}/home-proof
+          KITCHEN_ENTRY_ARTIFACTS: ${{ runner.temp }}/entry-proof
         run: |
           export KITCHEN_SINTEZ_KEYS="$(python3 -c 'import json,os;print(json.dumps(json.load(open(os.environ["KITCHEN_SINTEZ_RUNTIME_ROOT"]+"/pwa-version.json"))["storage_names"]))')"
           node tests/sintez-intro.browser.test.js
           node tests/sintez-home.browser.test.js
+          node tests/sintez-entry.browser.test.js
       - uses: actions/upload-artifact@v4
         with:
           name: sintez-main-candidate
@@ -63,6 +65,7 @@ jobs:
             ${{ runner.temp }}/main-regressions.log
             ${{ runner.temp }}/intro-proof
             ${{ runner.temp }}/home-proof
+            ${{ runner.temp }}/entry-proof
   publish:
     # A merge alone must not authorize a new permanent/PWA publication.
     if: github.event_name == 'workflow_dispatch' && inputs.publish_release && github.ref == 'refs/heads/main'

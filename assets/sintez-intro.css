@@ -38,6 +38,13 @@
 #sintez-presentation .sx-intro-fine {font-size:12px;line-height:1.5;margin:14px 0 0;color:#afbdce;max-width:1020px;}
 #sintez-presentation .sx-intro-announcement {position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap;}
 #sintez-presentation button[hidden] {display:none;}
+#sintez-presentation .sx-intro-navigation {flex-wrap:wrap;}
+#sintez-presentation .sx-intro-install-help {margin-top:16px;padding:18px;border:1px solid #536375;border-radius:12px;background:#192533;}
+#sintez-presentation .sx-intro-install-help[hidden] {display:none;}
+#sintez-presentation .sx-intro-install-help h3 {margin:0 0 12px;font-size:20px;}
+#sintez-presentation .sx-intro-install-help p {color:#dbe4ee;font-size:14px;line-height:1.6;}
+#sintez-presentation .sx-intro-install-help summary {cursor:pointer;padding:12px 0;min-height:44px;font-weight:600;}
+#sintez-presentation [data-intro-install] {border-color:#dbbb7c;}
 @media (min-width:900px) and (min-height:650px) {
   #sintez-presentation .sx-intro-shell {width:min(100%,1440px,calc((100dvh - 260px)*1672/941 + 56px));}
 }
@@ -59,6 +66,7 @@
   #sintez-presentation .sx-intro-progress {justify-content:space-between;width:100%;}
   #sintez-presentation .sx-intro-navigation {width:100%;}
   #sintez-presentation .sx-intro-navigation button {flex:1;min-width:0;}
+  #sintez-presentation .sx-intro-navigation [data-intro-install] {flex-basis:100%;}
   #sintez-presentation .sx-intro-tools {flex-wrap:wrap;}
   #sintez-presentation .sx-intro-hint {margin:0;width:100%;}
 }

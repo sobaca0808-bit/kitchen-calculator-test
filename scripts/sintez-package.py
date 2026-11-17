@@ -63,12 +63,19 @@ def package(output,source,target='preview',root=ROOT):
         html=html.replace('</head>','  <link rel="manifest" href="manifest.webmanifest">\n  <link rel="stylesheet" href="assets/pwa.css">\n  <link rel="stylesheet" href="assets/sintez-pwa.css">\n  <script defer src="js/sintez-pwa.js"></script>\n  <script defer src="js/pwa.js"></script>\n</head>')
         html=html.replace('</body>',(root/'pwa/control.html').read_text()+(root/'pwa/notice.html').read_text()+'</body>')
     html=re.sub(r'((?:src|href)=["\'])([^"\']+\.(?:js|css))(?:\?[^"\']*)?(["\'])',lambda m:m[1]+m[2]+'?v=sintez-release-'+source[:12]+m[3],html)
+    # Old workers match resource PATHS even when a version query changes. New
+    # presentation URLs and entry-only filenames must also work while the old
+    # installed shell is still open; never force its controller to activate.
+    for old,new in [('js/sintez-intro.js','js/sintez-entry-v2.js'),('assets/sintez-intro.css','assets/sintez-entry-v2.css')]:
+        html=html.replace(old,new);shutil.copyfile(output/old,output/new);(output/old).unlink()
     (output/'index.html').write_text(html)
-    files=runtime(output)
+    (output/'presentation.html').write_text(html)
+    files=runtime(output)+['presentation.html']
     if target!='web':
         worker=(output/'sw.js').read_text();assert worker.count('const BUILD = null; // PWA_BUILD')==1
         revision=sha(json.dumps({'assets':{f:sha((output/f).read_bytes()) for f in files},'worker':sha(worker.encode()),'format':1},sort_keys=True).encode())
         html=html.replace('<html lang="ru"','<html lang="ru" data-pwa-build="'+revision+'"',1);(output/'index.html').write_text(html)
+        (output/'presentation.html').write_text(html)
         config={'revision':revision,'assets':[{'url':f,'sha256':sha((output/f).read_bytes())} for f in files]}
         (output/'sw.js').write_text(worker.replace('const BUILD = null; // PWA_BUILD','const BUILD = '+json.dumps(config,separators=(',',':'))+'; // PWA_BUILD'))
         files.append('sw.js')
