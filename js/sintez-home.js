@@ -24,7 +24,7 @@
     if(route==='settings'){showSettings();return;}
     const section=routes[route];if(!section)return;
     if(!navigation.open(section,route==='calculator')){showHome();status.textContent='Переход отменён. Открытая запись остаётся на месте — можно продолжить работу.';return;}
-    status.textContent='';work(route!=='calculator');urlSection(section);
+    status.textContent='';work(route!=='calculator');if(route==='calculator')document.getElementById('item-name')?.focus();urlSection(section);
   }
   document.querySelectorAll('[data-sintez-route]').forEach(button=>button.addEventListener('click',()=>open(button.dataset.sintezRoute)));
   document.querySelectorAll('[data-sintez-home]').forEach(button=>button.addEventListener('click',showHome));

@@ -53,6 +53,7 @@ jobs:
           sudo apt-get update -qq
           sudo apt-get install -y poppler-utils
       - name: Run every existing logic and browser scenario in three themes
+        shell: bash
         env:
           NODE_PATH: ${{ runner.temp }}/sintez-tools/node_modules
           CHROMIUM_PATH: /usr/bin/google-chrome
