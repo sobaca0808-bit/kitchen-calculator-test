@@ -78,7 +78,7 @@
   }
   /* A filter on .editor would rebase its fixed action bar to the editor box.
      Blur a separate non-interactive layer, keeping the viewport toolbar intact. */
-  html[data-sintez-glass] .editor {position:relative;isolation:isolate;background:transparent;-webkit-backdrop-filter:none;backdrop-filter:none;}
+  html[data-sintez-glass] .editor {position:relative;isolation:isolate;background:transparent;border-width:2px;-webkit-backdrop-filter:none;backdrop-filter:none;}
   html[data-sintez-glass] .editor::before {content:'';position:absolute;inset:0;z-index:-1;pointer-events:none;border-radius:inherit;background:var(--g-panel);-webkit-backdrop-filter:blur(var(--g-blur)) saturate(115%);backdrop-filter:blur(var(--g-blur)) saturate(115%);}
   html[data-sintez-glass] .test-notice {background:var(--g-sub);color:var(--g-muted);border-color:var(--g-line);max-width:1360px;border-radius:8px;}
   html[data-sintez-glass] .app-header {max-width:1360px;padding:18px 22px;margin:16px auto;gap:16px;}
