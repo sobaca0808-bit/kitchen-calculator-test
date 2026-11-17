@@ -1,0 +1,107 @@
+name: Publish only the unified SINTEZ review stand
+on:
+  push:
+    branches: [preview/browser]
+    paths: ['preview-hosting/sintez-release/**', '.github/workflows/sintez-unified-preview.yml']
+permissions:
+  actions: read
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: github-pages
+  cancel-in-progress: false
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      APPROVED_MAIN: 9f45d0206022d5cfb66352b5a1518b3ff9a50abc
+      MERGED_HOME: 59fce080ea4e8dd90dc8cd86e2361323bc81cd3a
+      UNIFIED_SOURCE: c41efaaf76c1d0e8d51efd092bf96ac1fd3a7765
+      CHECK_RUN: '44124963566'
+    environment:
+      name: github-pages
+      url: https://sobaca0808-bit.github.io/kitchen-calculator-test/sintez-release/
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Require the exact final CI and unchanged main on every wait
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          test '${{ github.repository }}' = sobaca0808-bit/kitchen-calculator-test
+          for ATTEMPT in $(seq 1 120); do
+            test "$(gh api repos/${{ github.repository }}/git/ref/heads/main --jq .object.sha)" = "$APPROVED_MAIN"
+            test "$(gh api repos/${{ github.repository }}/git/ref/heads/feature/sintez-home --jq .object.sha)" = "$MERGED_HOME"
+            test "$(gh api repos/${{ github.repository }}/git/ref/heads/release/sintez-safe-release --jq .object.sha)" = "$UNIFIED_SOURCE"
+            test "$(gh api repos/${{ github.repository }}/git/ref/tags/release/sintez-unified-candidate-v1 --jq .object.sha)" = "$UNIFIED_SOURCE"
+            test "$(gh api repos/${{ github.repository }}/pulls/30 --jq .merged)" = false
+            test "$(gh api repos/${{ github.repository }}/actions/runs/$CHECK_RUN --jq .head_sha)" = "$UNIFIED_SOURCE"
+            test "$(gh api repos/${{ github.repository }}/actions/runs/$CHECK_RUN --jq .path)" = .github/workflows/sintez-safe-release.yml
+            STATUS="$(gh api repos/${{ github.repository }}/actions/runs/$CHECK_RUN --jq .status)"
+            if [ "$STATUS" = completed ]; then break; fi
+            echo "Waiting for the exact candidate checks ($ATTEMPT/120)."
+            sleep 12
+          done
+          test "$(gh api repos/${{ github.repository }}/actions/runs/$CHECK_RUN --jq .conclusion)" = success
+      - name: Rebuild the previous site and append only sintez-release
+        run: python3 preview-hosting/sintez-release/build.py --pages "$RUNNER_TEMP/unified-site" --proof "$RUNNER_TEMP/unified-publication.json" --source "$UNIFIED_SOURCE"
+      - name: Verify all 341 previous HTTPS resources before publication
+        run: python3 preview-hosting/sintez-release/verify.py "$RUNNER_TEMP/unified-publication.json" --phase before
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: ${{ runner.temp }}/unified-site
+      - name: Recheck the source and main immediately before publication
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          test "$(gh api repos/${{ github.repository }}/git/ref/heads/main --jq .object.sha)" = "$APPROVED_MAIN"
+          test "$(gh api repos/${{ github.repository }}/git/ref/heads/feature/sintez-home --jq .object.sha)" = "$MERGED_HOME"
+          test "$(gh api repos/${{ github.repository }}/git/ref/heads/release/sintez-safe-release --jq .object.sha)" = "$UNIFIED_SOURCE"
+          test "$(gh api repos/${{ github.repository }}/pulls/30 --jq .merged)" = false
+      - name: Publish the separate review route with the prior site preserved
+        uses: actions/deploy-pages@v4
+      - name: Verify all 341 unchanged and 59 new HTTPS resources
+        run: python3 preview-hosting/sintez-release/verify.py "$RUNNER_TEMP/unified-publication.json" --phase after
+      - name: Prepare disposable Chrome, native-window and PDF checks
+        run: |
+          npm install --prefix "$RUNNER_TEMP/unified-tools" --ignore-scripts --no-audit --no-fund playwright@1.62.1
+          sudo apt-get update -qq
+          sudo apt-get install -y poppler-utils xvfb xauth scrot
+      - name: Verify the actual HTTPS presentation, navigation, storage, JSON and A4
+        env:
+          NODE_PATH: ${{ runner.temp }}/unified-tools/node_modules
+          CHROMIUM_PATH: /usr/bin/google-chrome
+          KITCHEN_INTRO_ARTIFACTS: ${{ runner.temp }}/intro-live-proof
+          KITCHEN_SINTEZ_ARTIFACTS: ${{ runner.temp }}/home-live-proof
+        run: node preview-hosting/sintez-release/check.cjs
+      - name: Install the actual public preview and verify standalone offline relaunch
+        env:
+          NODE_PATH: ${{ runner.temp }}/unified-tools/node_modules
+          CHROMIUM_PATH: /usr/bin/google-chrome
+          SINTEZ_NATIVE_ARTIFACTS: ${{ runner.temp }}/native-live-proof
+        run: xvfb-run -a -s '-screen 0 1440x1000x24' node preview-hosting/sintez-release/native-check.cjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: sintez-unified-publication-proof
+          path: |
+            ${{ runner.temp }}/unified-publication.json
+            ${{ runner.temp }}/intro-live-proof
+            ${{ runner.temp }}/home-live-proof
+            ${{ runner.temp }}/native-live-proof
+      - name: Report the verified separate review URL
+        run: |
+          cat >> "$GITHUB_STEP_SUMMARY" <<'REPORT'
+          https://sobaca0808-bit.github.io/kitchen-calculator-test/sintez-release/
+
+          594 prior files remain byte-identical, including root, /pwa/ and all old stands.
+          All 341 old and 59 new resources were verified over real HTTPS.
+          The new PWA uses the existing SINTEZ test storage and its own installation id.
+          Main, the live PWA, Pages settings and all PR merge states were not changed.
+          Native desktop installation and offline relaunch passed on this public URL.
+          Physical Android installation still needs the owner's manual check.
+          REPORT
