@@ -17,8 +17,8 @@ jobs:
     timeout-minutes: 35
     env:
       APPROVED_MAIN: 9f45d0206022d5cfb66352b5a1518b3ff9a50abc
-      SINTEZ_SOURCE: 66173e7c8c2b2ded27b433ba00d1c2d7b633afab
-      CHECK_RUN: '43989888574'
+      SINTEZ_SOURCE: 871155948134353c4219e6c1aa4dcb039848ea68
+      CHECK_RUN: '43993007102'
     environment:
       name: github-pages
       url: https://sobaca0808-bit.github.io/kitchen-calculator-test/sintez/
