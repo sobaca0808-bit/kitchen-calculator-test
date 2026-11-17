@@ -1,0 +1,71 @@
+/* Scoped to the introductory dialog; calculator and A4 styles are untouched. */
+@media screen {
+  :root[data-sintez-screen] body > #sintez-presentation[open] {display:block!important;}
+}
+#sintez-presentation {color-scheme:dark;position:fixed;inset:0;width:100%;height:100%;height:100dvh;max-width:none;max-height:none;margin:0;padding:0;border:0;background:#0b1119;color:#f9fbff;font-family:Inter,'Segoe UI',Arial,sans-serif;overflow:auto;overscroll-behavior:contain;}
+#sintez-presentation::backdrop {background:#0b1119;}
+.sintez-presentation-open {overflow:hidden;}
+#sintez-presentation .sx-intro-shell {width:min(100%,1440px);min-height:100%;margin:auto;padding:20px 28px 16px;display:flex;flex-direction:column;justify-content:center;}
+#sintez-presentation .sx-intro-shell:fullscreen {width:100%;height:100%;background:#0b1119;overflow:auto;}
+#sintez-presentation .sx-intro-top {display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:14px;}
+#sintez-presentation .sx-intro-brand {font-size:17px;font-weight:800;letter-spacing:.12em;color:#f9fbff;}
+#sintez-presentation .sx-intro-stage {position:relative;aspect-ratio:1672/941;border:1px solid #343c48;border-radius:20px;background:#192533;box-shadow:0 24px 90px #0007;touch-action:pan-y pinch-zoom;isolation:isolate;}
+#sintez-presentation .sx-intro-slide {position:absolute;inset:0;margin:0;opacity:0;visibility:hidden;transition:opacity .45s ease,visibility .45s;}
+#sintez-presentation .sx-intro-slide.is-active {opacity:1;visibility:visible;}
+#sintez-presentation .sx-intro-slide img {display:block;width:100%;height:100%;object-fit:contain;border-radius:20px;}
+#sintez-presentation .sx-intro-slide::after {content:'';position:absolute;inset:42% 0 0;border-radius:0 0 20px 20px;background:linear-gradient(transparent,rgba(5,11,20,.92));pointer-events:none;}
+#sintez-presentation .sx-intro-copy {z-index:1;position:absolute;left:5%;right:6%;bottom:7%;text-shadow:0 2px 18px #000a;}
+#sintez-presentation .sx-intro-tag {font-size:13px;letter-spacing:.19em;color:#e4c892;font-weight:800;}
+#sintez-presentation h2 {font-size:clamp(30px,4.5vw,65px);line-height:1.1;letter-spacing:-.035em;margin:.16em 0 .12em;color:#f9fbff;}
+#sintez-presentation .sx-intro-copy p {font-size:clamp(16px,1.65vw,22px);line-height:1.45;margin:0;max-width:690px;color:#f2f5fa;}
+#sintez-presentation button {font:inherit;cursor:pointer;min-height:44px;min-width:44px;border:1px solid #536375;border-radius:10px;background:#162431;color:#f9fbff;padding:10px 16px;line-height:1.4;box-shadow:none;transition:background-color .15s,border-color .15s;}
+#sintez-presentation button:hover {background:#294051;border-color:#94a6b9;}
+#sintez-presentation button:focus-visible {outline:3px solid #edcd8c;outline-offset:3px;}
+#sintez-presentation button:disabled {opacity:.45;cursor:default;}
+#sintez-presentation [data-intro-skip] {background:transparent;font-size:14px;color:#c9d4e2;}
+#sintez-presentation [data-intro-next] {min-width:180px;background:#dbc08d;border-color:#e7cf9e;color:#171d23;font-weight:700;}
+#sintez-presentation [data-intro-next]:hover {background:#f0d8a9;}
+#sintez-presentation .sx-intro-bottom {display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:16px;}
+#sintez-presentation .sx-intro-progress,#sintez-presentation .sx-intro-navigation {display:flex;align-items:center;gap:10px;}
+#sintez-presentation .sx-intro-dots {display:flex;gap:0;}
+#sintez-presentation [data-intro-dot] {display:grid;place-items:center;padding:0;background:transparent;border:0;border-radius:8px;}
+#sintez-presentation [data-intro-dot]::after {content:'';display:block;width:10px;height:10px;border-radius:10px;background:#8292a5;transition:width .15s;}
+#sintez-presentation [data-intro-dot][aria-current=step]::after {width:30px;background:#dbbb7c;}
+#sintez-presentation [data-intro-count] {font-size:14px;color:#c6d0df;font-variant-numeric:tabular-nums;white-space:nowrap;}
+#sintez-presentation .sx-intro-tools {display:flex;align-items:center;gap:10px;margin-top:10px;}
+#sintez-presentation .sx-intro-tools button {font-size:13px;padding:8px 12px;}
+#sintez-presentation .sx-intro-hint {font-size:12px;line-height:1.5;color:#afbdce;margin-left:auto;}
+#sintez-presentation .sx-intro-fine {font-size:12px;line-height:1.5;margin:14px 0 0;color:#afbdce;max-width:1020px;}
+#sintez-presentation .sx-intro-announcement {position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap;}
+#sintez-presentation button[hidden] {display:none;}
+@media (min-width:900px) and (min-height:650px) {
+  #sintez-presentation .sx-intro-shell {width:min(100%,1440px,calc((100dvh - 260px)*1672/941 + 56px));}
+}
+@media (max-width:650px) {
+  #sintez-presentation .sx-intro-shell {padding:14px 12px 18px;justify-content:flex-start;}
+  #sintez-presentation .sx-intro-top {gap:8px;margin-bottom:14px;}
+  #sintez-presentation .sx-intro-brand {font-size:13px;letter-spacing:.08em;}
+  #sintez-presentation [data-intro-skip] {font-size:13px;padding:10px;}
+  #sintez-presentation .sx-intro-stage {aspect-ratio:auto;border-radius:12px;box-shadow:0 15px 50px #0005;}
+  #sintez-presentation .sx-intro-slide {position:relative;display:none;opacity:1;visibility:visible;transition:none;}
+  #sintez-presentation .sx-intro-slide.is-active {display:block;}
+  #sintez-presentation .sx-intro-slide img {width:100%;height:auto;aspect-ratio:1672/941;border-radius:12px 12px 0 0;}
+  #sintez-presentation .sx-intro-slide::after {display:none;}
+  #sintez-presentation .sx-intro-copy {position:relative;inset:auto;padding:22px 18px 24px;text-shadow:none;min-height:206px;}
+  #sintez-presentation h2 {font-size:32px;margin:10px 0 12px;}
+  #sintez-presentation .sx-intro-tag {font-size:11px;}
+  #sintez-presentation .sx-intro-copy p {font-size:16px;}
+  #sintez-presentation .sx-intro-bottom {flex-wrap:wrap;gap:12px;margin-top:12px;}
+  #sintez-presentation .sx-intro-progress {justify-content:space-between;width:100%;}
+  #sintez-presentation .sx-intro-navigation {width:100%;}
+  #sintez-presentation .sx-intro-navigation button {flex:1;min-width:0;}
+  #sintez-presentation .sx-intro-tools {flex-wrap:wrap;}
+  #sintez-presentation .sx-intro-hint {margin:0;width:100%;}
+}
+@media (prefers-reduced-motion:reduce) {
+  #sintez-presentation *,#sintez-presentation *::after {transition:none!important;animation:none!important;}
+}
+@media print {
+  #sintez-presentation {display:none!important;}
+  .sintez-presentation-open {overflow:visible;}
+}

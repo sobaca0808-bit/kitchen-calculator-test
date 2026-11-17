@@ -11,7 +11,7 @@ const mapping={
 async function start(root){
  const readBase=file=>execFileSync('git',['-C',root,'show',BASE+':'+file]);
  async function runtime(read){
-  const html=(await read('index.html')).toString(),files=new Set(['index.html',...Array.from(html.matchAll(/<(?:script|link)\b[^>]*\b(?:src|href)=["']([^"']+)/g),m=>new URL(m[1],'http://localhost/').pathname.slice(1))]);
+  const html=(await read('index.html')).toString(),files=new Set(['index.html',...Array.from(html.matchAll(/<(?:script|link|img)\b[^>]*\b(?:src|href)=["']([^"']+)/g),m=>new URL(m[1],'http://localhost/').pathname.slice(1))]);
   for(const css of [...files].filter(f=>f.endsWith('.css')))for(const m of (await read(css)).toString().matchAll(/url\(["']?([^"')]+)/g))files.add(path.posix.join(path.posix.dirname(css),m[1]));
   const contents=new Map();for(const file of files){if(file.includes('..')||file.startsWith('/'))throw Error('Only relative runtime files may be served');contents.set(file,await read(file));}return contents;
  }
@@ -25,7 +25,7 @@ async function start(root){
   if(!pathname.startsWith(MOUNT)){response.writeHead(404);response.end();return;}
   const file=pathname.slice((isPreview?MOUNT+'preview/':MOUNT).length)||'index.html',body=(isPreview?preview:base).get(file);
   if(request.method!=='GET'||!body){response.writeHead(404);response.end();return;}
-  const type=file.endsWith('.html')?'text/html':file.endsWith('.css')?'text/css':file.endsWith('.svg')?'image/svg+xml':file.endsWith('.webp')?'image/webp':'text/javascript';response.writeHead(200,{'Content-Type':type,'Cache-Control':'no-store'});response.end(body);
+  const type=file.endsWith('.html')?'text/html':file.endsWith('.css')?'text/css':file.endsWith('.jpg')?'image/jpeg':file.endsWith('.svg')?'image/svg+xml':file.endsWith('.webp')?'image/webp':'text/javascript';response.writeHead(200,{'Content-Type':type,'Cache-Control':'no-store'});response.end(body);
  });
  await new Promise((resolve,reject)=>{server.once('error',reject);server.listen(0,'127.0.0.1',resolve);});
  const url='http://127.0.0.1:'+server.address().port+MOUNT;
