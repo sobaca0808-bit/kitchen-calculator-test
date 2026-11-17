@@ -168,8 +168,15 @@ async function settings(page) { await page.locator('#sintez-shell [data-sintez-r
   }, {reducedMotion:'reduce'});
   await test('loaded slides and existing calculator keep working when connectivity disappears', async ({context,page}) => {
     for(const img of await page.locator('.sx-intro-slide img').all()) await img.evaluate(img=>{img.loading='eager';return img.decode();});
+    // This route is not a new PWA. Exercise an already-loaded workspace,
+    // including its theme assets, rather than promise an offline cold start.
+    await skip(page);await page.locator('[data-sintez-route=products]').click();
+    await page.waitForLoadState('networkidle');
+    await page.locator('#sintez-workbar [data-sintez-home]').click();await settings(page);
+    await page.locator('#sintez-presentation-replay').click();
     await context.setOffline(true);
     await page.keyboard.press('End');assert.equal(await title(page).textContent(),'Для бизнеса');await skip(page);
+    await page.locator('#sintez-settings [data-sintez-home]').click();
     await page.locator('[data-sintez-route=products]').click();assert.equal(await page.locator('.workspace').getAttribute('data-section'),'products');assert.equal(await raw(page),null);
   });
   await test('replay preserves an unsaved recipe, draft and existing library', async ({page}) => {
