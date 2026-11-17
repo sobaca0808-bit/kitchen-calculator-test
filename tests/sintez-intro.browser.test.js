@@ -7,7 +7,7 @@ const {chromium} = require('playwright');
 const {start} = require('./helpers/runtime-server');
 const {guard} = require('./helpers/release-storage-guard');
 const fixture = require('./helpers/design-fixture');
-const KEY = 'kitchen-calculator-sintez-presentation-seen-v1';
+const KEY = process.env.KITCHEN_INTRO_SEEN_KEY || 'kitchen-calculator-sintez-presentation-seen-v1';
 const keys = {...JSON.parse(process.env.KITCHEN_SINTEZ_KEYS || JSON.stringify({book:'kitchen-calculator-pr2-browser-test-v1',drafts:'kitchen-calculator-pr2-browser-drafts-v1',photos:'kitchen-calculator-test-photos-v1',backups:'kitchen-calculator-test-import-backups-v1',appearance:'kitchen-calculator-appearance-test-v1'})), extraLocal:[KEY]};
 const output = process.env.KITCHEN_INTRO_ARTIFACTS || path.join(os.tmpdir(), 'sintez-intro-proof');
 const launch = {executablePath:process.env.CHROMIUM_PATH || '/usr/bin/chromium',headless:true,args:['--no-sandbox']};
@@ -59,7 +59,7 @@ async function settings(page) { await page.locator('#sintez-shell [data-sintez-r
   await fs.mkdir(output, {recursive:true});
   if (process.env.KITCHEN_INTRO_URL) {
     url = process.env.KITCHEN_INTRO_URL;
-    assert(['https://sobaca0808-bit.github.io/kitchen-calculator-test/sintez-intro/','https://sobaca0808-bit.github.io/kitchen-calculator-test/sintez-release/'].includes(url));
+    assert(['https://sobaca0808-bit.github.io/kitchen-calculator-test/sintez-intro/','https://sobaca0808-bit.github.io/kitchen-calculator-test/sintez-release/','https://sobaca0808-bit.github.io/kitchen-calculator-test/','https://sobaca0808-bit.github.io/kitchen-calculator-test/pwa/'].includes(url));
   } else {
     server = await start(process.env.KITCHEN_SINTEZ_RUNTIME_ROOT || path.resolve(__dirname,'..'), {home:true});
     url = server.url;
