@@ -1,0 +1,29 @@
+{
+  "merged_base": "59fce080ea4e8dd90dc8cd86e2361323bc81cd3a",
+  "pwa_source": "11784f16e932dded4ca2e962a3bd7e38622328aa",
+  "unchanged_runtime_files": 44,
+  "approved_entry_ui": {
+    "index.html": "794b8c6a139109d77655106ff13154ee911dbb806a9748637d40c110339e77b8",
+    "js/sintez-intro.js": "fe0f516b65025215775648b9f0a3f96997706e170abe8628a945bc816c2320d7",
+    "assets/sintez-intro.css": "579af293b41f8bac05417a735964868539a5ded63ff609cc6195a4e200f8e868"
+  },
+  "approved_brand_files": {
+    "icon-128.png": "b0fc0401337ef9d5224e8fa62be6ba42c70f20154bfbe7043fb6fe26ac25777f",
+    "icon-maskable-512.png": "f4e513b2bf33d9d892c1be3d5b594c463299687e7c4058df92984272e0165614",
+    "original-logo.png": "a71b22914b3b0fa3ad6d8ac8f08304006dd5d66635af240c3971403f593329b1",
+    "icon-256.png": "119383963c7e5aaebbb4e446cd009ab14cd1c8cbd258c893a339b40ac682e94a",
+    "icon-32.png": "15c0a3b8eba51f909965b90367caa857b54fa1a6725573d540a917437b6f9e18",
+    "icon-48.png": "19f5a1e839af3d570d565a5170e4b432636ef86d8679702da08547c3c28fee39",
+    "icon-180.png": "ff6a7ed545ad450f574770033336f0f20dc11da6557c47a14a1a8fc72071cafa",
+    "icon-512.png": "9e9a5932e403161b4dde97c00b554ade7025f88c22fcea335f83a12d764d7a87",
+    "icon-192.png": "1ee7e721dd680db3e4f78ea29b830c15f6ed9a0dbad5cf86e45e34a3554b6d32",
+    "favicon.ico": "04d2158776839810183d60d9cf732b10ce0681b8d08c163c184e18462a6e5bbd",
+    "README.txt": "dffe4fb51990cad7a1218efcaa50e89eefb06ce89455c5bc3844e911f7977ed8",
+    "icon-maskable-192.png": "781da6dd01af466404bbc42aaa317eb0e85cc5e4b60c5a392b896669a4a0ec5b",
+    "icon-96.png": "b38796278636358ef5ff434abb1e961425bfa2d0192aa64da2984ffeb7e22202",
+    "icon-64.png": "f346666d28a45a5be29d3b3e14ca397a2d3d0b96011ee900b4047e4417085ff0",
+    "icon-16.png": "eb566c84edd36aa77610f0e1c48507755b036e9fe8f5c9e0c9ee2945538b4d16"
+  },
+  "pwa_worker_and_client_unchanged": true,
+  "no_calculator_data_changes": true
+}

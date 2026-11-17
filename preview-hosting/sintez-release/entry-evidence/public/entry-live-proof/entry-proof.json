@@ -1,0 +1,85 @@
+{
+  "url": "https://sobaca0808-bit.github.io/kitchen-calculator-test/sintez-release/",
+  "publicURL": "https://sobaca0808-bit.github.io/kitchen-calculator-test/sintez-release/presentation.html",
+  "passed": 19,
+  "physicalAndroidTested": false,
+  "syntheticPromptIsNotNativeInstallationProof": true,
+  "scenarios": [
+    {
+      "name": "public first slide, program, repeated visit and reload at 1366 without data",
+      "passed": true
+    },
+    {
+      "name": "public first slide, program, repeated visit and reload at 1366 with saved data",
+      "passed": true
+    },
+    {
+      "name": "public first slide, program, repeated visit and reload at 390 without data",
+      "passed": true
+    },
+    {
+      "name": "public first slide, program, repeated visit and reload at 390 with saved data",
+      "passed": true
+    },
+    {
+      "name": "public first slide, program, repeated visit and reload at 320 without data",
+      "passed": true
+    },
+    {
+      "name": "public first slide, program, repeated visit and reload at 320 with saved data",
+      "passed": true
+    },
+    {
+      "name": "explicit work link wins over public presentation: dish",
+      "passed": true
+    },
+    {
+      "name": "explicit work link wins over public presentation: prep",
+      "passed": true
+    },
+    {
+      "name": "explicit work link wins over public presentation: products",
+      "passed": true
+    },
+    {
+      "name": "explicit work link wins over public presentation: packaging",
+      "passed": true
+    },
+    {
+      "name": "explicit work link wins over public presentation: expenses",
+      "passed": true
+    },
+    {
+      "name": "explicit work link wins over public presentation: settings",
+      "passed": true
+    },
+    {
+      "name": "diagnostics still bypass public entry",
+      "passed": true
+    },
+    {
+      "name": "installed start URL needs neither saved data nor seen flag; explicit public link is separate",
+      "passed": true
+    },
+    {
+      "name": "explicit public entry works with unreadable storage",
+      "passed": true
+    },
+    {
+      "name": "unsupported install has Android/Windows/iOS instructions, no success and safe Escape",
+      "passed": true
+    },
+    {
+      "name": "public Back closes and Forward reopens slide one without changing data",
+      "passed": true
+    },
+    {
+      "name": "public replay returns to Settings; default launch with data remains a work entry",
+      "passed": true
+    },
+    {
+      "name": "prompt bridge invokes the existing client once; dismissed prompt is never reported as installed (synthetic prompt contract)",
+      "passed": true
+    }
+  ]
+}

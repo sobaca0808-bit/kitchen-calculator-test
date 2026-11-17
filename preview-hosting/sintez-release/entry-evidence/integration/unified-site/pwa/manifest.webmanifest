@@ -1,0 +1,38 @@
+{
+  "name": "СИНТЕЗ МЕРЫ",
+  "short_name": "Синтез меры",
+  "lang": "ru",
+  "description": "Рецепты, себестоимость и расходы заведения на вашем устройстве.",
+  "start_url": "./?source=pwa",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0d141c",
+  "theme_color": "#0d141c",
+  "icons": [
+    {
+      "src": "icons/sintez/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/sintez/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/sintez/icon-maskable-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "icons/sintez/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "id": "/kitchen-calculator-test/pwa/"
+}

@@ -1,0 +1,13 @@
+{
+  "url": "https://sobaca0808-bit.github.io/kitchen-calculator-test/sintez-release/",
+  "publicURL": "https://sobaca0808-bit.github.io/kitchen-calculator-test/sintez-release/presentation.html",
+  "passed": true,
+  "installedViaRealChromeBackend": true,
+  "standalone": true,
+  "shortcutBypassesIntroWithoutSeenFlag": true,
+  "repeatedPublicURLStartsFirstSlideWithData": true,
+  "offlineRelaunchPreservesData": true,
+  "manifestId": "https://sobaca0808-bit.github.io/kitchen-calculator-test/sintez-release/",
+  "livePwaNotTouched": true,
+  "physicalAndroidTested": false
+}
