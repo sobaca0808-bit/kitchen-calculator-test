@@ -2,9 +2,9 @@
 import json,os,subprocess,tempfile,time,zipfile
 from pathlib import Path
 REPO='sobaca0808-bit/kitchen-calculator-test'
-SOURCE='3e01422964329395e4d95744e2f896cd17197139'
-CHECK_RUN=44202453822
-PUBLIC_RUN=44202801311
+SOURCE='0b4bddfdddcd2a2002140ef5c5b15c84dc7ab9cd'
+CHECK_RUN=44203873371
+PUBLIC_RUN=44203967858
 def api(path):return json.loads(subprocess.check_output(['gh','api','repos/'+REPO+'/'+path]))
 def wait(run,sha):
     for attempt in range(150):
@@ -42,7 +42,7 @@ def public_artifacts(name,file):
     return base in screenshots|pdfs
 if __name__=='__main__':
     output=Path(os.environ['EVIDENCE_OUTPUT']);output.mkdir(parents=True,exist_ok=True)
-    wait(CHECK_RUN,SOURCE);wait(PUBLIC_RUN,'b322571c54c643ad00f887b0c61c93257f6670b2')
+    wait(CHECK_RUN,SOURCE);wait(PUBLIC_RUN,'5099c7d4f0fd8608089d1a284e0e11d75960de6b')
     collect(CHECK_RUN,output,source_artifacts);collect(PUBLIC_RUN,output,public_artifacts)
     files=[p for p in output.rglob('*') if p.is_file()];size=sum(p.stat().st_size for p in files)
     assert size<30*1024*1024,('Evidence must remain easily downloadable',size)
