@@ -1,0 +1,25 @@
+{
+  "passed": 4,
+  "headfulNativeInstallationTested": true,
+  "platform": "linux",
+  "physicalAndroidTested": false,
+  "scenarios": [
+    {
+      "name": "real worker update stays in Settings, waits for open work, and never forces reload or writes recipe data",
+      "passed": true
+    },
+    {
+      "name": "offline cold launch and all mode navigation preserve prices, both photo bytes, expenses, folders and recoverable draft",
+      "passed": true
+    },
+    {
+      "name": "corrupt cache cannot replace the working shell; its critical error is visible on home and recoverable through existing Settings controls",
+      "passed": true
+    },
+    {
+      "name": "actual native installation, shortcut launch, clean three-mode home and offline relaunch preserve existing data",
+      "passed": true,
+      "platform": "linux"
+    }
+  ]
+}

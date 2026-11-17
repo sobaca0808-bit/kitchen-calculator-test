@@ -1,0 +1,223 @@
+{
+  "source": "b44c1f59dc363adb68270dad75056aa0565d78dd",
+  "minimumRequired": 4.5,
+  "cases": [
+    {
+      "width": 1366,
+      "state": "default",
+      "element": "sintez-mode-title",
+      "text": "rgb(241, 242, 240)",
+      "background": "rgb(26, 37, 46)",
+      "ratio": 13.87
+    },
+    {
+      "width": 1366,
+      "state": "default",
+      "element": "sintez-mode-copy",
+      "text": "rgb(181, 193, 201)",
+      "background": "rgb(26, 37, 46)",
+      "ratio": 8.48
+    },
+    {
+      "width": 1366,
+      "state": "default",
+      "element": "sintez-mode-action",
+      "text": "rgb(221, 199, 158)",
+      "background": "rgb(26, 37, 46)",
+      "ratio": 9.45
+    },
+    {
+      "width": 1366,
+      "state": "hover",
+      "element": "sintez-mode-title",
+      "text": "rgb(241, 242, 240)",
+      "background": "rgb(26, 37, 46)",
+      "ratio": 13.87
+    },
+    {
+      "width": 1366,
+      "state": "hover",
+      "element": "sintez-mode-copy",
+      "text": "rgb(181, 193, 201)",
+      "background": "rgb(29, 41, 50)",
+      "ratio": 8.08
+    },
+    {
+      "width": 1366,
+      "state": "hover",
+      "element": "sintez-mode-action",
+      "text": "rgb(221, 199, 158)",
+      "background": "rgb(32, 45, 55)",
+      "ratio": 8.54
+    },
+    {
+      "width": 1366,
+      "state": "focus",
+      "element": "sintez-mode-title",
+      "text": "rgb(241, 242, 240)",
+      "background": "rgb(33, 47, 57)",
+      "ratio": 12.22
+    },
+    {
+      "width": 1366,
+      "state": "focus",
+      "element": "sintez-mode-copy",
+      "text": "rgb(181, 193, 201)",
+      "background": "rgb(33, 48, 58)",
+      "ratio": 7.39
+    },
+    {
+      "width": 1366,
+      "state": "focus",
+      "element": "sintez-mode-action",
+      "text": "rgb(221, 199, 158)",
+      "background": "rgb(33, 48, 58)",
+      "ratio": 8.23
+    },
+    {
+      "width": 390,
+      "state": "default",
+      "element": "sintez-mode-title",
+      "text": "rgb(241, 242, 240)",
+      "background": "rgb(26, 37, 46)",
+      "ratio": 13.87
+    },
+    {
+      "width": 390,
+      "state": "default",
+      "element": "sintez-mode-copy",
+      "text": "rgb(181, 193, 201)",
+      "background": "rgb(26, 37, 46)",
+      "ratio": 8.48
+    },
+    {
+      "width": 390,
+      "state": "default",
+      "element": "sintez-mode-action",
+      "text": "rgb(221, 199, 158)",
+      "background": "rgb(26, 37, 46)",
+      "ratio": 9.45
+    },
+    {
+      "width": 390,
+      "state": "hover",
+      "element": "sintez-mode-title",
+      "text": "rgb(241, 242, 240)",
+      "background": "rgb(27, 38, 47)",
+      "ratio": 13.7
+    },
+    {
+      "width": 390,
+      "state": "hover",
+      "element": "sintez-mode-copy",
+      "text": "rgb(181, 193, 201)",
+      "background": "rgb(32, 45, 55)",
+      "ratio": 7.67
+    },
+    {
+      "width": 390,
+      "state": "hover",
+      "element": "sintez-mode-action",
+      "text": "rgb(221, 199, 158)",
+      "background": "rgb(33, 48, 58)",
+      "ratio": 8.23
+    },
+    {
+      "width": 390,
+      "state": "focus",
+      "element": "sintez-mode-title",
+      "text": "rgb(241, 242, 240)",
+      "background": "rgb(34, 49, 59)",
+      "ratio": 11.91
+    },
+    {
+      "width": 390,
+      "state": "focus",
+      "element": "sintez-mode-copy",
+      "text": "rgb(181, 193, 201)",
+      "background": "rgb(34, 49, 59)",
+      "ratio": 7.28
+    },
+    {
+      "width": 390,
+      "state": "focus",
+      "element": "sintez-mode-action",
+      "text": "rgb(221, 199, 158)",
+      "background": "rgb(34, 49, 59)",
+      "ratio": 8.11
+    },
+    {
+      "width": 320,
+      "state": "default",
+      "element": "sintez-mode-title",
+      "text": "rgb(241, 242, 240)",
+      "background": "rgb(26, 37, 46)",
+      "ratio": 13.87
+    },
+    {
+      "width": 320,
+      "state": "default",
+      "element": "sintez-mode-copy",
+      "text": "rgb(181, 193, 201)",
+      "background": "rgb(26, 37, 46)",
+      "ratio": 8.48
+    },
+    {
+      "width": 320,
+      "state": "default",
+      "element": "sintez-mode-action",
+      "text": "rgb(221, 199, 158)",
+      "background": "rgb(26, 37, 46)",
+      "ratio": 9.45
+    },
+    {
+      "width": 320,
+      "state": "hover",
+      "element": "sintez-mode-title",
+      "text": "rgb(241, 242, 240)",
+      "background": "rgb(27, 38, 47)",
+      "ratio": 13.7
+    },
+    {
+      "width": 320,
+      "state": "hover",
+      "element": "sintez-mode-copy",
+      "text": "rgb(181, 193, 201)",
+      "background": "rgb(29, 41, 50)",
+      "ratio": 8.08
+    },
+    {
+      "width": 320,
+      "state": "hover",
+      "element": "sintez-mode-action",
+      "text": "rgb(221, 199, 158)",
+      "background": "rgb(29, 41, 50)",
+      "ratio": 9
+    },
+    {
+      "width": 320,
+      "state": "focus",
+      "element": "sintez-mode-title",
+      "text": "rgb(241, 242, 240)",
+      "background": "rgb(32, 45, 55)",
+      "ratio": 12.53
+    },
+    {
+      "width": 320,
+      "state": "focus",
+      "element": "sintez-mode-copy",
+      "text": "rgb(181, 193, 201)",
+      "background": "rgb(32, 45, 55)",
+      "ratio": 7.67
+    },
+    {
+      "width": 320,
+      "state": "focus",
+      "element": "sintez-mode-action",
+      "text": "rgb(221, 199, 158)",
+      "background": "rgb(33, 47, 57)",
+      "ratio": 8.32
+    }
+  ],
+  "minimumObserved": 7.28
+}
