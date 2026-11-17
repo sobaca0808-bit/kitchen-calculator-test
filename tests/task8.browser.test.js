@@ -373,8 +373,11 @@ async function test(name,fn,options={}) {
     });
 
     for(const width of [320,390,1366])await test(`photos, drafts and the warm readable working surfaces fit ${width}px`,async page=>{
-      const info=await page.evaluate(()=>({background:getComputedStyle(document.body).backgroundImage,editor:getComputedStyle(document.querySelector('.editor')).backgroundColor,input:getComputedStyle(document.querySelector('#view-portions')).backgroundColor}));
-      assert.match(info.background,new RegExp(skin.art.replaceAll('.','\\.')));assert.equal(info.editor,skin.paper);assert.equal(info.input,skin.field);
+      if(process.env.KITCHEN_GLASS_TEST==='1')await require('./helpers/glass-material').assertGlassMaterial(page);
+      else {
+        const info=await page.evaluate(()=>({background:getComputedStyle(document.body).backgroundImage,editor:getComputedStyle(document.querySelector('.editor')).backgroundColor,input:getComputedStyle(document.querySelector('#view-portions')).backgroundColor}));
+        assert.match(info.background,new RegExp(skin.art.replaceAll('.','\\.')));assert.equal(info.editor,skin.paper);assert.equal(info.input,skin.field);
+      }
       await edit(page);await uploadPhoto(page,await imageFile(page));await page.locator('#item-name').fill('Длинное название незавершённого блюда '.repeat(3));await draftSaved(page);await noOverflow(page);
       await page.locator('[data-tab="products"]').click();await noOverflow(page);await restore(page,'dish-a');await noOverflow(page);
       await page.locator('#save-item').click();await showCard(page);await noOverflow(page);

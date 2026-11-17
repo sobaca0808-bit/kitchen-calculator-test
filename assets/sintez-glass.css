@@ -46,6 +46,7 @@
   html[data-sintez-glass] body::before {
     content:'';position:fixed;inset:0;z-index:-2;pointer-events:none;
     background:linear-gradient(var(--g-wash),var(--g-wash)),url('sintez-glass-kitchen.webp') center/cover no-repeat;
+    background-repeat:no-repeat;
   }
   html[data-sintez-glass] body::after {content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;background:linear-gradient(180deg,transparent 58%,var(--g-wash));}
   html[data-sintez-glass] :is(button,input,select,textarea) {color:var(--g-ink);}
