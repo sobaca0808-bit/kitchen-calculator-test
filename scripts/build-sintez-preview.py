@@ -6,7 +6,7 @@ ROOT=Path(__file__).resolve().parents[1]
 CHANGES={'js/storage.js':('kitchen-calculator-pr2-browser-test-v1','kitchen-calculator-sintez-preview-v1'),'js/drafts.js':('kitchen-calculator-pr2-browser-drafts-v1','kitchen-calculator-sintez-drafts-v1'),'js/photos.js':('kitchen-calculator-test-photos-v1','kitchen-calculator-sintez-photos-v1'),'js/import-transaction.js':('kitchen-calculator-test-import-backups-v1','kitchen-calculator-sintez-import-backups-v1'),'js/appearance.js':('kitchen-calculator-appearance-test-v1','kitchen-calculator-sintez-appearance-v1')}
 def build(output,source):
  assert not output.exists();html=(ROOT/'index.html').read_text()
- files={'index.html',*(urlsplit(x).path for x in re.findall(r'<(?:script|link)\b[^>]*\b(?:src|href)=["\']([^"\']+)',html,re.I))}
+ files={'index.html',*(urlsplit(x).path for x in re.findall(r'<(?:script|link|img)\b[^>]*\b(?:src|href)=["\']([^"\']+)',html,re.I))}
  for name in list(files):
   if name.endswith('.css'):
    for asset in re.findall(r'url\(["\']?([^"\')]+)',(ROOT/name).read_text()):files.add(str(Path(name).parent/asset))

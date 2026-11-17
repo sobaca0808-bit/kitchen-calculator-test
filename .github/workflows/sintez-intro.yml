@@ -1,0 +1,72 @@
+name: SINTEZ presentation safety checks
+on:
+  push:
+    branches: [feature/sintez-intro]
+permissions:
+  contents: read
+jobs:
+  presentation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Preserve every existing runtime byte and the four approved photos
+        run: |
+          python3 scripts/check-sintez-core.py > "$RUNNER_TEMP/main-core.json"
+          python3 scripts/check-sintez-intro.py > "$RUNNER_TEMP/intro-core.json"
+      - name: Build with the existing SINTEZ storage names
+        run: python3 scripts/build-sintez-preview.py --output "$RUNNER_TEMP/intro-candidate" --source '${{ github.sha }}'
+      - name: Install disposable test tools
+        run: |
+          npm install --prefix "$RUNNER_TEMP/intro-tools" --ignore-scripts --no-audit --no-fund playwright@1.62.1
+          sudo apt-get update -qq
+          sudo apt-get install -y poppler-utils
+      - name: Test first visits, history, storage errors, restart and existing launcher
+        env:
+          NODE_PATH: ${{ runner.temp }}/intro-tools/node_modules
+          CHROMIUM_PATH: /usr/bin/google-chrome
+          KITCHEN_SINTEZ_RUNTIME_ROOT: ${{ runner.temp }}/intro-candidate
+          KITCHEN_INTRO_ARTIFACTS: ${{ runner.temp }}/intro-proof
+          KITCHEN_SINTEZ_ARTIFACTS: ${{ runner.temp }}/home-proof
+        run: |
+          export KITCHEN_SINTEZ_KEYS="$(python3 -c 'import json,os;print(json.dumps(json.load(open(os.environ["KITCHEN_SINTEZ_RUNTIME_ROOT"]+"/sintez-version.json"))["storage_names"]))')"
+          node tests/sintez-intro.browser.test.js
+          node tests/sintez-home.browser.test.js
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: sintez-intro-proof
+          path: |
+            ${{ runner.temp }}/intro-proof
+            ${{ runner.temp }}/home-proof
+            ${{ runner.temp }}/main-core.json
+            ${{ runner.temp }}/intro-core.json
+            ${{ runner.temp }}/intro-candidate/sintez-version.json
+  regressions:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Install disposable regression tools
+        run: |
+          npm install --prefix "$RUNNER_TEMP/intro-tools" --ignore-scripts --no-audit --no-fund playwright@1.62.1
+          sudo apt-get update -qq
+          sudo apt-get install -y poppler-utils
+      - name: Run every existing logic and browser test in all three themes
+        shell: bash
+        env:
+          NODE_PATH: ${{ runner.temp }}/intro-tools/node_modules
+          CHROMIUM_PATH: /usr/bin/google-chrome
+          KITCHEN_TEST_ARTIFACT_ROOT: ${{ runner.temp }}/intro-regressions
+        run: node scripts/check-preview.mjs 2>&1 | tee "$RUNNER_TEMP/intro-regressions.log"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: sintez-intro-regressions
+          path: ${{ runner.temp }}/intro-regressions.log
