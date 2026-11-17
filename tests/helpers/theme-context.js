@@ -7,7 +7,7 @@ const specs={
 };
 const theme=Object.hasOwn(specs,process.env.KITCHEN_TEST_THEME)?process.env.KITCHEN_TEST_THEME:'berry';
 async function seed(context){
- if(theme==='berry')return context;
+ if(theme==='berry'&&process.env.KITCHEN_GLASS_TEST!=='1')return context;
  await context.addInitScript(({key,theme})=>{try{if(['http:','https:'].includes(location.protocol)&&localStorage.getItem(key)===null)localStorage.setItem(key,theme);}catch(_){}},{key:KEY,theme});
  return context;
 }

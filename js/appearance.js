@@ -5,6 +5,9 @@
 })(typeof globalThis !== 'undefined' ? globalThis : this, function (root) {
   'use strict';
   const KEY = 'kitchen-calculator-appearance-test-v1';
+  // Only the opt-in glass entry gets a new unsaved default. Existing choices
+  // and other entries keep their exact storage key and behavior.
+  const DEFAULT = root.document?.documentElement?.dataset?.defaultKitchenTheme === 'graphite' ? 'graphite' : 'berry';
   const THEMES = Object.freeze({
     berry: Object.freeze({name:'Ягодная кухня',color:'#fff9f4'}),
     graphite: Object.freeze({name:'Графит',color:'#17212b'}),
@@ -12,15 +15,15 @@
   });
   const valid = value => typeof value === 'string' && Object.hasOwn(THEMES, value);
   function read(storage) {
-    try {const value=storage.getItem(KEY);return {theme:valid(value)?value:'berry',error:null};}
-    catch (_) {return {theme:'berry',error:'Браузер не разрешил прочитать оформление.'};}
+    try {const value=storage.getItem(KEY);return {theme:valid(value)?value:DEFAULT,error:null};}
+    catch (_) {return {theme:DEFAULT,error:'Браузер не разрешил прочитать оформление.'};}
   }
   function save(theme,storage) {
     if(!valid(theme))return {ok:false,error:'Неизвестное оформление.'};
     try {storage.setItem(KEY,theme);return {ok:true,error:null};}
     catch (_) {return {ok:false,error:'Не удалось запомнить оформление. Выбор действует в этом окне.'};}
   }
-  let current='berry',initialError=null,control,panel,toggle,status;
+  let current=DEFAULT,initialError=null,control,panel,toggle,status;
   function apply(theme) {
     if(!valid(theme))return false;
     current=theme;
@@ -62,13 +65,13 @@
     control.addEventListener('focusout',()=>{root.setTimeout(()=>{if(!control.contains(root.document.activeElement))close();},0);});
     root.addEventListener('storage',event=>{
       if(event.key!==KEY)return;
-      const theme=valid(event.newValue)?event.newValue:'berry';apply(theme);
+      const theme=valid(event.newValue)?event.newValue:DEFAULT;apply(theme);
       if(status){status.textContent='Оформление обновлено: '+THEMES[theme].name;status.classList.remove('appearance-error');}
     });
   }
   if(root.document){
     let saved;
-    try {saved=read(root.localStorage);}catch(_){saved={theme:'berry',error:'Браузер не разрешил прочитать оформление.'};}
+    try {saved=read(root.localStorage);}catch(_){saved={theme:DEFAULT,error:'Браузер не разрешил прочитать оформление.'};}
     initialError=saved.error;apply(saved.theme);
     if(root.document.readyState==='loading')root.document.addEventListener('DOMContentLoaded',mount,{once:true});else mount();
   }

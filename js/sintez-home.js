@@ -21,7 +21,7 @@
   };
   const status=document.getElementById('sintez-status');let visited=false,currentMode=null,pwaError='';
   document.title='СИНТЕЗ МЕРЫ — кухонный калькулятор';
-  function meta(){document.querySelector('meta[name="theme-color"]').content=root.dataset.sintezScreen==='workspace'?KitchenAppearance.THEMES[KitchenAppearance.current()].color:'#10171e';}
+  function meta(){document.querySelector('meta[name="theme-color"]').content=KitchenAppearance.THEMES[KitchenAppearance.current()].color;}
   function route(section,mode=currentMode,clearHash=false){const u=new URL(location.href);if(section)u.searchParams.set('section',section);else u.searchParams.delete('section');if(mode)u.searchParams.set('mode',mode);else u.searchParams.delete('mode');if(clearHash)u.hash='';history.replaceState(history.state,'',u);}
   function resumeState(){document.querySelectorAll('[data-sintez-resume]').forEach(b=>b.hidden=!visited);document.querySelector('[data-sintez-mode-back]').hidden=!currentMode;document.getElementById('sintez-work-context').textContent=currentMode?modes[currentMode].name:'СИНТЕЗ МЕРЫ';}
   function surface(name,focus){root.dataset.sintezScreen=name;home.hidden=name!=='home';panel.hidden=name!=='mode';settings.hidden=name!=='settings';resumeState();meta();if(focus){focus.focus({preventScroll:true});window.scrollTo({top:0,behavior:'instant'});}}
@@ -67,7 +67,7 @@
     else if(button.hasAttribute('data-sintez-diagnostics'))diagnostics();
     else if(['export','import'].includes(button.dataset.sintezAction)){work(false);route(navigation.current().section);document.getElementById(button.dataset.sintezAction).click();}
   });
-  settings.querySelectorAll('[name=sintez-theme]').forEach(input=>input.addEventListener('change',()=>{if(!input.checked)return;const result=KitchenAppearance.select(input.value);document.getElementById('sintez-theme-status').textContent=result.ok?'Тема рабочих разделов сохранена.':result.error;meta();}));
+  settings.querySelectorAll('[name=sintez-theme]').forEach(input=>input.addEventListener('change',()=>{if(!input.checked)return;const result=KitchenAppearance.select(input.value);document.getElementById('sintez-theme-status').textContent=result.ok?'Тема приложения сохранена.':result.error;meta();}));
   document.addEventListener('keydown',event=>{if(event.key==='Escape'&&root.dataset.sintezScreen==='settings'&&!document.querySelector('#sintez-presentation[open]')&&document.getElementById('pwa-panel')?.hidden!==false){event.preventDefault();currentMode?showMode(currentMode):showHome();}});
   root.addEventListener('sintez-pwa-status',event=>{pwaError=event.detail.error||'';critical();});
   new MutationObserver(critical).observe(document.getElementById('message'),{attributes:true,childList:true,subtree:true});critical();
