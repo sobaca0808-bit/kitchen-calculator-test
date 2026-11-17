@@ -1,0 +1,91 @@
+name: Publish isolated SINTEZ home preview
+on:
+  push:
+    branches: [preview/browser]
+    paths: ['preview-hosting/sintez/**', '.github/workflows/sintez-preview.yml']
+permissions:
+  actions: read
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: github-pages
+  cancel-in-progress: false
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      APPROVED_MAIN: 9f45d0206022d5cfb66352b5a1518b3ff9a50abc
+      SINTEZ_SOURCE: 66173e7c8c2b2ded27b433ba00d1c2d7b633afab
+      CHECK_RUN: '43989888574'
+    environment:
+      name: github-pages
+      url: https://sobaca0808-bit.github.io/kitchen-calculator-test/sintez/
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify main and wait for all candidate checks
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          test '${{ github.repository }}' = sobaca0808-bit/kitchen-calculator-test
+          test "$(gh api repos/${{ github.repository }}/git/ref/heads/main --jq .object.sha)" = "$APPROVED_MAIN"
+          test "$(gh api repos/${{ github.repository }}/git/ref/heads/feature/sintez-home --jq .object.sha)" = "$SINTEZ_SOURCE"
+          test "$(gh api repos/${{ github.repository }}/actions/runs/$CHECK_RUN --jq .head_sha)" = "$SINTEZ_SOURCE"
+          for ATTEMPT in $(seq 1 100); do
+            STATUS="$(gh api repos/${{ github.repository }}/actions/runs/$CHECK_RUN --jq .status)"
+            if [ "$STATUS" = completed ]; then break; fi
+            echo "Waiting for candidate checks ($ATTEMPT/100)."
+            sleep 12
+          done
+          test "$(gh api repos/${{ github.repository }}/actions/runs/$CHECK_RUN --jq .conclusion)" = success
+          test "$(gh api repos/${{ github.repository }}/pulls/30 --jq .merged)" = false
+      - name: Rebuild the exact main and all older stands; append only SINTEZ
+        run: python3 preview-hosting/sintez/build.py --pages "$RUNNER_TEMP/sintez-site" --proof "$RUNNER_TEMP/sintez-publication.json" --source "$SINTEZ_SOURCE"
+      - name: Verify 257 existing HTTPS files before publication
+        run: python3 preview-hosting/sintez/verify.py "$RUNNER_TEMP/sintez-publication.json" --phase before
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: ${{ runner.temp }}/sintez-site
+      - name: Recheck main and candidate immediately before publishing
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          test "$(gh api repos/${{ github.repository }}/git/ref/heads/main --jq .object.sha)" = "$APPROVED_MAIN"
+          test "$(gh api repos/${{ github.repository }}/git/ref/heads/feature/sintez-home --jq .object.sha)" = "$SINTEZ_SOURCE"
+      - name: Publish only the additional preview
+        uses: actions/deploy-pages@v4
+      - name: Verify new HTTPS files and unchanged main, PWA and earlier stands
+        run: python3 preview-hosting/sintez/verify.py "$RUNNER_TEMP/sintez-publication.json" --phase after
+      - name: Prepare disposable browser checks
+        run: |
+          npm install --prefix "$RUNNER_TEMP/sintez-tools" --ignore-scripts --no-audit --no-fund playwright@1.62.1
+          sudo apt-get update -qq
+          sudo apt-get install -y poppler-utils
+      - name: Verify the actual public site on desktop, tablet and mobile
+        env:
+          NODE_PATH: ${{ runner.temp }}/sintez-tools/node_modules
+          CHROMIUM_PATH: /usr/bin/google-chrome
+          KITCHEN_SINTEZ_ARTIFACTS: ${{ runner.temp }}/sintez-live-proof
+        run: node preview-hosting/sintez/check.cjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: sintez-publication-proof
+          path: |
+            ${{ runner.temp }}/sintez-publication.json
+            ${{ runner.temp }}/sintez-live-proof
+      - name: Report verified URL
+        run: |
+          cat >> "$GITHUB_STEP_SUMMARY" <<'REPORT'
+          https://sobaca0808-bit.github.io/kitchen-calculator-test/sintez/
+
+          Main, PWA, welcome and all previous sandboxes are unchanged.
+          The SINTEZ preview has five separate storage names. PR 30 was not merged.
+          Live Chrome desktop/mobile navigation, drafts, JSON, photographs,
+          expenses, A4 and full browser restart checks passed.
+          Physical Android remains a manual check.
+          REPORT
