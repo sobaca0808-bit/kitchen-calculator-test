@@ -10,6 +10,7 @@ from urllib.parse import urlsplit
 ROOT = Path(__file__).resolve().parents[1]
 LIVE_PWA_ID = '/kitchen-calculator-test/pwa/'
 PREVIEW_ID = '/kitchen-calculator-test/sintez-release/'
+MODES_ID = '/kitchen-calculator-test/sintez-modes/'
 FILES = {'book':('js/storage.js','kitchen-calculator-pr2-browser-test-v1'),
          'drafts':('js/drafts.js','kitchen-calculator-pr2-browser-drafts-v1'),
          'photos':('js/photos.js','kitchen-calculator-test-photos-v1'),
@@ -34,8 +35,8 @@ def runtime(root):
     assert sum((root/x).stat().st_size for x in files)<10*1024*1024
     return sorted(files)
 def package(output,source,target='preview',root=ROOT):
-    assert target in ['web','pwa','preview'] and not output.exists()
-    names=PWA_NAMES if target=='pwa' else SINTEZ_NAMES if target=='preview' else {k:v[1] for k,v in FILES.items()}
+    assert target in ['web','pwa','preview','modes'] and not output.exists()
+    names=PWA_NAMES if target=='pwa' else SINTEZ_NAMES if target in ['preview','modes'] else {k:v[1] for k,v in FILES.items()}
     for file in runtime(root):
         dest=output/file;dest.parent.mkdir(parents=True,exist_ok=True);shutil.copyfile(root/file,dest)
     for kind,(file,old) in FILES.items():
@@ -43,11 +44,11 @@ def package(output,source,target='preview',root=ROOT):
     html=(output/'index.html').read_text()
     notice='ТЕСТ PR №2 · Отдельное хранилище. Рабочие продукты и рецепты здесь не используются.'
     assert html.count(notice)==1
-    html=html.replace(notice,'СИНТЕЗ МЕРЫ · Проверка единого выпуска. Общая тестовая база /sintez/.' if target=='preview' else 'СИНТЕЗ МЕРЫ · Рабочая версия')
+    html=html.replace(notice,'СИНТЕЗ МЕРЫ · Проверка главного экрана. Общая тестовая база /sintez/.' if target=='modes' else 'СИНТЕЗ МЕРЫ · Проверка единого выпуска. Общая тестовая база /sintez/.' if target=='preview' else 'СИНТЕЗ МЕРЫ · Рабочая версия')
     html=html.replace('<title>ТЕСТ PR №2 — Кухонный калькулятор</title>','<title>СИНТЕЗ МЕРЫ — кухонный калькулятор</title>')
     if target!='preview':html=html.replace('>ПРЕДПРОСМОТР</span>','>СИНТЕЗ МЕРЫ</span>')
     seen='kitchen-calculator-sintez-presentation-seen-v1'
-    if target!='preview':
+    if target not in ['preview','modes']:
         path=output/'js/sintez-intro.js';text=path.read_text();assert text.count(seen)==1
         seen='kitchen-calculator-pwa-presentation-seen-v1' if target=='pwa' else 'kitchen-calculator-presentation-seen-v1'
         path.write_text(text.replace('kitchen-calculator-sintez-presentation-seen-v1',seen))
@@ -55,7 +56,7 @@ def package(output,source,target='preview',root=ROOT):
         additions=[('pwa/client.js','js/pwa.js'),('pwa/base.css','assets/pwa.css'),('pwa/placement.js','js/sintez-pwa.js'),('pwa/placement.css','assets/sintez-pwa.css'),('pwa/worker-template.js','sw.js')]
         for src,dst in additions:
             dest=output/dst;dest.parent.mkdir(parents=True,exist_ok=True);shutil.copyfile(root/src,dest)
-        manifest=json.loads((root/'pwa/manifest-template.json').read_text());manifest['id']=LIVE_PWA_ID if target=='pwa' else PREVIEW_ID
+        manifest=json.loads((root/'pwa/manifest-template.json').read_text());manifest['id']=LIVE_PWA_ID if target=='pwa' else MODES_ID if target=='modes' else PREVIEW_ID
         assert manifest['start_url']=='./?source=pwa' and manifest['scope']=='./'
         (output/'manifest.webmanifest').write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+'\n')
         for icon in manifest['icons']:
