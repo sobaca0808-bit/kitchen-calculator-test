@@ -1,0 +1,164 @@
+name: SINTEZ unified release safety
+on:
+  push:
+    branches: [release/sintez-safe-release]
+permissions:
+  contents: read
+jobs:
+  integration:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      pages: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Read current Pages publishing mode without changing settings
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if ! gh api repos/${{ github.repository }}/pages --jq '{build_type,source,html_url,https_enforced}' > "$RUNNER_TEMP/pages-config.json"; then
+            echo '{"available":false,"requires_owner_verification":true}' > "$RUNNER_TEMP/pages-config.json"
+          fi
+      - name: Install disposable test tooling
+        run: |
+          npm install --prefix "$RUNNER_TEMP/sintez-tools" --ignore-scripts --no-audit --no-fund playwright@1.62.1
+          python3 -m venv "$RUNNER_TEMP/sintez-python"
+          "$RUNNER_TEMP/sintez-python/bin/pip" install Pillow==12.0.0
+          sudo apt-get update -qq
+          sudo apt-get install -y poppler-utils
+      - name: Verify approved merged runtime, original icons and release guards
+        run: |
+          python3 scripts/check-sintez-core.py > "$RUNNER_TEMP/main-core.json"
+          python3 scripts/check-sintez-unified.py > "$RUNNER_TEMP/unified-core.json"
+          "$RUNNER_TEMP/sintez-python/bin/python" tests/sintez-release-build.test.py
+          python3 tests/sintez-release-verifier.test.py
+      - name: Build the exact future main/PWA release and frozen review stand
+        run: python3 scripts/release-sintez.py --output "$RUNNER_TEMP/unified-site" --proof "$RUNNER_TEMP/unified-release-proof.json" --preview-source '${{ github.sha }}'
+      - name: Test presentation and launcher together on the packaged installable stand
+        env:
+          NODE_PATH: ${{ runner.temp }}/sintez-tools/node_modules
+          CHROMIUM_PATH: /usr/bin/google-chrome
+          KITCHEN_SINTEZ_RUNTIME_ROOT: ${{ runner.temp }}/unified-site/sintez-release
+          KITCHEN_INTRO_ARTIFACTS: ${{ runner.temp }}/intro-proof
+          KITCHEN_SINTEZ_ARTIFACTS: ${{ runner.temp }}/home-proof
+          KITCHEN_ENTRY_ARTIFACTS: ${{ runner.temp }}/entry-proof
+        run: |
+          export KITCHEN_SINTEZ_KEYS="$(python3 -c 'import json,os;print(json.dumps(json.load(open(os.environ["KITCHEN_SINTEZ_RUNTIME_ROOT"]+"/pwa-version.json"))["storage_names"]))')"
+          node tests/sintez-intro.browser.test.js
+          node tests/sintez-home.browser.test.js
+          node tests/sintez-entry.browser.test.js
+          export KITCHEN_SINTEZ_RUNTIME_ROOT="$RUNNER_TEMP/unified-site"
+          export KITCHEN_SINTEZ_KEYS="$(python3 -c 'import json,os;print(json.dumps(json.load(open(os.environ["KITCHEN_SINTEZ_RUNTIME_ROOT"]+"/release-version.json"))["storage_names"]))')"
+          export KITCHEN_INTRO_SEEN_KEY=kitchen-calculator-presentation-seen-v1
+          export KITCHEN_ENTRY_ARTIFACTS="$RUNNER_TEMP/web-entry-proof"
+          node tests/sintez-entry.browser.test.js
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: issue32-integration
+          path: |
+            ${{ runner.temp }}/pages-config.json
+            ${{ runner.temp }}/main-core.json
+            ${{ runner.temp }}/unified-core.json
+            ${{ runner.temp }}/unified-release-proof.json
+            ${{ runner.temp }}/intro-proof
+            ${{ runner.temp }}/home-proof
+            ${{ runner.temp }}/entry-proof
+            ${{ runner.temp }}/web-entry-proof
+            ${{ runner.temp }}/unified-site/pwa/manifest.webmanifest
+            ${{ runner.temp }}/unified-site/pwa/pwa-version.json
+  regressions:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Install disposable regression tools
+        run: |
+          npm install --prefix "$RUNNER_TEMP/sintez-tools" --ignore-scripts --no-audit --no-fund playwright@1.62.1
+          sudo apt-get update -qq
+          sudo apt-get install -y poppler-utils
+      - name: Run all 253 logic and 715 existing browser scenarios after the merge
+        shell: bash
+        env:
+          NODE_PATH: ${{ runner.temp }}/sintez-tools/node_modules
+          CHROMIUM_PATH: /usr/bin/google-chrome
+          KITCHEN_TEST_ARTIFACT_ROOT: ${{ runner.temp }}/regressions
+        run: node scripts/check-preview.mjs 2>&1 | tee "$RUNNER_TEMP/issue32-regressions.log"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: issue32-regressions
+          path: ${{ runner.temp }}/issue32-regressions.log
+  installed-pwa-linux:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Install graphical Chrome test tools
+        run: |
+          npm install --prefix "$RUNNER_TEMP/sintez-tools" --ignore-scripts --no-audit --no-fund playwright@1.62.1
+          sudo apt-get update -qq
+          sudo apt-get install -y poppler-utils xvfb xauth scrot
+      - name: Prepare old, proposed, preview and corrupt PWA versions
+        run: python3 scripts/prepare-sintez-pwa-tests.py --output "$RUNNER_TEMP/pwa-versions" --source '${{ github.sha }}'
+      - name: Verify old installed identity, data, offline update and approved native icon
+        env:
+          NODE_PATH: ${{ runner.temp }}/sintez-tools/node_modules
+          CHROMIUM_PATH: /usr/bin/google-chrome
+          KITCHEN_PWA_HEADFUL: '1'
+          SINTEZ_PWA_OLD: ${{ runner.temp }}/pwa-versions/old
+          SINTEZ_PWA_NEW: ${{ runner.temp }}/pwa-versions/new
+          SINTEZ_PWA_PREVIEW: ${{ runner.temp }}/pwa-versions/preview
+          SINTEZ_PWA_PRIOR_PREVIEW: ${{ runner.temp }}/pwa-versions/prior-preview
+          SINTEZ_PWA_BAD: ${{ runner.temp }}/pwa-versions/bad
+          SINTEZ_PWA_ARTIFACTS: ${{ runner.temp }}/pwa-proof
+        run: xvfb-run -a -s '-screen 0 1440x1000x24' node tests/sintez-pwa-upgrade.browser.test.js
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: issue32-linux-installed-pwa
+          path: ${{ runner.temp }}/pwa-proof
+  installed-pwa-windows:
+    runs-on: windows-latest
+    timeout-minutes: 15
+    env:
+      PYTHONUTF8: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install disposable browser tooling
+        run: npm install --prefix "$env:RUNNER_TEMP/sintez-tools" --ignore-scripts --no-audit --no-fund playwright@1.62.1
+      - name: Prepare old and new PWA without browser data
+        run: python scripts/prepare-sintez-pwa-tests.py --output "$env:RUNNER_TEMP/pwa-versions" --source '${{ github.sha }}'
+      - name: Test actual Windows Chrome installation, icon, update and data
+        env:
+          NODE_PATH: ${{ runner.temp }}/sintez-tools/node_modules
+          CHROMIUM_PATH: C:\Program Files\Google\Chrome\Application\chrome.exe
+          KITCHEN_PWA_HEADFUL: '1'
+          SINTEZ_PWA_OLD: ${{ runner.temp }}/pwa-versions/old
+          SINTEZ_PWA_NEW: ${{ runner.temp }}/pwa-versions/new
+          SINTEZ_PWA_PREVIEW: ${{ runner.temp }}/pwa-versions/preview
+          SINTEZ_PWA_PRIOR_PREVIEW: ${{ runner.temp }}/pwa-versions/prior-preview
+          SINTEZ_PWA_BAD: ${{ runner.temp }}/pwa-versions/bad
+          SINTEZ_PWA_ARTIFACTS: ${{ runner.temp }}/pwa-proof
+        run: node tests/sintez-pwa-upgrade.browser.test.js
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: issue32-windows-installed-pwa
+          path: ${{ runner.temp }}/pwa-proof

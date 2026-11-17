@@ -7,7 +7,7 @@ const {chromium} = require('playwright');
 const {start} = require('./helpers/runtime-server');
 const {guard} = require('./helpers/release-storage-guard');
 const fixture = require('./helpers/design-fixture');
-const KEY = 'kitchen-calculator-sintez-presentation-seen-v1';
+const KEY = process.env.KITCHEN_INTRO_SEEN_KEY || 'kitchen-calculator-sintez-presentation-seen-v1';
 const keys = {...JSON.parse(process.env.KITCHEN_SINTEZ_KEYS || JSON.stringify({book:'kitchen-calculator-pr2-browser-test-v1',drafts:'kitchen-calculator-pr2-browser-drafts-v1',photos:'kitchen-calculator-test-photos-v1',backups:'kitchen-calculator-test-import-backups-v1',appearance:'kitchen-calculator-appearance-test-v1'})), extraLocal:[KEY]};
 const output = process.env.KITCHEN_INTRO_ARTIFACTS || path.join(os.tmpdir(), 'sintez-intro-proof');
 const launch = {executablePath:process.env.CHROMIUM_PATH || '/usr/bin/chromium',headless:true,args:['--no-sandbox']};
@@ -59,7 +59,7 @@ async function settings(page) { await page.locator('#sintez-shell [data-sintez-r
   await fs.mkdir(output, {recursive:true});
   if (process.env.KITCHEN_INTRO_URL) {
     url = process.env.KITCHEN_INTRO_URL;
-    assert.equal(url, 'https://sobaca0808-bit.github.io/kitchen-calculator-test/sintez-intro/');
+    assert(['https://sobaca0808-bit.github.io/kitchen-calculator-test/sintez-intro/','https://sobaca0808-bit.github.io/kitchen-calculator-test/sintez-release/','https://sobaca0808-bit.github.io/kitchen-calculator-test/','https://sobaca0808-bit.github.io/kitchen-calculator-test/pwa/'].includes(url));
   } else {
     server = await start(process.env.KITCHEN_SINTEZ_RUNTIME_ROOT || path.resolve(__dirname,'..'), {home:true});
     url = server.url;
@@ -83,7 +83,7 @@ async function settings(page) { await page.locator('#sintez-shell [data-sintez-r
         }
         if ([1366,390].includes(width)) await page.screenshot({path:path.join(output, 'slide-' + (i+1) + '-' + width + '.png'),animations:'disabled'});
       }
-      assert.match(await page.locator('[data-intro-next]').textContent(), /Начать работу/);
+      assert.match(await page.locator('[data-intro-next]').textContent(), /Открыть программу/);
       await page.keyboard.press('Home');assert.equal(await title(page).textContent(),names[0]);
       assert(await page.locator('[data-intro-previous]').isDisabled());
       await page.keyboard.press('ArrowRight');assert.equal(await title(page).textContent(),names[1]);
@@ -111,6 +111,12 @@ async function settings(page) { await page.locator('#sintez-shell [data-sintez-r
     await page.keyboard.press('Escape');await page.waitForFunction(() => !history.state?.sintezPresentationV1);
     assert(await intro(page).isHidden());assert(await page.locator('#sintez-settings').isVisible());
     assert.equal(await page.evaluate(() => document.activeElement.id),'sintez-presentation-replay');
+  });
+  await test('reload during replay permits a later replay to close without reopening itself', async ({page}) => {
+    await skip(page);await settings(page);await page.locator('#sintez-presentation-replay').click();
+    await page.reload();assert(await intro(page).isHidden());assert(await page.locator('#sintez-settings').isVisible());
+    await page.locator('#sintez-presentation-replay').click();await skip(page);
+    assert(await intro(page).isHidden());assert(await page.locator('#sintez-settings').isVisible());assert.equal(await raw(page),null);
   });
   for (const section of ['dish','prep','products','packaging','expenses','settings']) {
     await test('direct link bypasses welcome: '+section, async ({page}) => {
@@ -174,6 +180,12 @@ async function settings(page) { await page.locator('#sintez-shell [data-sintez-r
     await page.waitForLoadState('networkidle');
     await page.locator('#sintez-workbar [data-sintez-home]').click();await settings(page);
     await page.locator('#sintez-presentation-replay').click();
+    if (await page.evaluate(()=>!!document.documentElement.dataset.pwaBuild)) {
+      await page.waitForFunction(()=>document.querySelector('#pwa-status').textContent.includes('Готово к запуску без интернета.'));
+      await page.reload();await page.waitForFunction(()=>!!navigator.serviceWorker.controller);
+      await page.evaluate(async()=>{await(await navigator.serviceWorker.getRegistration()).update();});
+      await page.waitForLoadState('networkidle');await page.locator('#sintez-presentation-replay').click();
+    }
     await context.setOffline(true);
     await page.keyboard.press('End');assert.equal(await title(page).textContent(),'Для бизнеса');await skip(page);
     await page.locator('#sintez-settings [data-sintez-home]').click();
@@ -208,6 +220,6 @@ async function settings(page) { await page.locator('#sintez-shell [data-sintez-r
     }
     proof.push({name:'full Chrome process restart retains presentation choice without creating a database',passed:true});
   } finally {await fs.rm(profile,{recursive:true,force:true,maxRetries:3,retryDelay:100});}
-  await fs.writeFile(path.join(output,'intro-proof.json'),JSON.stringify({url,passed:proof.length,physicalAndroidTested:false,offlineColdStartSupported:false,scenarios:proof},null,2)+'\n');
+  await fs.writeFile(path.join(output,'intro-proof.json'),JSON.stringify({url,passed:proof.length,physicalAndroidTested:false,offlineColdStartTestedByThisSuite:false,scenarios:proof},null,2)+'\n');
   console.log(proof.length+' INTRO scenarios passed; 0 failures.');
 })().catch(error=>{console.error(error);process.exitCode=1;}).finally(async()=>{await browser?.close();await server?.close();});

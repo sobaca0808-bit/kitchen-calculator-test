@@ -25,7 +25,7 @@ async function start(root){
   if(!pathname.startsWith(MOUNT)){response.writeHead(404);response.end();return;}
   const file=pathname.slice((isPreview?MOUNT+'preview/':MOUNT).length)||'index.html',body=(isPreview?preview:base).get(file);
   if(request.method!=='GET'||!body){response.writeHead(404);response.end();return;}
-  const type=file.endsWith('.html')?'text/html':file.endsWith('.css')?'text/css':file.endsWith('.jpg')?'image/jpeg':file.endsWith('.svg')?'image/svg+xml':file.endsWith('.webp')?'image/webp':'text/javascript';response.writeHead(200,{'Content-Type':type,'Cache-Control':'no-store'});response.end(body);
+  const type=file.endsWith('.html')?'text/html':file.endsWith('.css')?'text/css':file.endsWith('.png')?'image/png':file.endsWith('.ico')?'image/x-icon':file.endsWith('.jpg')?'image/jpeg':file.endsWith('.svg')?'image/svg+xml':file.endsWith('.webp')?'image/webp':'text/javascript';response.writeHead(200,{'Content-Type':type,'Cache-Control':'no-store'});response.end(body);
  });
  await new Promise((resolve,reject)=>{server.once('error',reject);server.listen(0,'127.0.0.1',resolve);});
  const url='http://127.0.0.1:'+server.address().port+MOUNT;
