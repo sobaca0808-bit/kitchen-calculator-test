@@ -1,0 +1,25 @@
+{
+  "source": "c41efaaf76c1d0e8d51efd092bf96ac1fd3a7765",
+  "source_ci": "https://github.com/sobaca0808-bit/kitchen-calculator-test/actions/runs/44124963566",
+  "publication_ci": "https://github.com/sobaca0808-bit/kitchen-calculator-test/actions/runs/44126913858",
+  "public_url": "https://sobaca0808-bit.github.io/kitchen-calculator-test/sintez-release/",
+  "before_https_passed": 341,
+  "after_https_passed": 400,
+  "unchanged_prior_static_files": 594,
+  "presentation_passed": 30,
+  "home_passed": 12,
+  "native_live": {
+    "url": "https://sobaca0808-bit.github.io/kitchen-calculator-test/sintez-release/",
+    "passed": true,
+    "installedViaRealChromeBackend": true,
+    "standalone": true,
+    "offlineRelaunchPreservesData": true,
+    "manifestId": "https://sobaca0808-bit.github.io/kitchen-calculator-test/sintez-release/",
+    "livePwaNotTouched": true,
+    "physicalAndroidTested": false
+  },
+  "main_unchanged": "9f45d0206022d5cfb66352b5a1518b3ff9a50abc",
+  "pages_source_unchanged": "legacy / main /",
+  "release_main_not_deployed": true,
+  "physical_android_tested": false
+}

@@ -1,0 +1,128 @@
+{
+  "url": "https://sobaca0808-bit.github.io/kitchen-calculator-test/sintez-release/",
+  "passed": 30,
+  "physicalAndroidTested": false,
+  "offlineColdStartTestedByThisSuite": false,
+  "scenarios": [
+    {
+      "name": "four full approved images, readable controls and navigation at 1366x900",
+      "passed": true
+    },
+    {
+      "name": "four full approved images, readable controls and navigation at 1024x768",
+      "passed": true
+    },
+    {
+      "name": "four full approved images, readable controls and navigation at 768x1024",
+      "passed": true
+    },
+    {
+      "name": "four full approved images, readable controls and navigation at 390x844",
+      "passed": true
+    },
+    {
+      "name": "four full approved images, readable controls and navigation at 320x690",
+      "passed": true
+    },
+    {
+      "name": "four full approved images, readable controls and navigation at 844x390",
+      "passed": true
+    },
+    {
+      "name": "skip, reload and settings replay do not create a database",
+      "passed": true
+    },
+    {
+      "name": "browser back/forward and Escape preserve replay context and focus",
+      "passed": true
+    },
+    {
+      "name": "reload during replay permits a later replay to close without reopening itself",
+      "passed": true
+    },
+    {
+      "name": "direct link bypasses welcome: dish",
+      "passed": true
+    },
+    {
+      "name": "direct link bypasses welcome: prep",
+      "passed": true
+    },
+    {
+      "name": "direct link bypasses welcome: products",
+      "passed": true
+    },
+    {
+      "name": "direct link bypasses welcome: packaging",
+      "passed": true
+    },
+    {
+      "name": "direct link bypasses welcome: expenses",
+      "passed": true
+    },
+    {
+      "name": "direct link bypasses welcome: settings",
+      "passed": true
+    },
+    {
+      "name": "storage diagnostics and import entry bypass welcome",
+      "passed": true
+    },
+    {
+      "name": "saved recipe database is not mistaken for a new user",
+      "passed": true
+    },
+    {
+      "name": "empty saved database is not mistaken for a new user",
+      "passed": true
+    },
+    {
+      "name": "damaged database is not mistaken for a new user",
+      "passed": true
+    },
+    {
+      "name": "draft only is not mistaken for a new user",
+      "passed": true
+    },
+    {
+      "name": "saved appearance is not mistaken for a new user",
+      "passed": true
+    },
+    {
+      "name": "unknown presentation marker is not mistaken for a new user",
+      "passed": true
+    },
+    {
+      "name": "a blocked localStorage read never triggers first-run welcome",
+      "passed": true
+    },
+    {
+      "name": "an unreadable welcome marker does not touch or initialize the database",
+      "passed": true
+    },
+    {
+      "name": "quota failure remembers nothing but still opens calculator safely",
+      "passed": true
+    },
+    {
+      "name": "touch swipe changes one slide and does not treat vertical scroll as navigation",
+      "passed": true
+    },
+    {
+      "name": "reduced motion, keyboard focus, autoplay pause and fullscreen controls",
+      "passed": true
+    },
+    {
+      "name": "loaded slides and existing calculator keep working when connectivity disappears",
+      "passed": true
+    },
+    {
+      "name": "replay preserves an unsaved recipe, draft and existing library",
+      "passed": true
+    },
+    {
+      "name": "full Chrome process restart retains presentation choice without creating a database",
+      "passed": true
+    }
+  ]
+}
