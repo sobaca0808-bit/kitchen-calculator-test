@@ -1,0 +1,11 @@
+{
+  "base": "871155948134353c4219e6c1aa4dcb039848ea68",
+  "unchanged_runtime_files": 40,
+  "approved_photos": {
+    "01_intro.jpg": "f416cef58b53f3d8773b2e43b690f06a2254adfe5270c707440d07a55369e19f",
+    "02_home.jpg": "bfb18646af9e617e6c7f41aad1ac470a716cb5aed1eec5a0163a2fc22681bcfe",
+    "03_chef.jpg": "1b9ac9a6a7d8d00a482528fe70618004fdab77b8d88c167776f094ea520c86a0",
+    "04_business.jpg": "dd8ca30fc7599da340ad42c561032e1da5383eeea9dc85da1cc1456dac40cf8a"
+  },
+  "existing_storage_schemas_keys_calculations_and_print_unchanged": true
+}
