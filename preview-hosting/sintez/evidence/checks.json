@@ -1,0 +1,29 @@
+{
+  "source_commit": "871155948134353c4219e6c1aa4dcb039848ea68",
+  "main_unchanged": "9f45d0206022d5cfb66352b5a1518b3ff9a50abc",
+  "url": "https://sobaca0808-bit.github.io/kitchen-calculator-test/sintez/",
+  "source_ci": 43993007102,
+  "publication_ci": 43993339441,
+  "node_passed": 253,
+  "legacy_browser_passed": 715,
+  "source_launcher_passed": 12,
+  "live_launcher_passed": 12,
+  "physical_android_tested": false,
+  "protected_https_unchanged": 257,
+  "new_https_verified": 39,
+  "hashes": {
+    "publication-proof.json": "749006ab8a1ee7ad6e9f3b2b96c938634818b36a40a7b8a85aa2a04969941843",
+    "live-checks.json": "3397b56e1ca8eedca8be5a05c3eb13f7d8927975cd872b372652685a3831774b",
+    "source-checks.json": "96044747dcde331a805cb41402ca6ee52e5af9cba74e01268638ff8bb9b580ac",
+    "unchanged-core.json": "04aec3e22a3bbeea0339c1f9eb9fd670e644b3e13678164f411f6f003f9e1b9d",
+    "regressions.log": "9be5ab9430f4f466159ba18290ee7b5a8bb8624d9fdb93a1bda17f2339612817",
+    "home-desktop.png": "d64a15112471624bcc09cc81711904cdce5ca71b3ed5633967ae4b1330140a49",
+    "home-tablet.png": "74557e039683735c521105e94d046b8a228dbb3b419680062a8402ca36df3896",
+    "home-mobile.png": "efe20d1c17a3339bbeaace52ed79955987c77128bc39466e9f8cb939266d67a2",
+    "settings-desktop.png": "78a908ab944b07556c2edb0f1d608c9fee567f88a8979dde746e91565695114c",
+    "settings-mobile.png": "49780ca2175a5fbc7131f4980993d017f1dd2d04f97db5d9114d57ebb1032e1c",
+    "recipe-desktop.png": "f9a4233689474c39a17599b86ca2b3bcab8222a5bd170d4c3b4e4c463104f12a",
+    "recipe-mobile.png": "de5f26bfe8b8aab76df695564bafaa222fabac1ae5800b1f78a944d33c4eb6a3",
+    "calculation-a4.pdf": "35eb94db4ea85306b4b30602f68ac2ee3b50b6a6f56278ceaa359ddd2b10eb66"
+  }
+}

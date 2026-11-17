@@ -1,0 +1,55 @@
+{
+  "url": "https://sobaca0808-bit.github.io/kitchen-calculator-test/sintez/",
+  "passed": 12,
+  "physicalAndroidTested": false,
+  "scenarios": [
+    {
+      "name": "home layout, six genuine tiles and keyboard focus at 1366",
+      "passed": true
+    },
+    {
+      "name": "home layout, six genuine tiles and keyboard focus at 1024",
+      "passed": true
+    },
+    {
+      "name": "home layout, six genuine tiles and keyboard focus at 768",
+      "passed": true
+    },
+    {
+      "name": "home layout, six genuine tiles and keyboard focus at 390",
+      "passed": true
+    },
+    {
+      "name": "home layout, six genuine tiles and keyboard focus at 320",
+      "passed": true
+    },
+    {
+      "name": "all six tiles reach existing sections; calculator creates only an unsaved draft",
+      "passed": true
+    },
+    {
+      "name": "catalog form survives home and cancelled navigation without changing its saved price",
+      "passed": true
+    },
+    {
+      "name": "recipe draft is flushed on home and restores after reload; both photos and base stay intact",
+      "passed": true
+    },
+    {
+      "name": "settings reuse all three themes and preserve the recipe database",
+      "passed": true
+    },
+    {
+      "name": "settings export/import JSON keeps photos, folders and expenses; A4 excludes the launcher",
+      "passed": true
+    },
+    {
+      "name": "mobile recipe and settings fit after repeated navigation",
+      "passed": true
+    },
+    {
+      "name": "full Chrome restart preserves saved prices, photos, folders, expenses and theme",
+      "passed": true
+    }
+  ]
+}

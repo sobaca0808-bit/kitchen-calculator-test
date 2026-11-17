@@ -1,0 +1,1032 @@
+✔ approved berry stylesheet and watercolor are byte-for-byte unchanged (9.006589ms)
+✔ appearance has three fixed safe choices and berry is the default (0.740432ms)
+✔ appearance reads only its own preference, leaving recipes and drafts alone (0.186074ms)
+✔ unknown persisted appearance falls back without deleting or rewriting it (0.140638ms)
+✔ denied preference access remains a recoverable berry default (0.29159ms)
+✔ all three preferences save independently of the recipe database (0.258561ms)
+✔ invalid choices never write to storage (0.157602ms)
+✔ quota failures preserve the previous saved choice and every database entry (0.172735ms)
+✔ appearance is not part of the recipe JSON format (3.46543ms)
+✔ decimal comma, point, empty price and invalid numbers (1.679005ms)
+✔ 160g with 37.5% loss gives 100g and inverse input agrees (0.385809ms)
+✔ 500 rubles per kg, actual output 600g: 100g costs 83.33, loss not reapplied (1.096337ms)
+✔ actual batch yield, not summed row yield, sets cost per gram (0.353771ms)
+✔ missing prices propagate incompleteness and a known partial sum (0.409234ms)
+✔ dependent recipes immediately reflect a changed purchase price (0.232563ms)
+✔ missing yield or quantity, empty recipe and dangling references are incomplete (0.35936ms)
+✔ zero price is valid, but zero pack or batch yield never divides by zero (0.340993ms)
+✔ volume stays volume without explicit coefficient; price works while weight unknown (0.652552ms)
+✔ piece weight gives conditional mass without changing purchase cost (0.552465ms)
+✔ raw ingredient loss affects only weight, inconsistent loss/output cannot pass (0.320403ms)
+✔ nested preparations supported and direct/indirect cycles are rejected (0.346361ms)
+✔ numeric overflow never produces a complete infinite total (0.69825ms)
+✔ shared references at 30 levels keep incomplete issue lists bounded (2.861279ms)
+✔ excessive depth is incomplete and cycle checking uses no recursive call stack (29.741479ms)
+✔ drafts preserve full raw input, recipe fields, photo references and opened details through reload (5.083365ms)
+✔ saving and deleting one exact type:id never mixes other dishes or preparations (4.017734ms)
+✔ draft data supports absent optional editor fields and preserves future JSON fields (0.471505ms)
+✔ quota failures preserve the last good draft and the saved recipe database (1.158989ms)
+✔ storage access denial reports an error without throwing or attempting a write (0.335355ms)
+✔ unreadable, unknown or duplicate draft envelopes are never overwritten (1.877789ms)
+✔ malformed draft identity, type, form values and editor state are rejected before writing (1.499521ms)
+✔ prototype setters, custom prototypes, functions and toJSON are not accepted or executed (0.608337ms)
+✔ accessor values anywhere in a draft are rejected without running user code (0.458787ms)
+✔ single draft byte limit rejects oversized UTF-8 content without replacing a saved snapshot (6.518961ms)
+✔ total storage limit preserves all existing drafts on addition failure (362.74349ms)
+✔ oversized stored envelope remains untouched during read, save and deletion (16.708745ms)
+✔ approved monthly allocation and four categories give 40 per portion (2.980474ms)
+✔ full cost adds food30, packaging5 and overhead40 once; product metrics remain separate (2.487858ms)
+✔ batch recipe portions and temporary scale never divide monthly overhead by recipe count (2.829782ms)
+✔ changing period amounts and sales plan recalculates without materializing dish fields (0.321604ms)
+✔ purchase price, prep yield, ingredient amount, sale price and packaging update the new result (0.493287ms)
+✔ final dish yield never invents a monthly sales volume or a portion count (0.91624ms)
+✔ nested preps have only food cost and never receive repeated expense allocations (0.655196ms)
+✔ existing packaging duplicate protection is reused, not charged a second time (0.371688ms)
+✔ missing, partial and all-zero expenses are different states (0.733372ms)
+✔ zero, fractional, negative, nonfinite and unsafe planned volumes are rejected (1.635291ms)
+✔ invalid amounts, method or period cannot enter a backup or overwrite a saved book (4.935847ms)
+✔ partial food, missing price, zero sale and negative profit never fabricate a margin (2.695444ms)
+✔ missing packaging price prevents an apparently complete full-cost result (0.349626ms)
+✔ arithmetic overflows and underflows produce unavailable full results (0.335194ms)
+✔ fresh calculations retain full precision and never compound rounded allocations (10.292154ms)
+✔ legacy JSON without expenses stays structurally identical (1.748318ms)
+✔ expenses and unknown future metadata survive JSON/load/save with unchanged recipe fields (1.709591ms)
+✔ repeat JSON import is a no-op; conflicting expense plans require an explicit version (32.12301ms)
+✔ old merge files preserve local expenses; explicit replacement may remove them (5.259615ms)
+✔ old records keep their exact optional-field structure through validate and JSON (13.067325ms)
+✔ creating folders is immutable and keeps every unrelated field and recipe (2.860607ms)
+✔ folder naming uses Unicode normalization, collapsed whitespace and case-insensitive duplicates (0.796564ms)
+✔ blank, nontext and overly long names fail without altering the library (1.162604ms)
+✔ new folder IDs cannot collide with products, recipes, packaging or either kind of row (0.727783ms)
+✔ rename retains the same folder ID and recipe relations, and permits its own normalized name (1.264744ms)
+✔ rename rejects duplicate or blank names and leaves both folders unchanged (0.560617ms)
+✔ moving a saved dish changes only folderId and never duplicates or changes the recipe ID (1.116065ms)
+✔ moving into Without folder removes the optional field and accepts both explicit empty choices (2.234264ms)
+✔ unknown recipes, preparations and unknown folders cannot be moved or create phantom records (0.809724ms)
+✔ deleting a folder detaches all its dishes without deleting recipes or changing any other field (3.038059ms)
+✔ removing one category leaves dishes belonging to another category unchanged (0.771678ms)
+✔ folder structure and two-photo references round-trip through JSON and storage reload (3.964375ms)
+✔ malformed folder definitions and links reject the whole import instead of stripping relations (13.057151ms)
+✔ invalid folder saves and quota errors preserve the last saved full database byte for byte (3.915162ms)
+✔ a damaged stored folder link is reported without any replacement or seed write (0.75278ms)
+✔ folderId survives independent draft save and reload while the saved recipe stays unchanged (4.094998ms)
+✔ hundreds of folders and a thousand dishes retain unique identities after moves and deletion (508.729004ms)
+✔ backup uses a dedicated test IndexedDB and lock namespace, without changing main schema (0.981527ms)
+✔ a denied default localStorage getter cannot break service construction or independent backup listing (1.20001ms)
+✔ a denied default IndexedDB getter is resolved only by a backup operation, without breaking construction (3.510025ms)
+✔ durable backup includes portable photos, exact source and independent draft attachment before any apply (5.523473ms)
+✔ apply creates and verifies backup before one atomic main write and preserves all inputs (5.870084ms)
+✔ an identical repeat import creates no backup, no photos and no main write (1.195413ms)
+✔ actual imports store resolved packaging identities while backup keeps the exact unresolved previous data (13.032604ms)
+✔ portable photo-only representation changes do not duplicate photos or rewrite an unchanged recipe (1.576534ms)
+✔ backup quota or read-back failure blocks apply before staging and preserves older backups (3.234098ms)
+✔ backup store unavailable never falls back to deleting or overwriting main localStorage (5.562651ms)
+✔ stale main snapshot before backup does not write anything (0.497093ms)
+✔ unsaved or corrupt current database cannot be misrepresented by an empty backup (0.574367ms)
+✔ stale main snapshot after asynchronous backup prevents staging and never overwrites external data (1.613559ms)
+✔ stale snapshot after staging removes only newly staged photos (1.966489ms)
+✔ main quota failure retains durable backup and old photos, rolling back all staged images (3.397419ms)
+✔ second photo staging failure removes the first staged image and keeps both originals (4.392176ms)
+✔ cleanup failure is reported without deleting any previous image or modifying main (2.397465ms)
+✔ existing two-photo IDs and legacy single-photo shape are retained for unrelated recipe changes (7.67125ms)
+✔ new single-photo imports retain photoId and different recipes reuse identical existing bytes (2.368612ms)
+✔ an actual changed legacy single-photo import reuses the current array ID but preserves scalar representation (2.107027ms)
+✔ fresh new photo bytes are staged once even if repeated across recipes and slots (2.628485ms)
+✔ unsupported embedded photo metadata is rejected explicitly before backup or staging (0.628547ms)
+✔ invalid candidate references and modes fail without touching old data or backups (0.7533ms)
+✔ only the latest three durable backups remain, and pruning happens after read-back (3.762778ms)
+✔ failed new backup never deletes an older durable copy; prune failures retain the new backup (3.43894ms)
+✔ provided backup must match the exact reviewed base and can be downloaded after a new service is created (2.739539ms)
+✔ a valid empty base can be backed up and replaced; missing snapshot is never assumed (1.18024ms)
+✔ empty libraries and old JSON without optional fields retain their exact shape (13.906733ms)
+✔ all linked kinds are added with valid relations and no input mutation (12.065269ms)
+✔ reimport of the same unchanged file is a no-op without new IDs (20.692318ms)
+✔ different prices expose product and both affected recipe conflicts before applying anything (11.284408ms)
+✔ keeping both versions preserves original costs and maps the whole incoming dependency graph (16.327487ms)
+✔ repeated keep-both import recognizes derived identities and never grows copies (12.648218ms)
+✔ skipping a price conflict leaves current data and dependent recipes exactly unchanged (2.34693ms)
+✔ same names with a different ingredient amount are conflicts rather than assumed duplicates (8.388057ms)
+✔ full semantic equality under different IDs deduplicates only after references are mapped (2.701954ms)
+✔ folder metadata conflicts preserve both categories with unique names and correct dish links (14.997888ms)
+✔ cross-namespace entity ID collisions allocate valid IDs instead of overwriting another kind (9.181537ms)
+✔ skipping an unavailable cross-type dependency skips dependent incoming recipes visibly (2.205571ms)
+✔ row ID collisions are remapped independently and remain stable on repeated import (4.333479ms)
+✔ old files materialize automatic packaging-food identities and remain idempotent after save (6.946366ms)
+✔ keep-both maps materialized automatic packaging identity to the copied food graph (12.431248ms)
+✔ edited deterministic copies are not silently reused or overwritten on next keep-both import (22.933451ms)
+✔ reimport recognizes kept copies after the entire original graph was removed (11.681062ms)
+✔ reimport finds an existing numbered copy even after earlier alias slots were deleted (11.895513ms)
+✔ merge never offers in-place financial overwrites but full replacement is explicit and audited (4.589181ms)
+✔ incompatible local dependency choices retain conflict controls and cannot produce an applyable plan (10.334897ms)
+✔ replacement preview explicitly accounts for removed and changed root extension fields (0.609839ms)
+✔ copy suffixes respect maximum folder/name lengths without splitting Unicode characters (16.191161ms)
+✔ legacy single photo and an equal two-slot representation compare by actual bytes (17.181001ms)
+✔ device-local photograph IDs must be resolved before a portable merge comparison (0.797535ms)
+✔ malformed schemas, broken references, cycles, unsupported modes and invalid choices never mutate input (4.474096ms)
+✔ a thousand incoming dishes keep unique identities, links and repeated-import idempotence (738.656922ms)
+✔ unknown permissible fields survive copies and root conflicts require an explicit field version (11.693129ms)
+✔ foil 60cm=3, box=10, two napkins=1, guest-free ketchup=6; total20 per portion (3.09966ms)
+✔ unit conversion is dimensional: metres/centimetres, grams/kg, ml/l and pieces only (0.291369ms)
+✔ base prices preserve zero, unknown values and finite arithmetic (0.292271ms)
+✔ default portions belong to the recipe and fresh recalculation never compounds rounding (8.522159ms)
+✔ a matching ingredient is not charged twice, even when names differ by case, spaces and ё (1.169164ms)
+✔ duplicate detection follows prep ingredients and explicit additional/included modes are respected (0.442392ms)
+✔ zero or unknown food quantity does not exempt an actual packaging serving (0.519686ms)
+✔ zero or unknown nested prep consumption cannot hide packaging cost (0.560096ms)
+✔ packaging and food yield are independent and guest-free flag does not change procurement cost (0.389674ms)
+✔ missing prices, quantities, references and mismatched units remain incomplete rather than zero-valued complete (0.878365ms)
+✔ included duplicate needs no second price but still requires valid consumption and units (0.308695ms)
+✔ overflow and underflow never produce a complete infinite or silently free result (1.153982ms)
+✔ old version1 backups stay byte-structure compatible and optional fields are not inserted (6.667766ms)
+✔ new packaging catalog and per-portion rows survive JSON/save/load without touching old data (2.158993ms)
+✔ packaging schema validates lengths, dimensions, references, uniqueness and flags independently of food units (5.469874ms)
+✔ nonempty packaging on a prep is rejected rather than importing hidden serving costs (1.054374ms)
+✔ resolveLinks persists stable auto dedup identities without mutating the input (0.98378ms)
+✔ stable identities follow nested positive food consumption but do not exempt removed or zeroed food (0.714764ms)
+✔ inactive identity falls back to a current same-name ingredient; explicit modes do not gain auto links (0.54947ms)
+✔ dedup identity metadata is optional text, never an unchecked object or numeric coercion (2.565302ms)
+✔ Page assets resolve within the GitHub Pages project path and exist in the root checkout (4.264077ms)
+✔ print selection addresses the requested photo positions without substituting another slot (1.299225ms)
+✔ invalid print selections fail explicitly, including inherited property names and coerced values (1.130076ms)
+✔ print selection does not retain mutable choices or modify saved photo references (0.188498ms)
+✔ photos live in an isolated IndexedDB and keep the existing database key/version (3.250583ms)
+✔ old backups without optional photos remain byte-for-byte structurally compatible (1.769599ms)
+✔ local photo references round-trip without embedding blobs in localStorage (0.627825ms)
+✔ portable photo JSON is accepted but must be staged before saving the main database (1.386465ms)
+✔ schema rejects remote or executable photo URLs, malformed references and double photo fields (2.207424ms)
+✔ photo payload budget checks decoded bytes as well as encoded length (7.476873ms)
+✔ invalid photo IDs fail before trying to open a browser database (0.727843ms)
+✔ photo-free export/import needs no IndexedDB or browser-only API (1.628947ms)
+✔ quality limits retain larger useful images with a bounded two-photo budget (0.156631ms)
+✔ ids normalizes new and old photo references without mutating any recipe (0.265551ms)
+✔ two local photo slots round-trip with order and empty frame preserved (1.583905ms)
+✔ two portable photo slots remain ordered and cannot be written as main localStorage blobs (1.061435ms)
+✔ more than two slots, malformed entries and mixed photo formats never overwrite stored data (2.099826ms)
+✔ new 1920px embedded photos are accepted; over-budget images still fail before writes (4.765786ms)
+✔ invalid source requests are serialized and do not poison the compression queue (0.717999ms)
+✔ oversized JPEG, PNG and WebP dimensions are rejected before allocating a decoded image (0.907117ms)
+✔ preview never reads or writes production data, including on import/save/reload (10.026222ms)
+✔ the existing source namespace stays fixed, with independent empty objects (1.109456ms)
+✔ missing records stay missing and do not trigger a seeded write (0.9699ms)
+✔ corruption preserves exact bytes and exposes the original snapshot (0.967766ms)
+✔ read denial does not initialize an empty replacement (0.232313ms)
+✔ prices, folders and future fields survive confirmed save and load (1.225797ms)
+✔ a stale expected source is rejected before a write (1.24806ms)
+✔ silent no-op storage is never reported as saved (0.624751ms)
+✔ read-back denial after a write is explicitly uncertain and keeps actual bytes (0.354343ms)
+✔ a real quota failure is distinct from an uncertain commit (0.558083ms)
+✔ drafts also detect silent no-op writes without clearing previous data (0.906116ms)
+✔ diagnosis is explicit, read-only and never aliases distinct namespaces (1.164937ms)
+✔ a broken foreign source is available raw without blocking a valid current source (0.354603ms)
+✔ a changed donor source blocks a stale recovery preview (0.693462ms)
+✔ portable diagnostics use exactly the selected photo database and never write (0.479788ms)
+✔ import photo rollback respects an actual failed write (7.572104ms)
+✔ import photo rollback respects uncertain committed references (1.280898ms)
+✔ 300 selling price and 100 food cost give the four requested per-portion metrics (2.453277ms)
+✔ packaging is excluded even when its procurement cost exceeds food and it is free for the guest (0.347912ms)
+✔ selling price remains per portion when a saved recipe has several portions (0.559294ms)
+✔ gross losses and negative percentages are valid, not storage or calculation errors (0.207075ms)
+✔ zero selling price retains the loss and markup but has no margin or foodcost denominator (0.324789ms)
+✔ zero food cost has no markup denominator; zero price and zero cost do not invent percentages (0.397616ms)
+✔ absent or explicitly empty selling price preserves known food cost but never assumes zero sales (0.232583ms)
+✔ partial food costs never become apparently complete profit metrics (0.286592ms)
+✔ nested ready preparations follow purchase price, ingredient amounts and actual prep yield exactly once (1.666977ms)
+✔ dish final output does not invent portions or change the existing per-portion food-cost rule (0.279352ms)
+✔ full precision is kept internally rather than compounding display rounding (0.882491ms)
+✔ direct invalid prices and malformed recipe inputs report unavailable metrics without throwing (1.005392ms)
+✔ unrepresentable per-portion cost is unavailable instead of Infinity or a silent zero (0.130422ms)
+✔ extreme percentage arithmetic retains representable tiny values and leaves overflow unavailable (0.116201ms)
+✔ the required explanation is exported verbatim and is not a net-profit claim (0.123478ms)
+✔ old JSON remains structurally identical and missing sale price is not inserted automatically (3.720025ms)
+✔ selling price persists through browser-style save/load and portable JSON with photos and packaging (2.948987ms)
+✔ invalid sale-price imports or saves never overwrite the prior database (4.028289ms)
+✔ the existing draft format preserves optional selling price and raw invalid selling-price input independently (1.127252ms)
+✔ a cook takes 100g of ready prep; production yield affects cost only once (4.214083ms)
+✔ calculation retains raw quantity, output and all existing financial results (0.424566ms)
+✔ ready quantities stay per serving when the saved recipe has several portions (0.559785ms)
+✔ classification follows the saved reference, not the ingredient name (0.337067ms)
+✔ nested preparations remain a single assembly row (0.262597ms)
+✔ litres, kilograms and pieces use assembly base units without coefficient mixing (0.362745ms)
+✔ processed ordinary product shows ready output, including a valid zero output (0.355995ms)
+✔ missing prices or prep yield do not hide a known ready portion or leak cost issues (0.382494ms)
+✔ unknown quantities stay unknown; a missing reference is never labelled as prep (0.567277ms)
+✔ repeated fresh scaling preserves decimal quantities without cumulative rounding (7.624926ms)
+✔ old recipes without portions and optional metadata still use one serving (0.551803ms)
+✔ invalid modes, portions and arithmetic overflow cannot create misleading quantities (0.687684ms)
+✔ legacy recipes stay off and loading never inserts a preference (4.926754ms)
+✔ one toggle changes only the selected dish flag and preserves all other fields (1.592327ms)
+✔ many toggles never duplicate recipes or remove the monthly expense settings (13.00234ms)
+✔ dish choices are independent and explicit false survives JSON (1.969153ms)
+✔ invalid flag values and flags on preparations are rejected without coercion (7.396355ms)
+✔ control example uses computed 74 and preserves food, packaging, yield and product margin (3.230392ms)
+✔ temporary portions multiply expenses once without changing stored quantities (1.036659ms)
+✔ an old draft inherits the current saved flag without altering its unfinished fields (0.327683ms)
+✔ photos, packaging metadata and future recipe fields survive preference changes (1.073403ms)
+✔ a failed or stale save cannot overwrite the former preference and database (7.541088ms)
+✔ JSON conflicts retain each version and repeat import never creates more copies (22.713838ms)
+✔ ten portions multiply ready prep cost and mass without changing source or reapplying loss (3.252185ms)
+✔ base portions, explicit final yield, loss and decimals scale consistently (0.240725ms)
+✔ piece and volume coefficients preserved; missing mass stays unknown (0.268696ms)
+✔ invalid portions and numeric overflow are rejected (0.368659ms)
+✔ old backups retain fields; new optional metadata survives import/export (7.63443ms)
+✔ extensions at every supported entity level survive validate, JSON and saved reload (12.820006ms)
+✔ validated extensions are detached from input references and retain null and finite negative metadata (1.34971ms)
+✔ legacy absence and known optional undefined values retain previous normalization (2.335854ms)
+✔ extensions cannot relax known numeric, unit, identity, folder or version validation (4.730254ms)
+✔ unknown photo metadata is rejected explicitly instead of being silently lost during staging (2.654043ms)
+✔ prototype-related keys in imported JSON are rejected without pollution or a partial save (7.897133ms)
+✔ accessors and serialization hooks are never invoked, including on known fields (2.989978ms)
+✔ unsupported extension values, circular structures and nonplain objects fail explicitly (11.579302ms)
+✔ sparse arrays, hidden properties, symbol keys and named array fields are not silently stripped (2.582458ms)
+✔ extension complexity and imported file size are bounded before any storage write (56.344611ms)
+✔ null-prototype extension objects are safely copied as ordinary detached JSON data (1.179499ms)
+✔ seed retains all requested incomplete data and can be serialized (6.482267ms)
+✔ save and reload round-trip, null prices do not become zero (2.447669ms)
+✔ corrupt data is not overwritten on load (0.301254ms)
+✔ storage denial and quota failure are reported without throwing (3.582952ms)
+✔ import rejects malformed schemas, negative values and division by zero (5.524515ms)
+✔ import rejects duplicates, broken references, dish references, and cycles (4.525322ms)
+✔ import validates loss/output agreement, prep ready mass and dimensional conversions (3.881272ms)
+✔ malicious markup remains plain data and legitimate extension fields are preserved (2.289846ms)
+✔ import rejects IDs with spaces, quotes, selector punctuation, and non-Latin letters (5.816585ms)
+✔ import allows 100 recipe levels but rejects deeper graphs before recursive calculation (14.135321ms)
+✔ ingredient rows are not limited by the recipe nesting bound (6.905621ms)
+ℹ tests 253
+ℹ suites 0
+ℹ pass 253
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1442.699705
+Browser checks use an isolated local server: http://127.0.0.1:43101/kitchen-calculator-test/?section=dish
+Theme matrix artifacts: /home/runner/work/_temp/sintez-regressions
+[graphite] PASS Production-key sentinel remains unchanged throughout preview workflow at 1366px
+[berry] PASS Production-key sentinel remains unchanged throughout preview workflow at 1366px
+[sage] PASS Production-key sentinel remains unchanged throughout preview workflow at 1366px
+[berry] PASS Production-key sentinel remains unchanged throughout preview workflow at 360px
+[graphite] PASS Production-key sentinel remains unchanged throughout preview workflow at 360px
+[sage] PASS Production-key sentinel remains unchanged throughout preview workflow at 360px
+[berry] PASS Production-key sentinel remains unchanged throughout preview workflow at 390px
+[graphite] PASS Production-key sentinel remains unchanged throughout preview workflow at 390px
+[sage] PASS Production-key sentinel remains unchanged throughout preview workflow at 390px
+[berry] PASS Production-key sentinel remains unchanged throughout preview workflow at 430px
+[sage] PASS Production-key sentinel remains unchanged throughout preview workflow at 430px
+[graphite] PASS Production-key sentinel remains unchanged throughout preview workflow at 430px
+[berry] PASS Recipe card, prices, temporary portions, print and list navigation
+[graphite] PASS Recipe card, prices, temporary portions, print and list navigation
+[sage] PASS Recipe card, prices, temporary portions, print and list navigation
+[berry] PASS Recipe edits survive navigation as a separate draft until explicit save
+[graphite] PASS Recipe edits survive navigation as a separate draft until explicit save
+[sage] PASS Recipe edits survive navigation as a separate draft until explicit save
+[sage] PASS Mobile cards and multi-page A4 print preserve all rows with and without prices
+[berry] PASS Mobile cards and multi-page A4 print preserve all rows with and without prices
+[graphite] PASS Mobile cards and multi-page A4 print preserve all rows with and without prices
+[berry] PASS Corrupt browser data is never replaced by seed or a new save
+[sage] PASS Corrupt browser data is never replaced by seed or a new save
+[graphite] PASS Corrupt browser data is never replaced by seed or a new save
+[berry] PASS Initial editable gyro, missing prices and honest incomplete total
+[graphite] PASS Initial editable gyro, missing prices and honest incomplete total
+[sage] PASS Initial editable gyro, missing prices and honest incomplete total
+[berry] PASS Synonym search from first letter, uppercase keyboard and mouse selection
+[sage] PASS Synonym search from first letter, uppercase keyboard and mouse selection
+[graphite] PASS Synonym search from first letter, uppercase keyboard and mouse selection
+[berry] PASS Processing output/loss synchronized; commas, dot, invalid negatives and percentages
+[sage] PASS Processing output/loss synchronized; commas, dot, invalid negatives and percentages
+[graphite] PASS Processing output/loss synchronized; commas, dot, invalid negatives and percentages
+[berry] PASS Invalid numeric input survives adding a row and can be corrected
+[sage] PASS Invalid numeric input survives adding a row and can be corrected
+[graphite] PASS Invalid numeric input survives adding a row and can be corrected
+[berry] PASS Product edits persist on reload; used product cannot be deleted
+[sage] PASS Product edits persist on reload; used product cannot be deleted
+[graphite] PASS Product edits persist on reload; used product cannot be deleted
+[berry] PASS Create product, prep and dish through UI; 83.33 example and dependent price updates
+[sage] PASS Create product, prep and dish through UI; 83.33 example and dependent price updates
+[graphite] PASS Create product, prep and dish through UI; 83.33 example and dependent price updates
+[berry] PASS At least 30 ingredient rows, remove and save/reload
+[sage] PASS At least 30 ingredient rows, remove and save/reload
+[graphite] PASS At least 30 ingredient rows, remove and save/reload
+[berry] PASS Export downloads validated JSON; import replacement requires confirmation; cancel and invalid preserve state
+[sage] PASS Export downloads validated JSON; import replacement requires confirmation; cancel and invalid preserve state
+[graphite] PASS Export downloads validated JSON; import replacement requires confirmation; cancel and invalid preserve state
+[berry] PASS Nested prep cycles are excluded from picker and rejected on import
+[sage] PASS Nested prep cycles are excluded from picker and rejected on import
+[graphite] PASS Nested prep cycles are excluded from picker and rejected on import
+[berry] PASS Mobile touch selection and layouts 360/390/430: no page overflow, last field visible
+[sage] PASS Mobile touch selection and layouts 360/390/430: no page overflow, last field visible
+[graphite] PASS Mobile touch selection and layouts 360/390/430: no page overflow, last field visible
+[berry] PASS Explicit save quota failure reports in-memory status rather than saved
+[sage] PASS Explicit save quota failure reports in-memory status rather than saved
+[berry] PASS Unavailable localStorage reports error and still permits export
+[graphite] PASS Explicit save quota failure reports in-memory status rather than saved
+[berry] Browser checks: 20 passed, 0 failed.
+[sage] PASS Unavailable localStorage reports error and still permits export
+[graphite] PASS Unavailable localStorage reports error and still permits export
+[sage] Browser checks: 20 passed, 0 failed.
+[graphite] Browser checks: 20 passed, 0 failed.
+[berry] PASS compact products: 12 records, 360px
+[sage] PASS compact products: 12 records, 360px
+[graphite] PASS compact products: 12 records, 360px
+[berry] PASS compact products: 100 records, 360px
+[sage] PASS compact products: 100 records, 360px
+[graphite] PASS compact products: 100 records, 360px
+[berry] PASS compact products: 500 records, 360px
+[sage] PASS compact products: 500 records, 360px
+[graphite] PASS compact products: 500 records, 360px
+[berry] PASS compact products: 12 records, 390px
+[sage] PASS compact products: 12 records, 390px
+[graphite] PASS compact products: 12 records, 390px
+[berry] PASS compact products: 100 records, 390px
+[sage] PASS compact products: 100 records, 390px
+[graphite] PASS compact products: 100 records, 390px
+[berry] PASS compact products: 500 records, 390px
+[sage] PASS compact products: 500 records, 390px
+[graphite] PASS compact products: 500 records, 390px
+[berry] PASS compact products: 12 records, 430px
+[sage] PASS compact products: 12 records, 430px
+[graphite] PASS compact products: 12 records, 430px
+[berry] PASS compact products: 100 records, 430px
+[sage] PASS compact products: 100 records, 430px
+[graphite] PASS compact products: 100 records, 430px
+[berry] PASS compact products: 500 records, 430px
+[sage] PASS compact products: 500 records, 430px
+[graphite] PASS compact products: 500 records, 430px
+[berry] PASS compact products: 12 records, 1366px
+[sage] PASS compact products: 12 records, 1366px
+[graphite] PASS compact products: 12 records, 1366px
+[berry] PASS compact products: 100 records, 1366px
+[sage] PASS compact products: 100 records, 1366px
+[graphite] PASS compact products: 100 records, 1366px
+[berry] PASS compact products: 500 records, 1366px
+[berry] 12/12 compact product-list browser scenarios passed; 0 failures.
+[sage] PASS compact products: 500 records, 1366px
+[sage] 12/12 compact product-list browser scenarios passed; 0 failures.
+[graphite] PASS compact products: 500 records, 1366px
+[graphite] 12/12 compact product-list browser scenarios passed; 0 failures.
+[berry] PASS shared library: prep, 12 records, 360px
+[sage] PASS shared library: prep, 12 records, 360px
+[graphite] PASS shared library: prep, 12 records, 360px
+[berry] PASS shared library: prep, 100 records, 360px
+[sage] PASS shared library: prep, 100 records, 360px
+[graphite] PASS shared library: prep, 100 records, 360px
+[berry] PASS shared library: prep, 500 records, 360px
+[sage] PASS shared library: prep, 500 records, 360px
+[graphite] PASS shared library: prep, 500 records, 360px
+[berry] PASS shared library: prep, 12 records, 390px
+[sage] PASS shared library: prep, 12 records, 390px
+[graphite] PASS shared library: prep, 12 records, 390px
+[berry] PASS shared library: prep, 100 records, 390px
+[sage] PASS shared library: prep, 100 records, 390px
+[graphite] PASS shared library: prep, 100 records, 390px
+[berry] PASS shared library: prep, 500 records, 390px
+[sage] PASS shared library: prep, 500 records, 390px
+[graphite] PASS shared library: prep, 500 records, 390px
+[berry] PASS shared library: prep, 12 records, 430px
+[sage] PASS shared library: prep, 12 records, 430px
+[graphite] PASS shared library: prep, 12 records, 430px
+[berry] PASS shared library: prep, 100 records, 430px
+[sage] PASS shared library: prep, 100 records, 430px
+[graphite] PASS shared library: prep, 100 records, 430px
+[berry] PASS shared library: prep, 500 records, 430px
+[sage] PASS shared library: prep, 500 records, 430px
+[graphite] PASS shared library: prep, 500 records, 430px
+[berry] PASS shared library: prep, 12 records, 1366px
+[sage] PASS shared library: prep, 12 records, 1366px
+[graphite] PASS shared library: prep, 12 records, 1366px
+[berry] PASS shared library: prep, 100 records, 1366px
+[sage] PASS shared library: prep, 100 records, 1366px
+[graphite] PASS shared library: prep, 100 records, 1366px
+[berry] PASS shared library: prep, 500 records, 1366px
+[sage] PASS shared library: prep, 500 records, 1366px
+[graphite] PASS shared library: prep, 500 records, 1366px
+[berry] PASS shared library: dish, 12 records, 360px
+[sage] PASS shared library: dish, 12 records, 360px
+[graphite] PASS shared library: dish, 12 records, 360px
+[berry] PASS shared library: dish, 100 records, 360px
+[sage] PASS shared library: dish, 100 records, 360px
+[graphite] PASS shared library: dish, 100 records, 360px
+[berry] PASS shared library: dish, 500 records, 360px
+[sage] PASS shared library: dish, 500 records, 360px
+[graphite] PASS shared library: dish, 500 records, 360px
+[berry] PASS shared library: dish, 12 records, 390px
+[sage] PASS shared library: dish, 12 records, 390px
+[graphite] PASS shared library: dish, 12 records, 390px
+[berry] PASS shared library: dish, 100 records, 390px
+[sage] PASS shared library: dish, 100 records, 390px
+[graphite] PASS shared library: dish, 100 records, 390px
+[berry] PASS shared library: dish, 500 records, 390px
+[sage] PASS shared library: dish, 500 records, 390px
+[graphite] PASS shared library: dish, 500 records, 390px
+[berry] PASS shared library: dish, 12 records, 430px
+[sage] PASS shared library: dish, 12 records, 430px
+[graphite] PASS shared library: dish, 12 records, 430px
+[berry] PASS shared library: dish, 100 records, 430px
+[sage] PASS shared library: dish, 100 records, 430px
+[graphite] PASS shared library: dish, 100 records, 430px
+[berry] PASS shared library: dish, 500 records, 430px
+[sage] PASS shared library: dish, 500 records, 430px
+[graphite] PASS shared library: dish, 500 records, 430px
+[berry] PASS shared library: dish, 12 records, 1366px
+[sage] PASS shared library: dish, 12 records, 1366px
+[graphite] PASS shared library: dish, 12 records, 1366px
+[berry] PASS shared library: dish, 100 records, 1366px
+[sage] PASS shared library: dish, 100 records, 1366px
+[graphite] PASS shared library: dish, 100 records, 1366px
+[berry] PASS shared library: dish, 500 records, 1366px
+[berry] 24/24 shared-library browser scenarios passed; 0 failures.
+[sage] PASS shared library: dish, 500 records, 1366px
+[sage] 24/24 shared-library browser scenarios passed; 0 failures.
+[graphite] PASS shared library: dish, 500 records, 1366px
+[graphite] 24/24 shared-library browser scenarios passed; 0 failures.
+[berry] PASS packaging: per-portion materials, temporary scaling, JSON and print at 1366px
+[sage] PASS packaging: per-portion materials, temporary scaling, JSON and print at 1366px
+[graphite] PASS packaging: per-portion materials, temporary scaling, JSON and print at 1366px
+[berry] PASS packaging: per-portion materials, temporary scaling, JSON and print at 360px
+[sage] PASS packaging: per-portion materials, temporary scaling, JSON and print at 360px
+[graphite] PASS packaging: per-portion materials, temporary scaling, JSON and print at 360px
+[berry] PASS packaging: per-portion materials, temporary scaling, JSON and print at 390px
+[sage] PASS packaging: per-portion materials, temporary scaling, JSON and print at 390px
+[graphite] PASS packaging: per-portion materials, temporary scaling, JSON and print at 390px
+[berry] PASS packaging: per-portion materials, temporary scaling, JSON and print at 430px
+[sage] PASS packaging: per-portion materials, temporary scaling, JSON and print at 430px
+[graphite] PASS packaging: per-portion materials, temporary scaling, JSON and print at 430px
+[berry] PASS packaging: arbitrary catalog names, units, search, edits and guarded deletion
+[graphite] PASS packaging: arbitrary catalog names, units, search, edits and guarded deletion
+[sage] PASS packaging: arbitrary catalog names, units, search, edits and guarded deletion
+[berry] PASS packaging: invalid quantities retain input and missing prices are visibly incomplete
+[graphite] PASS packaging: invalid quantities retain input and missing prices are visibly incomplete
+[sage] PASS packaging: invalid quantities retain input and missing prices are visibly incomplete
+[berry] PASS packaging: duplicate food and nested ingredients are not charged twice unless explicitly additional
+[graphite] PASS packaging: duplicate food and nested ingredients are not charged twice unless explicitly additional
+[sage] PASS packaging: duplicate food and nested ingredients are not charged twice unless explicitly additional
+[berry] PASS packaging: saved ingredient identity prevents double charging after food and material renames
+[graphite] PASS packaging: saved ingredient identity prevents double charging after food and material renames
+[berry] PASS packaging: nonempty prep packaging is rejected without replacing current or legacy data
+[sage] PASS packaging: saved ingredient identity prevents double charging after food and material renames
+[graphite] PASS packaging: nonempty prep packaging is rejected without replacing current or legacy data
+[berry] PASS packaging: old JSON remains unchanged and bad packaging imports preserve existing data
+[sage] PASS packaging: nonempty prep packaging is rejected without replacing current or legacy data
+[berry] 10/10 packaging browser scenarios passed; 0 failures.
+[graphite] PASS packaging: old JSON remains unchanged and bad packaging imports preserve existing data
+[graphite] 10/10 packaging browser scenarios passed; 0 failures.
+[sage] PASS packaging: old JSON remains unchanged and bad packaging imports preserve existing data
+[sage] 10/10 packaging browser scenarios passed; 0 failures.
+[berry] PASS task8: new recipe restores all entered fields and invalid raw values after immediate refresh
+[graphite] PASS task8: new recipe restores all entered fields and invalid raw values after immediate refresh
+[berry] PASS task8: edited recipe and packaging survive navigation without overwriting the saved card
+[sage] PASS task8: new recipe restores all entered fields and invalid raw values after immediate refresh
+[graphite] PASS task8: edited recipe and packaging survive navigation without overwriting the saved card
+[sage] PASS task8: edited recipe and packaging survive navigation without overwriting the saved card
+[berry] PASS task8: different dishes and preparations keep separate drafts; explicit save clears only one
+[graphite] PASS task8: different dishes and preparations keep separate drafts; explicit save clears only one
+[berry] PASS task8: closing a tab and reopening in the same browser context offers the draft
+[sage] PASS task8: different dishes and preparations keep separate drafts; explicit save clears only one
+[graphite] PASS task8: closing a tab and reopening in the same browser context offers the draft
+[sage] PASS task8: closing a tab and reopening in the same browser context offers the draft
+[berry] PASS task8: deleting a draft requires confirmation and preserves the saved recipe
+[graphite] PASS task8: deleting a draft requires confirmation and preserves the saved recipe
+[sage] PASS task8: deleting a draft requires confirmation and preserves the saved recipe
+[berry] PASS task8: draft quota keeps the previous checkpoint and main data and warns before unsafe navigation
+[graphite] PASS task8: draft quota keeps the previous checkpoint and main data and warns before unsafe navigation
+[berry] PASS task8: a damaged draft envelope is not overwritten and never damages the main database
+[sage] PASS task8: draft quota keeps the previous checkpoint and main data and warns before unsafe navigation
+[graphite] PASS task8: a damaged draft envelope is not overwritten and never damages the main database
+[berry] PASS task8: a malformed draft cannot break the app or overwrite the saved database
+[graphite] PASS task8: a malformed draft cannot break the app or overwrite the saved database
+[sage] PASS task8: a damaged draft envelope is not overwritten and never damages the main database
+[berry] PASS task8: a pending photo import locks editing and navigation while preserving the pre-import draft
+[sage] PASS task8: a malformed draft cannot break the app or overwrite the saved database
+[graphite] PASS task8: a pending photo import locks editing and navigation while preserving the pre-import draft
+[sage] PASS task8: a pending photo import locks editing and navigation while preserving the pre-import draft
+[berry] PASS task8: photo is compressed, persists through draft recovery and explicit save, and does not affect costs
+[graphite] PASS task8: photo is compressed, persists through draft recovery and explicit save, and does not affect costs
+[sage] PASS task8: photo is compressed, persists through draft recovery and explicit save, and does not affect costs
+[berry] PASS task8: replacing and removing a photo remain drafts until explicitly saved
+[graphite] PASS task8: replacing and removing a photo remain drafts until explicitly saved
+[sage] PASS task8: replacing and removing a photo remain drafts until explicitly saved
+[berry] PASS task8: bad and oversized photo input leaves the saved image and main recipe intact
+[graphite] PASS task8: bad and oversized photo input leaves the saved image and main recipe intact
+[sage] PASS task8: bad and oversized photo input leaves the saved image and main recipe intact
+[berry] PASS task8: photo storage quota preserves the previous photo, saved recipe and recoverable draft
+[graphite] PASS task8: photo storage quota preserves the previous photo, saved recipe and recoverable draft
+[berry] PASS task8: a failed main save keeps the separate photo draft until saving succeeds
+[sage] PASS task8: photo storage quota preserves the previous photo, saved recipe and recoverable draft
+[graphite] PASS task8: a failed main save keeps the separate photo draft until saving succeeds
+[berry] PASS task8: a missing local photo is reported; printing without a photo remains possible
+[sage] PASS task8: a failed main save keeps the separate photo draft until saving succeeds
+[graphite] PASS task8: a missing local photo is reported; printing without a photo remains possible
+[berry] PASS task8: print photo and price controls work independently; screen photo stays visible
+[sage] PASS task8: a missing local photo is reported; printing without a photo remains possible
+[graphite] PASS task8: print photo and price controls work independently; screen photo stays visible
+[sage] PASS task8: print photo and price controls work independently; screen photo stays visible
+[berry] PASS task8: JSON includes portable photos and imports into a fresh browser; old backups remain compatible
+[graphite] PASS task8: JSON includes portable photos and imports into a fresh browser; old backups remain compatible
+[berry] PASS task8: export preserves an unfinished draft without silently saving it as a recipe
+[graphite] PASS task8: export preserves an unfinished draft without silently saving it as a recipe
+[sage] PASS task8: JSON includes portable photos and imports into a fresh browser; old backups remain compatible
+[berry] PASS task8: photos, drafts and the warm readable working surfaces fit 320px
+[sage] PASS task8: export preserves an unfinished draft without silently saving it as a recipe
+[graphite] PASS task8: photos, drafts and the warm readable working surfaces fit 320px
+[berry] PASS task8: photos, drafts and the warm readable working surfaces fit 390px
+[sage] PASS task8: photos, drafts and the warm readable working surfaces fit 320px
+[graphite] PASS task8: photos, drafts and the warm readable working surfaces fit 390px
+[berry] PASS task8: photos, drafts and the warm readable working surfaces fit 1366px
+[berry] 21 task8 browser scenarios passed; 0 failures.
+[sage] PASS task8: photos, drafts and the warm readable working surfaces fit 390px
+[graphite] PASS task8: photos, drafts and the warm readable working surfaces fit 1366px
+[graphite] 21 task8 browser scenarios passed; 0 failures.
+[berry] PASS two photos: two equal frames stay under the title, empty slots never create photos
+[sage] PASS task8: photos, drafts and the warm readable working surfaces fit 1366px
+[sage] 21 task8 browser scenarios passed; 0 failures.
+[graphite] PASS two photos: two equal frames stay under the title, empty slots never create photos
+[sage] PASS two photos: two equal frames stay under the title, empty slots never create photos
+[berry] PASS two photos: two independent uploads, replacement and swap persist without changing food or packaging
+[graphite] PASS two photos: two independent uploads, replacement and swap persist without changing food or packaging
+[sage] PASS two photos: two independent uploads, replacement and swap persist without changing food or packaging
+[berry] PASS two photos: deletion confirms independently; a single photo can move slots and prints once
+[graphite] PASS two photos: deletion confirms independently; a single photo can move slots and prints once
+[berry] PASS two photos: two photo draft IDs survive actual tab close, restore and explicit save
+[sage] PASS two photos: deletion confirms independently; a single photo can move slots and prints once
+[graphite] PASS two photos: two photo draft IDs survive actual tab close, restore and explicit save
+[berry] PASS two photos: camera and gallery inputs are separate per slot and share safe image handling
+[sage] PASS two photos: two photo draft IDs survive actual tab close, restore and explicit save
+[graphite] PASS two photos: camera and gallery inputs are separate per slot and share safe image handling
+[berry] PASS two photos: viewer opens whole image, zooms and closes with Escape without modifying saved or draft data
+[sage] PASS two photos: camera and gallery inputs are separate per slot and share safe image handling
+[berry] PASS two photos: touch pinch enlarges the image inside the viewer without changing page width or recipe
+[graphite] PASS two photos: viewer opens whole image, zooms and closes with Escape without modifying saved or draft data
+[sage] PASS two photos: viewer opens whole image, zooms and closes with Escape without modifying saved or draft data
+[graphite] PASS two photos: touch pinch enlarges the image inside the viewer without changing page width or recipe
+[sage] PASS two photos: touch pinch enlarges the image inside the viewer without changing page width or recipe
+[berry] PASS two photos: photo quota while replacing one slot preserves both prior photos and recoverable draft
+[graphite] PASS two photos: photo quota while replacing one slot preserves both prior photos and recoverable draft
+[sage] PASS two photos: photo quota while replacing one slot preserves both prior photos and recoverable draft
+[berry] PASS two photos: two-photo portable JSON restores fresh IDs on another browser and preserves bytes
+[graphite] PASS two photos: two-photo portable JSON restores fresh IDs on another browser and preserves bytes
+[berry] PASS two photos: bad second imported photo rolls back new first photo without touching old data
+[sage] PASS two photos: two-photo portable JSON restores fresh IDs on another browser and preserves bytes
+[graphite] PASS two photos: bad second imported photo rolls back new first photo without touching old data
+[berry] PASS two photos: quota during second imported photo rolls back only staged IDs
+[sage] PASS two photos: bad second imported photo rolls back new first photo without touching old data
+[graphite] PASS two photos: quota during second imported photo rolls back only staged IDs
+[sage] PASS two photos: quota during second imported photo rolls back only staged IDs
+[berry] PASS two photos: old one-photo JSON and local recipes remain readable without eager migration
+[graphite] PASS two photos: old one-photo JSON and local recipes remain readable without eager migration
+[berry] PASS two photos: four print combinations show both photos or no blocks independently of prices
+[sage] PASS two photos: old one-photo JSON and local recipes remain readable without eager migration
+[graphite] PASS two photos: four print combinations show both photos or no blocks independently of prices
+[berry] PHOTO_QUALITY {"newWidth":1920,"newHeight":1280,"newBytes":377630,"newPSNR":35.44895230361551,"oldWidth":1280,"oldHeight":853,"oldBytes":140085,"oldPSNR":28.549382883485617}
+[berry] PASS two photos: quality budget retains 1920px details with bounded memory; EXIF orientation is normalized
+[sage] PASS two photos: four print combinations show both photos or no blocks independently of prices
+[berry] PASS two photos: equal frames, contained images and top controls fit 320px
+[graphite] PHOTO_QUALITY {"newWidth":1920,"newHeight":1280,"newBytes":377630,"newPSNR":35.44895230361551,"oldWidth":1280,"oldHeight":853,"oldBytes":140085,"oldPSNR":28.549382883485617}
+[graphite] PASS two photos: quality budget retains 1920px details with bounded memory; EXIF orientation is normalized
+[sage] PHOTO_QUALITY {"newWidth":1920,"newHeight":1280,"newBytes":377630,"newPSNR":35.44895230361551,"oldWidth":1280,"oldHeight":853,"oldBytes":140085,"oldPSNR":28.549382883485617}
+[sage] PASS two photos: quality budget retains 1920px details with bounded memory; EXIF orientation is normalized
+[berry] PASS two photos: equal frames, contained images and top controls fit 390px
+[graphite] PASS two photos: equal frames, contained images and top controls fit 320px
+[sage] PASS two photos: equal frames, contained images and top controls fit 320px
+[berry] PASS two photos: equal frames, contained images and top controls fit 768px
+[graphite] PASS two photos: equal frames, contained images and top controls fit 390px
+[sage] PASS two photos: equal frames, contained images and top controls fit 390px
+[berry] PASS two photos: equal frames, contained images and top controls fit 1366px
+[berry] 18 two-photo browser scenarios passed; 0 failures.
+[graphite] PASS two photos: equal frames, contained images and top controls fit 768px
+[sage] PASS two photos: equal frames, contained images and top controls fit 768px
+[berry] PASS card modes: chef shows ready one-portion quantities and tags only linked preparations
+[berry] PASS card modes: calculation keeps the original cost, raw amount, output and preparation labels
+[berry] PASS card modes: missing prices never hide a known ready quantity or leak financial issues into chef form
+[graphite] PASS two photos: equal frames, contained images and top controls fit 1366px
+[graphite] 18 two-photo browser scenarios passed; 0 failures.
+[berry] PASS card modes: invalid portions never expose a stale financial card after switching to chef mode
+[sage] PASS two photos: equal frames, contained images and top controls fit 1366px
+[sage] 18 two-photo browser scenarios passed; 0 failures.
+[graphite] PASS card modes: chef shows ready one-portion quantities and tags only linked preparations
+[berry] PASS card modes: photo choices are independent per form, screen keeps both photos and storage never changes
+[graphite] PASS card modes: calculation keeps the original cost, raw amount, output and preparation labels
+[sage] PASS card modes: chef shows ready one-portion quantities and tags only linked preparations
+[graphite] PASS card modes: missing prices never hide a known ready quantity or leak financial issues into chef form
+[graphite] PASS card modes: invalid portions never expose a stale financial card after switching to chef mode
+[sage] PASS card modes: calculation keeps the original cost, raw amount, output and preparation labels
+[berry] PASS card modes: an unavailable photo in slot 1 does not block printing the other slot
+[sage] PASS card modes: missing prices never hide a known ready quantity or leak financial issues into chef form
+[sage] PASS card modes: invalid portions never expose a stale financial card after switching to chef mode
+[graphite] PASS card modes: photo choices are independent per form, screen keeps both photos and storage never changes
+[berry] PASS card modes: an unavailable photo in slot 2 does not block printing the other slot
+[sage] PASS card modes: photo choices are independent per form, screen keeps both photos and storage never changes
+[graphite] PASS card modes: an unavailable photo in slot 1 does not block printing the other slot
+[sage] PASS card modes: an unavailable photo in slot 1 does not block printing the other slot
+[graphite] PASS card modes: an unavailable photo in slot 2 does not block printing the other slot
+[sage] PASS card modes: an unavailable photo in slot 2 does not block printing the other slot
+[berry] PASS card modes: eight A4 print combinations contain exactly the requested photographs and correct form data
+[berry] PASS card modes: long ingredient tables repeat headers and preserve final rows and technology in both forms
+[graphite] PASS card modes: eight A4 print combinations contain exactly the requested photographs and correct form data
+[sage] PASS card modes: eight A4 print combinations contain exactly the requested photographs and correct form data
+[graphite] PASS card modes: long ingredient tables repeat headers and preserve final rows and technology in both forms
+[berry] PASS card modes: both forms and their photo choices preserve portable JSON and old recipe compatibility
+[sage] PASS card modes: long ingredient tables repeat headers and preserve final rows and technology in both forms
+[graphite] PASS card modes: both forms and their photo choices preserve portable JSON and old recipe compatibility
+[berry] PASS card modes: an actual browser restart keeps the single saved recipe and both local photographs
+[sage] PASS card modes: both forms and their photo choices preserve portable JSON and old recipe compatibility
+[berry] PASS card modes: both forms and photo controls fit 320px without horizontal scrolling
+[berry] PASS card modes: both forms and photo controls fit 390px without horizontal scrolling
+[graphite] PASS card modes: an actual browser restart keeps the single saved recipe and both local photographs
+[sage] PASS card modes: an actual browser restart keeps the single saved recipe and both local photographs
+[berry] PASS card modes: both forms and photo controls fit 768px without horizontal scrolling
+[graphite] PASS card modes: both forms and photo controls fit 320px without horizontal scrolling
+[sage] PASS card modes: both forms and photo controls fit 320px without horizontal scrolling
+[berry] PASS card modes: both forms and photo controls fit 1366px without horizontal scrolling
+[berry] 15 card-mode browser scenarios passed; 0 failures.
+[graphite] PASS card modes: both forms and photo controls fit 390px without horizontal scrolling
+[sage] PASS card modes: both forms and photo controls fit 390px without horizontal scrolling
+[graphite] PASS card modes: both forms and photo controls fit 768px without horizontal scrolling
+[sage] PASS card modes: both forms and photo controls fit 768px without horizontal scrolling
+[berry] PASS profitability: sale price is a separate saved field; margins use food cost per portion and exclude packaging
+[graphite] PASS card modes: both forms and photo controls fit 1366px without horizontal scrolling
+[graphite] 15 card-mode browser scenarios passed; 0 failures.
+[berry] PASS profitability: price, ingredient amount and recipe portions update the live profitability without changing food formulas
+[sage] PASS card modes: both forms and photo controls fit 1366px without horizontal scrolling
+[sage] 15 card-mode browser scenarios passed; 0 failures.
+[berry] PASS profitability: saved purchase price and preparation yield propagate to the saved dish profitability
+[graphite] PASS profitability: sale price is a separate saved field; margins use food cost per portion and exclude packaging
+[sage] PASS profitability: sale price is a separate saved field; margins use food cost per portion and exclude packaging
+[graphite] PASS profitability: price, ingredient amount and recipe portions update the live profitability without changing food formulas
+[sage] PASS profitability: price, ingredient amount and recipe portions update the live profitability without changing food formulas
+[graphite] PASS profitability: saved purchase price and preparation yield propagate to the saved dish profitability
+[berry] PASS profitability: invalid sale price survives draft recovery and never replaces the last saved recipe
+[sage] PASS profitability: saved purchase price and preparation yield propagate to the saved dish profitability
+[berry] PASS profitability: blank and zero prices and zero food cost never divide by zero or invent profits
+[berry] PASS profitability: losses remain valid numbers; incomplete food calculations do not display false profitability
+[graphite] PASS profitability: invalid sale price survives draft recovery and never replaces the last saved recipe
+[berry] PASS profitability: old JSON stays structurally compatible and malformed sale prices do not replace any data
+[sage] PASS profitability: invalid sale price survives draft recovery and never replaces the last saved recipe
+[graphite] PASS profitability: blank and zero prices and zero food cost never divide by zero or invent profits
+[graphite] PASS profitability: losses remain valid numbers; incomplete food calculations do not display false profitability
+[sage] PASS profitability: blank and zero prices and zero food cost never divide by zero or invent profits
+[berry] PASS profitability: both photographs and selling price round-trip together through portable JSON in another browser
+[sage] PASS profitability: losses remain valid numbers; incomplete food calculations do not display false profitability
+[graphite] PASS profitability: old JSON stays structurally compatible and malformed sale prices do not replace any data
+[berry] PASS profitability: failed main storage keeps the sale-price draft recoverable
+[sage] PASS profitability: old JSON stays structurally compatible and malformed sale prices do not replace any data
+[graphite] PASS profitability: both photographs and selling price round-trip together through portable JSON in another browser
+[berry] PASS profitability: an actual Chromium restart retains the sale price and both local photos
+[sage] PASS profitability: both photographs and selling price round-trip together through portable JSON in another browser
+[graphite] PASS profitability: failed main storage keeps the sale-price draft recoverable
+[sage] PASS profitability: failed main storage keeps the sale-price draft recoverable
+[graphite] PASS profitability: an actual Chromium restart retains the sale price and both local photos
+[berry] PASS profitability: calculation prints profitability and its exact note; chef never contains financial data
+[berry] PASS profitability: profitability editor, saved card and chef fit 320px without overflow
+[sage] PASS profitability: an actual Chromium restart retains the sale price and both local photos
+[berry] PASS profitability: profitability editor, saved card and chef fit 390px without overflow
+[berry] PASS profitability: profitability editor, saved card and chef fit 1366px without overflow
+[berry] 14 profitability browser scenarios passed; 0 failures.
+[graphite] PASS profitability: calculation prints profitability and its exact note; chef never contains financial data
+[graphite] PASS profitability: profitability editor, saved card and chef fit 320px without overflow
+[sage] PASS profitability: calculation prints profitability and its exact note; chef never contains financial data
+[graphite] PASS profitability: profitability editor, saved card and chef fit 390px without overflow
+[sage] PASS profitability: profitability editor, saved card and chef fit 320px without overflow
+[graphite] PASS profitability: profitability editor, saved card and chef fit 1366px without overflow
+[graphite] 14 profitability browser scenarios passed; 0 failures.
+[sage] PASS profitability: profitability editor, saved card and chef fit 390px without overflow
+[sage] PASS profitability: profitability editor, saved card and chef fit 1366px without overflow
+[sage] 14 profitability browser scenarios passed; 0 failures.
+[berry] GYRO_PAGE_COUNTS [{"selection":"none","pages":1},{"selection":"first","pages":1},{"selection":"second","pages":1},{"selection":"both","pages":1}]
+[berry] PASS compact print: representative chicken gyro fits one A4 page with any photograph selection without shrinking photos
+[berry] PASS compact print: screen layout is pixel-identical before and after at 320px
+[graphite] GYRO_PAGE_COUNTS [{"selection":"none","pages":1},{"selection":"first","pages":1},{"selection":"second","pages":1},{"selection":"both","pages":1}]
+[graphite] PASS compact print: representative chicken gyro fits one A4 page with any photograph selection without shrinking photos
+[sage] GYRO_PAGE_COUNTS [{"selection":"none","pages":1},{"selection":"first","pages":1},{"selection":"second","pages":1},{"selection":"both","pages":1}]
+[sage] PASS compact print: representative chicken gyro fits one A4 page with any photograph selection without shrinking photos
+[berry] PASS compact print: screen layout is pixel-identical before and after at 390px
+[graphite] PASS compact print: screen layout is pixel-identical before and after at 320px
+[sage] PASS compact print: screen layout is pixel-identical before and after at 320px
+[graphite] PASS compact print: screen layout is pixel-identical before and after at 390px
+[berry] PASS compact print: screen layout is pixel-identical before and after at 1366px
+[sage] PASS compact print: screen layout is pixel-identical before and after at 390px
+[graphite] PASS compact print: screen layout is pixel-identical before and after at 1366px
+[sage] PASS compact print: screen layout is pixel-identical before and after at 1366px
+[berry] PASS compact print: chef printing and all four photo choices are unchanged
+[graphite] PASS compact print: chef printing and all four photo choices are unchanged
+[berry] PASS compact print: a single saved photograph keeps its physical size and no empty second frame is printed
+[sage] PASS compact print: chef printing and all four photo choices are unchanged
+[graphite] PASS compact print: a single saved photograph keeps its physical size and no empty second frame is printed
+[berry] PASS compact print: long tables and lengthy recipe text continue on occupied A4 pages without lost rows or clipping
+[sage] PASS compact print: a single saved photograph keeps its physical size and no empty second frame is printed
+[berry] PASS compact print: one ingredient note taller than a page is allowed to continue instead of being cut off
+[berry] 8 compact-print browser scenarios passed; 0 failures.
+[berry] PASS folders: legacy recipes open as unfiled without an eager data migration
+[graphite] PASS compact print: long tables and lengthy recipe text continue on occupied A4 pages without lost rows or clipping
+[graphite] PASS compact print: one ingredient note taller than a page is allowed to continue instead of being cut off
+[sage] PASS compact print: long tables and lengthy recipe text continue on occupied A4 pages without lost rows or clipping
+[graphite] 8 compact-print browser scenarios passed; 0 failures.
+[berry] PASS folders: create and rename folders; normalize names and reject duplicate or blank names
+[sage] PASS compact print: one ingredient note taller than a page is allowed to continue instead of being cut off
+[berry] PASS folders: all, unfiled and chosen-folder counts are correct and search always spans all dishes
+[sage] 8 compact-print browser scenarios passed; 0 failures.
+[berry] PASS folders: imported folder IDs all and unfiled stay distinct from navigation modes
+[graphite] PASS folders: legacy recipes open as unfiled without an eager data migration
+[sage] PASS folders: legacy recipes open as unfiled without an eager data migration
+[berry] PASS folders: explicit card moves update only folderId and never duplicate a saved recipe
+[graphite] PASS folders: create and rename folders; normalize names and reject duplicate or blank names
+[graphite] PASS folders: all, unfiled and chosen-folder counts are correct and search always spans all dishes
+[sage] PASS folders: create and rename folders; normalize names and reject duplicate or blank names
+[berry] PASS folders: dish editor folder changes stay in a recoverable draft until explicit save
+[sage] PASS folders: all, unfiled and chosen-folder counts are correct and search always spans all dishes
+[graphite] PASS folders: imported folder IDs all and unfiled stay distinct from navigation modes
+[sage] PASS folders: imported folder IDs all and unfiled stay distinct from navigation modes
+[berry] PASS folders: a newly created dish saves into its chosen folder exactly once
+[graphite] PASS folders: explicit card moves update only folderId and never duplicate a saved recipe
+[berry] PASS folders: deleting a folder requires confirmation and retains all its recipes as unfiled
+[sage] PASS folders: explicit card moves update only folderId and never duplicate a saved recipe
+[graphite] PASS folders: dish editor folder changes stay in a recoverable draft until explicit save
+[berry] PASS folders: a draft whose folder was deleted restores its other fields and saves as unfiled
+[sage] PASS folders: dish editor folder changes stay in a recoverable draft until explicit save
+[graphite] PASS folders: a newly created dish saves into its chosen folder exactly once
+[graphite] PASS folders: deleting a folder requires confirmation and retains all its recipes as unfiled
+[sage] PASS folders: a newly created dish saves into its chosen folder exactly once
+[berry] PASS folders: folder management preserves active unsaved fields and never commits them into the saved card
+[sage] PASS folders: deleting a folder requires confirmation and retains all its recipes as unfiled
+[graphite] PASS folders: a draft whose folder was deleted restores its other fields and saves as unfiled
+[berry] PASS folders: folder CRUD and card moves are atomic when main storage is full
+[sage] PASS folders: a draft whose folder was deleted restores its other fields and saves as unfiled
+[berry] PASS folders: folder actions refuse to overwrite a database changed by another tab
+[graphite] PASS folders: folder management preserves active unsaved fields and never commits them into the saved card
+[berry] PASS folders: a failed editor save preserves the previous folder and recoverable draft
+[sage] PASS folders: folder management preserves active unsaved fields and never commits them into the saved card
+[graphite] PASS folders: folder CRUD and card moves are atomic when main storage is full
+[berry] PASS folders: invalid folder backups are rejected before replacing the saved database
+[graphite] PASS folders: folder actions refuse to overwrite a database changed by another tab
+[sage] PASS folders: folder CRUD and card moves are atomic when main storage is full
+[sage] PASS folders: folder actions refuse to overwrite a database changed by another tab
+[berry] PASS folders: folders, prices and two photos round-trip through actual JSON UI in a fresh browser
+[graphite] PASS folders: a failed editor save preserves the previous folder and recoverable draft
+[graphite] PASS folders: invalid folder backups are rejected before replacing the saved database
+[sage] PASS folders: a failed editor save preserves the previous folder and recoverable draft
+[sage] PASS folders: invalid folder backups are rejected before replacing the saved database
+[graphite] PASS folders: folders, prices and two photos round-trip through actual JSON UI in a fresh browser
+[berry] PASS folders: an actual Chromium restart retains folders, recipe links, prices and photos
+[sage] PASS folders: folders, prices and two photos round-trip through actual JSON UI in a fresh browser
+[berry] PASS folders: 500 dishes and 24 folders remain searchable and usable at 320px
+[graphite] PASS folders: an actual Chromium restart retains folders, recipe links, prices and photos
+[sage] PASS folders: an actual Chromium restart retains folders, recipe links, prices and photos
+[berry] PASS folders: 500 dishes and 24 folders remain searchable and usable at 390px
+[graphite] PASS folders: 500 dishes and 24 folders remain searchable and usable at 320px
+[sage] PASS folders: 500 dishes and 24 folders remain searchable and usable at 320px
+[berry] PASS folders: 500 dishes and 24 folders remain searchable and usable at 1366px
+[berry] 19 folder-library browser scenarios passed; 0 failures.
+[graphite] PASS folders: 500 dishes and 24 folders remain searchable and usable at 390px
+[sage] PASS folders: 500 dishes and 24 folders remain searchable and usable at 390px
+[berry] PASS safe merge: file preview and cancellation leave saved data byte-identical and preserve all draft fields
+[graphite] PASS folders: 500 dishes and 24 folders remain searchable and usable at 1366px
+[graphite] 19 folder-library browser scenarios passed; 0 failures.
+[berry] PASS safe merge: default merge adds a complete connected graph and retains every local record and extension
+[sage] PASS folders: 500 dishes and 24 folders remain searchable and usable at 1366px
+[sage] 19 folder-library browser scenarios passed; 0 failures.
+[berry] PASS safe merge: repeating the same merged file skips records without multiplying identities
+[graphite] PASS safe merge: file preview and cancellation leave saved data byte-identical and preserve all draft fields
+[berry] PASS safe merge: a changed price is an explicit conflict and local choice keeps the saved graph
+[graphite] PASS safe merge: default merge adds a complete connected graph and retains every local record and extension
+[berry] PASS safe merge: keep both preserves old recipes and remaps imported dependent preparations and dishes
+[sage] PASS safe merge: file preview and cancellation leave saved data byte-identical and preserve all draft fields
+[graphite] PASS safe merge: repeating the same merged file skips records without multiplying identities
+[berry] PASS safe merge: equal names with different IDs and different composition never imply entity identity
+[sage] PASS safe merge: default merge adds a complete connected graph and retains every local record and extension
+[graphite] PASS safe merge: a changed price is an explicit conflict and local choice keeps the saved graph
+[berry] PASS safe merge: cross-kind IDs and ingredient-row collisions are remapped without broken folder links
+[sage] PASS safe merge: repeating the same merged file skips records without multiplying identities
+[berry] PASS safe merge: root extension conflicts require an explicit choice and preserve unrelated extension data
+[graphite] PASS safe merge: keep both preserves old recipes and remaps imported dependent preparations and dishes
+[sage] PASS safe merge: a changed price is an explicit conflict and local choice keeps the saved graph
+[graphite] PASS safe merge: equal names with different IDs and different composition never imply entity identity
+[berry] PASS safe merge: explicit replacement warns and makes a portable downloadable backup before removing local-only records
+[sage] PASS safe merge: keep both preserves old recipes and remaps imported dependent preparations and dishes
+[graphite] PASS safe merge: cross-kind IDs and ingredient-row collisions are remapped without broken folder links
+[sage] PASS safe merge: equal names with different IDs and different composition never imply entity identity
+[graphite] PASS safe merge: root extension conflicts require an explicit choice and preserve unrelated extension data
+[berry] PASS safe merge: merge preserves existing photo references and bytes and exports imported photos with prices and folders
+[sage] PASS safe merge: cross-kind IDs and ingredient-row collisions are remapped without broken folder links
+[sage] PASS safe merge: root extension conflicts require an explicit choice and preserve unrelated extension data
+[berry] PASS safe merge: backup-storage failure prevents both merge and replacement without touching main data or drafts
+[graphite] PASS safe merge: explicit replacement warns and makes a portable downloadable backup before removing local-only records
+[sage] PASS safe merge: explicit replacement warns and makes a portable downloadable backup before removing local-only records
+[berry] PASS safe merge: main-storage quota keeps original data and images and leaves the automatic backup downloadable
+[graphite] PASS safe merge: merge preserves existing photo references and bytes and exports imported photos with prices and folders
+[berry] PASS safe merge: new-photo staging failure leaves saved recipes, old images and drafts untouched
+[graphite] PASS safe merge: backup-storage failure prevents both merge and replacement without touching main data or drafts
+[sage] PASS safe merge: merge preserves existing photo references and bytes and exports imported photos with prices and folders
+[berry] PASS safe merge: a database changed after preview is never overwritten by applying an obsolete plan
+[sage] PASS safe merge: backup-storage failure prevents both merge and replacement without touching main data or drafts
+[graphite] PASS safe merge: main-storage quota keeps original data and images and leaves the automatic backup downloadable
+[berry] PASS safe merge: a change during asynchronous photo staging rolls back new images and preserves the other-tab database
+[berry] PASS safe merge: malformed, unsupported and oversized JSON never replaces the current database
+[sage] PASS safe merge: main-storage quota keeps original data and images and leaves the automatic backup downloadable
+[graphite] PASS safe merge: new-photo staging failure leaves saved recipes, old images and drafts untouched
+[berry] PASS safe merge: legacy JSON without folders, selling price or photos merges into an empty database
+[graphite] PASS safe merge: a database changed after preview is never overwritten by applying an obsolete plan
+[sage] PASS safe merge: new-photo staging failure leaves saved recipes, old images and drafts untouched
+[berry] PASS safe merge: an empty incoming database deletes nothing in merge mode and empties only through explicit replacement with backup
+[sage] PASS safe merge: a database changed after preview is never overwritten by applying an obsolete plan
+[graphite] PASS safe merge: a change during asynchronous photo staging rolls back new images and preserves the other-tab database
+[graphite] PASS safe merge: malformed, unsupported and oversized JSON never replaces the current database
+[sage] PASS safe merge: a change during asynchronous photo staging rolls back new images and preserves the other-tab database
+[graphite] PASS safe merge: legacy JSON without folders, selling price or photos merges into an empty database
+[berry] PASS safe merge: retained drafts cannot overwrite a replacement entity of another type or silently replace a same-type new record
+[sage] PASS safe merge: malformed, unsupported and oversized JSON never replaces the current database
+[graphite] PASS safe merge: an empty incoming database deletes nothing in merge mode and empties only through explicit replacement with backup
+[sage] PASS safe merge: legacy JSON without folders, selling price or photos merges into an empty database
+[berry] PASS safe merge: an error after a successful commit reports saved data accurately and retains the automatic backup
+[berry] PASS safe merge: unknown portable photo metadata is rejected explicitly instead of being silently discarded
+[sage] PASS safe merge: an empty incoming database deletes nothing in merge mode and empties only through explicit replacement with backup
+[graphite] PASS safe merge: retained drafts cannot overwrite a replacement entity of another type or silently replace a same-type new record
+[berry] PASS safe merge: large connected import preview is usable without horizontal scrolling at 320px
+[graphite] PASS safe merge: an error after a successful commit reports saved data accurately and retains the automatic backup
+[sage] PASS safe merge: retained drafts cannot overwrite a replacement entity of another type or silently replace a same-type new record
+[berry] PASS safe merge: large connected import preview is usable without horizontal scrolling at 390px
+[graphite] PASS safe merge: unknown portable photo metadata is rejected explicitly instead of being silently discarded
+[sage] PASS safe merge: an error after a successful commit reports saved data accurately and retains the automatic backup
+[sage] PASS safe merge: unknown portable photo metadata is rejected explicitly instead of being silently discarded
+[graphite] PASS safe merge: large connected import preview is usable without horizontal scrolling at 320px
+[berry] PASS safe merge: large connected import preview is usable without horizontal scrolling at 1366px
+[graphite] PASS safe merge: large connected import preview is usable without horizontal scrolling at 390px
+[sage] PASS safe merge: large connected import preview is usable without horizontal scrolling at 320px
+[berry] PASS safe merge: automatic backup and merged data survive an actual Chromium restart
+[graphite] PASS safe merge: large connected import preview is usable without horizontal scrolling at 1366px
+[berry] 25 safe-JSON-merge browser scenarios passed; 0 failures.
+[sage] PASS safe merge: large connected import preview is usable without horizontal scrolling at 390px
+[berry] PASS import transaction: actual backup database survives reload with portable photos and exact original sources
+[sage] PASS safe merge: large connected import preview is usable without horizontal scrolling at 1366px
+[berry] PASS import transaction: metadata write failure aborts the full backup write in the same IndexedDB transaction
+[berry] PASS import transaction: backup quota blocks apply and preserves a previous complete backup
+[graphite] PASS safe merge: automatic backup and merged data survive an actual Chromium restart
+[berry] PASS import transaction: main localStorage quota rolls back staged images while retaining old photo and durable backup
+[graphite] 25 safe-JSON-merge browser scenarios passed; 0 failures.
+[berry] PASS import transaction: second real photo add failure removes only the first newly staged photo
+[berry] PASS import transaction: external change during actual photo staging is retained and new photos are rolled back
+[berry] PASS import transaction: durable retention keeps the three newest actual backups without touching main or drafts
+[graphite] PASS import transaction: actual backup database survives reload with portable photos and exact original sources
+[sage] PASS safe merge: automatic backup and merged data survive an actual Chromium restart
+[sage] 25 safe-JSON-merge browser scenarios passed; 0 failures.
+[graphite] PASS import transaction: metadata write failure aborts the full backup write in the same IndexedDB transaction
+[graphite] PASS import transaction: backup quota blocks apply and preserves a previous complete backup
+[berry] PASS import transaction: backup database and binary photos survive an actual Chromium restart
+[graphite] PASS import transaction: main localStorage quota rolls back staged images while retaining old photo and durable backup
+[berry] 8 import-transaction browser scenarios passed; 0 failures.
+[graphite] PASS import transaction: second real photo add failure removes only the first newly staged photo
+[sage] PASS import transaction: actual backup database survives reload with portable photos and exact original sources
+[graphite] PASS import transaction: external change during actual photo staging is retained and new photos are rolled back
+[sage] PASS import transaction: metadata write failure aborts the full backup write in the same IndexedDB transaction
+[graphite] PASS import transaction: durable retention keeps the three newest actual backups without touching main or drafts
+[sage] PASS import transaction: backup quota blocks apply and preserves a previous complete backup
+[sage] PASS import transaction: main localStorage quota rolls back staged images while retaining old photo and durable backup
+[sage] PASS import transaction: second real photo add failure removes only the first newly staged photo
+[sage] PASS import transaction: external change during actual photo staging is retained and new photos are rolled back
+[graphite] PASS import transaction: backup database and binary photos survive an actual Chromium restart
+[sage] PASS import transaction: durable retention keeps the three newest actual backups without touching main or drafts
+[graphite] 8 import-transaction browser scenarios passed; 0 failures.
+[sage] PASS import transaction: backup database and binary photos survive an actual Chromium restart
+[sage] 8 import-transaction browser scenarios passed; 0 failures.
+[berry] PASS interface controls: long editors keep their own actions available without page overflow at 1366px
+[graphite] PASS interface controls: long editors keep their own actions available without page overflow at 1366px
+[berry] PASS interface controls: long editors keep their own actions available without page overflow at 1024px
+[sage] PASS interface controls: long editors keep their own actions available without page overflow at 1366px
+[graphite] PASS interface controls: long editors keep their own actions available without page overflow at 1024px
+[berry] PASS interface controls: long editors keep their own actions available without page overflow at 768px
+[sage] PASS interface controls: long editors keep their own actions available without page overflow at 1024px
+[graphite] PASS interface controls: long editors keep their own actions available without page overflow at 768px
+[berry] PASS interface controls: long editors keep their own actions available without page overflow at 390px
+[sage] PASS interface controls: long editors keep their own actions available without page overflow at 768px
+[graphite] PASS interface controls: long editors keep their own actions available without page overflow at 390px
+[berry] PASS interface controls: long editors keep their own actions available without page overflow at 320px
+[sage] PASS interface controls: long editors keep their own actions available without page overflow at 390px
+[berry] PASS interface controls: ingredient actions follow the current prep and dish instead of a stale editor
+[graphite] PASS interface controls: long editors keep their own actions available without page overflow at 320px
+[berry] PASS interface controls: actions adapt to viewport changes and focused fields remain reachable
+[sage] PASS interface controls: long editors keep their own actions available without page overflow at 320px
+[graphite] PASS interface controls: ingredient actions follow the current prep and dish instead of a stale editor
+[berry] PASS interface controls: import preview disables the editor bar and cancellation restores the same draft
+[sage] PASS interface controls: ingredient actions follow the current prep and dish instead of a stale editor
+[graphite] PASS interface controls: actions adapt to viewport changes and focused fields remain reachable
+[graphite] PASS interface controls: import preview disables the editor bar and cancellation restores the same draft
+[berry] PASS interface controls: backup disclosure folds after merge and retains data and photos through toggles and reload
+[berry] 9 interface-control browser scenarios passed; 0 failures.
+[sage] PASS interface controls: actions adapt to viewport changes and focused fields remain reachable
+[sage] PASS interface controls: import preview disables the editor bar and cancellation restores the same draft
+[berry] PASS warm theme: main editors remain readable and usable at 320px
+[graphite] PASS interface controls: backup disclosure folds after merge and retains data and photos through toggles and reload
+[berry] PASS warm theme: main editors remain readable and usable at 390px
+[graphite] 9 interface-control browser scenarios passed; 0 failures.
+[berry] PASS warm theme: main editors remain readable and usable at 768px
+[sage] PASS interface controls: backup disclosure folds after merge and retains data and photos through toggles and reload
+[sage] 9 interface-control browser scenarios passed; 0 failures.
+[graphite] PASS warm theme: main editors remain readable and usable at 320px
+[berry] PASS warm theme: main editors remain readable and usable at 1366px
+[graphite] PASS warm theme: main editors remain readable and usable at 390px
+[berry] PASS warm theme: buttons, selectors and keyboard focus have distinct accessible states
+[sage] PASS warm theme: main editors remain readable and usable at 320px
+[berry] PASS warm theme: empty photo areas stay compact and loaded photographs keep their proportions at 320px
+[graphite] PASS warm theme: main editors remain readable and usable at 768px
+[sage] PASS warm theme: main editors remain readable and usable at 390px
+[berry] PASS warm theme: empty photo areas stay compact and loaded photographs keep their proportions at 390px
+[graphite] PASS warm theme: main editors remain readable and usable at 1366px
+[berry] PASS warm theme: empty photo areas stay compact and loaded photographs keep their proportions at 1366px
+[sage] PASS warm theme: main editors remain readable and usable at 768px
+[graphite] PASS warm theme: buttons, selectors and keyboard focus have distinct accessible states
+[sage] PASS warm theme: main editors remain readable and usable at 1366px
+[graphite] PASS warm theme: empty photo areas stay compact and loaded photographs keep their proportions at 320px
+[berry] PASS warm theme: long recipe, fixed actions and both photographs keep their data and proportions
+[sage] PASS warm theme: buttons, selectors and keyboard focus have distinct accessible states
+[graphite] PASS warm theme: empty photo areas stay compact and loaded photographs keep their proportions at 390px
+[berry] PASS warm theme: import preview uses the same palette without writing data at 390px
+[sage] PASS warm theme: empty photo areas stay compact and loaded photographs keep their proportions at 320px
+[berry] PASS warm theme: import preview uses the same palette without writing data at 1366px
+[graphite] PASS warm theme: empty photo areas stay compact and loaded photographs keep their proportions at 1366px
+[sage] PASS warm theme: empty photo areas stay compact and loaded photographs keep their proportions at 390px
+[sage] PASS warm theme: empty photo areas stay compact and loaded photographs keep their proportions at 1366px
+[graphite] PASS warm theme: long recipe, fixed actions and both photographs keep their data and proportions
+[berry] PASS warm theme: before and after comparison is captured from the same fixture at 390px
+[graphite] PASS warm theme: import preview uses the same palette without writing data at 390px
+[graphite] PASS warm theme: import preview uses the same palette without writing data at 1366px
+[sage] PASS warm theme: long recipe, fixed actions and both photographs keep their data and proportions
+[sage] PASS warm theme: import preview uses the same palette without writing data at 390px
+[berry] PASS warm theme: before and after comparison is captured from the same fixture at 1366px
+[sage] PASS warm theme: import preview uses the same palette without writing data at 1366px
+[graphite] PASS warm theme: before and after comparison is captured from the same fixture at 390px
+[sage] PASS warm theme: before and after comparison is captured from the same fixture at 390px
+[graphite] PASS warm theme: before and after comparison is captured from the same fixture at 1366px
+[sage] PASS warm theme: before and after comparison is captured from the same fixture at 1366px
+[berry] PASS warm theme: both A4 forms and all four photo choices print identically with and without the screen theme
+[berry] 14 warm-theme browser scenarios passed; 0 failures.
+THEME_MATRIX_PASS berry
+[graphite] PASS warm theme: both A4 forms and all four photo choices print identically with and without the screen theme
+[graphite] 14 warm-theme browser scenarios passed; 0 failures.
+THEME_MATRIX_PASS graphite
+[sage] PASS warm theme: both A4 forms and all four photo choices print identically with and without the screen theme
+[sage] 14 warm-theme browser scenarios passed; 0 failures.
+THEME_MATRIX_PASS sage
+PASS appearance: berry: main, card and editor remain readable at 1366px
+PASS appearance: berry: main, card and editor remain readable at 390px
+PASS appearance: graphite: main, card and editor remain readable at 1366px
+PASS appearance: graphite: main, card and editor remain readable at 390px
+PASS appearance: sage: main, card and editor remain readable at 1366px
+PASS appearance: sage: main, card and editor remain readable at 390px
+PASS appearance: approved berry UI pixels and exact photo data are preserved at 1366px
+PASS appearance: approved berry UI pixels and exact photo data are preserved at 390px
+PASS appearance: palette keyboard, Escape, outside click and mobile popover stay accessible
+PASS appearance: switching every theme preserves saved JSON, photo bytes, DOM nodes and geometry
+PASS appearance: theme switching keeps an unsaved recipe and its draft recoverable
+PASS appearance: invalid saved preference falls back without rewriting data
+PASS appearance: preference quota applies the theme only in memory and preserves the saved database
+PASS appearance: denied localStorage still permits safe in-memory appearance without exceptions
+PASS appearance: appearance synchronizes between tabs without rewriting recipes
+PASS appearance: a real Chromium restart retains preference, recipe and photograph
+PASS appearance: initial load requests only the selected illustration, including after reload
+PASS appearance: all themes keep the palette and artwork out of A4 printing
+18 appearance browser scenarios passed; 0 failures.
+PASS establishment expenses: berry 1366: visible navigation, live monthly allocation, separate margins, scaling and chef protection
+PASS establishment expenses: berry 390: visible navigation, live monthly allocation, separate margins, scaling and chef protection
+PASS establishment expenses: graphite 1366: visible navigation, live monthly allocation, separate margins, scaling and chef protection
+PASS establishment expenses: graphite 390: visible navigation, live monthly allocation, separate margins, scaling and chef protection
+PASS establishment expenses: sage 1366: visible navigation, live monthly allocation, separate margins, scaling and chef protection
+PASS establishment expenses: sage 390: visible navigation, live monthly allocation, separate margins, scaling and chef protection
+PASS establishment expenses: changing expenses, forecasts, sale price, procurement and prep output recalculates from originals
+PASS establishment expenses: empty fields, invalid sales volume and valid zeros do not fabricate full costs or percentages
+PASS establishment expenses: unsaved expense navigation requires confirmation and the fixed save stays reachable at 320px
+PASS establishment expenses: quota and stale tab preserve the database and allow emergency JSON with proposed expenses
+PASS establishment expenses: JSON exports expenses; conflicts require a choice and backup preserves the former plan
+PASS establishment expenses: photographs and independent recipe draft survive expense changes, reload and JSON export
+PASS establishment expenses: saving an expense plan never changes recipe packaging identity metadata
+PASS establishment expenses: reopening the expense form preserves raw decimal precision instead of rounding saved inputs
+PASS establishment expenses: A4 calculation includes opted-in expense details; chef print and toggle-off exclude them
+PASS establishment expenses: 1366: gyro control 192.34 / 266.34, inline placement and unchanged product margin and yield
+PASS establishment expenses: 390: gyro control 192.34 / 266.34, inline placement and unchanged product margin and yield
+PASS establishment expenses: each dish keeps its own switch through reload and actual JSON export/import
+PASS establishment expenses: unconfigured expenses explain the missing plan and immediately update after setting it
+PASS establishment expenses: rent and payroll edits update enabled dishes without touching their own switch or base cost
+PASS establishment expenses: a quota failure or stale tab reverts the checkbox without overwriting the database
+PASS establishment expenses: restoring an older recipe draft preserves the later saved per-dish expense choice
+PASS establishment expenses: expense A4 can print totals only, full articles, or the existing chef form without finance
+PASS establishment expenses: full browser restarts 1366
+PASS establishment expenses: full browser restarts 390
+25 establishment-expense browser scenarios passed; 0 failures.
+PASS preview persistence: absent preview stays empty despite valuable records in other namespaces; first folder saves explicitly
+PASS preview persistence: a saved preview opens itself with no migration, write or recovery panel
+PASS preview persistence: corruption remains exact, raw export works and import stays blocked
+PASS preview persistence: diagnosis of both different databases is read-only, with individual exports
+PASS preview persistence: explicit recovery reuses merge preview and mandatory backup; donor photos and drafts stay unchanged
+PASS preview persistence: conflicting prices require a choice and both versions can be kept
+PASS preview persistence: cancel recovery leaves both databases unchanged without a backup write
+PASS preview persistence: a donor changed after preview aborts recovery and keeps the new donor data
+PASS preview persistence: stale save is rejected even if no storage event was delivered; input can be exported
+PASS preview persistence: quota never looks saved and keeps the last database plus editable input
+PASS preview persistence: silent failed writes are detected instead of reporting success
+PASS preview persistence: missing foreign photo blocks recovery and does not create a foreign database
+PASS preview persistence: unconfirmed import keeps committed photo references and reloads the actual saved database
+PASS preview persistence: denied storage does not replace anything and has an explicit diagnosis
+PASS preview persistence: diagnostics are opt-in on a healthy database and hidden in A4
+PASS preview persistence: berry: product, price, prep, dish, folder, packaging, both photos and draft survive three Chrome restarts at 1366px
+PASS preview persistence: berry: product, price, prep, dish, folder, packaging, both photos and draft survive three Chrome restarts at 390px
+PASS preview persistence: graphite: product, price, prep, dish, folder, packaging, both photos and draft survive three Chrome restarts at 1366px
+PASS preview persistence: graphite: product, price, prep, dish, folder, packaging, both photos and draft survive three Chrome restarts at 390px
+PASS preview persistence: sage: product, price, prep, dish, folder, packaging, both photos and draft survive three Chrome restarts at 1366px
+PASS preview persistence: sage: product, price, prep, dish, folder, packaging, both photos and draft survive three Chrome restarts at 390px
+21 preview-persistence browser scenarios passed; 0 failures.
