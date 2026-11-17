@@ -21,7 +21,7 @@ function run(args,env=process.env) {
   });
 }
 const runtimeFiles=new Map([
-  ['/','index.html'],['/index.html','index.html'],['/styles.css','styles.css'],['/assets/folders.css','assets/folders.css'],['/assets/import.css','assets/import.css'],['/assets/editor-actions.css','assets/editor-actions.css'],['/assets/warm-kitchen.css','assets/warm-kitchen.css'],['/assets/food-pattern.svg','assets/food-pattern.svg'],
+  ['/assets/sintez-home.css','assets/sintez-home.css'],['/js/sintez-home.js','js/sintez-home.js'],['/','index.html'],['/index.html','index.html'],['/styles.css','styles.css'],['/assets/folders.css','assets/folders.css'],['/assets/import.css','assets/import.css'],['/assets/editor-actions.css','assets/editor-actions.css'],['/assets/warm-kitchen.css','assets/warm-kitchen.css'],['/assets/food-pattern.svg','assets/food-pattern.svg'],
   ['/assets/appearance.css','assets/appearance.css'],['/assets/graphite-kitchen.webp','assets/graphite-kitchen.webp'],['/assets/sage-kitchen.webp','assets/sage-kitchen.webp'],
   ['/js/persistence-diagnostics.js','js/persistence-diagnostics.js'],['/js/recipe-expense-preferences.js','js/recipe-expense-preferences.js'],
   ['/assets/establishment-expenses.css','assets/establishment-expenses.css'],['/js/establishment-expenses.js','js/establishment-expenses.js'],['/js/establishment-expenses-ui.js','js/establishment-expenses-ui.js'],
@@ -42,7 +42,7 @@ const server=createServer(async(req,res)=>{
 try {
   await run(['--test',...logicTests]);
   await new Promise((done,reject)=>{server.once('error',reject);server.listen(0,'127.0.0.1',done);});
-  const testURL='http://127.0.0.1:'+server.address().port+mount+'/';
+  const testURL='http://127.0.0.1:'+server.address().port+mount+'/?section=dish';
   console.log('Browser checks use an isolated local server:',testURL);
   const artifacts=process.env.KITCHEN_TEST_ARTIFACT_ROOT||await mkdtemp(resolve(tmpdir(),'kitchen-three-themes-'));
   console.log('Theme matrix artifacts:',artifacts);

@@ -51,14 +51,14 @@ async function test(name,fn,options={}){if(process.env.KITCHEN_APPEARANCE_TEST_F
   proof.push({theme,width,contrast:c});
  },{theme:theme==='berry'?undefined:theme,width});
  for(const width of [1366,390])await test(`approved berry pixels are preserved outside the new control at ${width}px`,async page=>{
-  await page.locator('#appearance-control').evaluate(el=>el.remove());const old=await open({width,reference:true});try{
+  await page.locator('#appearance-control').evaluate(el=>el.remove());await page.locator('#sintez-workbar').evaluate(el=>el.remove());const old=await open({width,reference:true});try{
    for(const view of ['main','card','editor']){
     if(view==='card'){
      await page.locator('#edit-recipe').click();await upload(page);await saveView(page);
      const portable=await page.evaluate(()=>KitchenPhotos.exportData(KitchenStorage.load().data));
      await old.page.evaluate(async data=>{const staged=await KitchenPhotos.prepareImport(data),result=KitchenStorage.save(staged.data);if(!result.ok)throw Error(result.error);},portable);
      for(const p of [old.page,page]){await p.reload();await p.waitForFunction(()=>!document.querySelector('#print-recipe').disabled);}
-     await page.locator('#appearance-control').evaluate(el=>el.remove());
+     await page.locator('#appearance-control').evaluate(el=>el.remove());await page.locator('#sintez-workbar').evaluate(el=>el.remove());
     }
     if(view==='editor')for(const p of [old.page,page])await p.locator('#edit-recipe').click();
     for(const p of [old.page,page]){await paint(p);await p.evaluate(()=>scrollTo(0,0));}

@@ -279,8 +279,9 @@
     dirty = false; isNew = false; errors.clear();invalidValues.clear(); renderLibrary(); renderEditor();renderDrafts();releaseUnusedPhotos();
   }
   function switchSection(next) {
-    if (next === section || !canLeave()) return;
-    section = next; $('#library-search').value = ''; selectedId = collection()[0]?.id || null; openSelected();
+    if (next === section) return true;
+    if (!canLeave()) return false;
+    section = next; $('#library-search').value = ''; selectedId = collection()[0]?.id || null; openSelected();return true;
   }
   function renderEditor() {
     photoEditor?.dispose();photoEditor=null;photoPreview?.dispose();photoPreview=null;
@@ -673,13 +674,14 @@
       selectedId = collection()[0]?.id || null;openSelected();
     }
   }
-  $('#create').addEventListener('click',() => {
-    if(!canLeave()) return;
+  function createItem() {
+    if(!canLeave()) return false;
     draft = section === 'products' ? {id:uid('product'),name:'',aliases:'',price:null,packQuantity:1,unit:'kg',massPerPiece:null,gramsPerMl:null,note:''} : section === 'packaging' ? {id:uid('packaging'),name:'',price:null,packQuantity:1,unit:'pcs',note:''} : {id:uid(section),type:section,name:'',note:'',actualYield:null,ingredients:[]};
     if(section === 'dish' && selectedFolderId()) draft.folderId = selectedFolderId();
     clearTimeout(draftTimer);draftStatus='';
-    viewing = false;selectedId = draft.id;dirty = true;isNew = true;errors.clear();invalidValues.clear();renderLibrary();renderEditor();markDirty();renderDrafts();$('#item-name').focus();
-  });
+    viewing = false;selectedId = draft.id;dirty = true;isNew = true;errors.clear();invalidValues.clear();renderLibrary();renderEditor();markDirty();renderDrafts();$('#item-name').focus();return true;
+  }
+  $('#create').addEventListener('click',createItem);
   $('.brand').addEventListener('click', e => {e.preventDefault();if(canLeave()) {section = 'dish';selectedId = null;openSelected();}});
   $('[data-tab="dish"]').addEventListener('click',() => switchSection('dish'));
   $('[data-tab="prep"]').addEventListener('click',() => switchSection('prep'));
@@ -780,6 +782,20 @@
   document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')flushDraft();});
   window.addEventListener('storage',event=>{
     if(event.key===S.KEY&&event.newValue!==persistedSource){storageBlocked=true;message('База изменилась в другой вкладке. Сохранение старой версии заблокировано. Введённые поля остаются на экране: скачайте JSON с изменениями перед обновлением страницы.',true);}
+  });
+  // UI-only navigation boundary. All edits, checks and saves use existing handlers.
+  globalThis.KitchenNavigation = Object.freeze({
+    open(next, create = false) {
+      if(!['dish','prep','products','packaging','expenses'].includes(next))return false;
+      if(!switchSection(next))return false;
+      return create && next==='dish' ? createItem() : true;
+    },
+    park() {
+      if(backupBusy || photoEditor?.busy){message('Дождитесь обработки фотографии или резервной копии.',true);return false;}
+      if(editingRecipe() && dirty && !flushDraft())return false;
+      return true; // The editor DOM stays mounted, including unsaved catalog fields.
+    },
+    current: () => ({section,dirty})
   });
   openSelected();
   if(loaded.error) message('Не удалось прочитать сохранённые данные: '+loaded.error+' Исходная запись не перезаписана. Автоматическая запись и импорт заблокированы. Скачайте исходную запись для восстановления; фотографии и черновики остаются в браузере.',true);

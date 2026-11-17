@@ -29,6 +29,6 @@ async function start(root){
  });
  await new Promise((resolve,reject)=>{server.once('error',reject);server.listen(0,'127.0.0.1',resolve);});
  const url='http://127.0.0.1:'+server.address().port+MOUNT;
- return {server,url,previewURL:url+'preview/',base,preview,close:()=>new Promise(resolve=>server.close(resolve))};
+ return {server,url,previewURL:url+'preview/?section=dish',base,preview,close:()=>new Promise(resolve=>server.close(resolve))};
 }
 module.exports={start,BASE,mapping};

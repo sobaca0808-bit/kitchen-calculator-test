@@ -1,0 +1,65 @@
+name: SINTEZ home safety checks
+on:
+  push:
+    branches: [feature/sintez-home]
+permissions:
+  contents: read
+jobs:
+  launcher:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify unchanged calculator, data, photos and print code
+        run: PYTHONDONTWRITEBYTECODE=1 python3 scripts/check-sintez-core.py > "$RUNNER_TEMP/unchanged-core.json"
+      - name: Build preview with five independent storage names
+        run: python3 scripts/build-sintez-preview.py --output "$RUNNER_TEMP/sintez-candidate" --source '${{ github.sha }}'
+      - name: Install disposable browser tooling
+        run: |
+          npm install --prefix "$RUNNER_TEMP/sintez-tools" --ignore-scripts --no-audit --no-fund playwright@1.62.1
+          sudo apt-get update -qq
+          sudo apt-get install -y poppler-utils
+      - name: Verify real navigation, unsaved forms, drafts, settings, JSON, photos, A4 and browser restarts
+        env:
+          NODE_PATH: ${{ runner.temp }}/sintez-tools/node_modules
+          CHROMIUM_PATH: /usr/bin/google-chrome
+          KITCHEN_SINTEZ_RUNTIME_ROOT: ${{ runner.temp }}/sintez-candidate
+          KITCHEN_SINTEZ_ARTIFACTS: ${{ runner.temp }}/sintez-proof
+        run: |
+          export KITCHEN_SINTEZ_KEYS="$(python3 -c 'import json,os;print(json.dumps(json.load(open(os.environ["KITCHEN_SINTEZ_RUNTIME_ROOT"]+"/sintez-version.json"))["storage_names"]))')"
+          node tests/sintez-home.browser.test.js
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: sintez-home-proof
+          path: |
+            ${{ runner.temp }}/sintez-proof
+            ${{ runner.temp }}/unchanged-core.json
+            ${{ runner.temp }}/sintez-candidate/sintez-version.json
+  regressions:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Install disposable regression tools
+        run: |
+          npm install --prefix "$RUNNER_TEMP/sintez-tools" --ignore-scripts --no-audit --no-fund playwright@1.62.1
+          sudo apt-get update -qq
+          sudo apt-get install -y poppler-utils
+      - name: Run every existing logic and browser scenario in three themes
+        env:
+          NODE_PATH: ${{ runner.temp }}/sintez-tools/node_modules
+          CHROMIUM_PATH: /usr/bin/google-chrome
+          KITCHEN_TEST_ARTIFACT_ROOT: ${{ runner.temp }}/sintez-regressions
+        run: node scripts/check-preview.mjs 2>&1 | tee "$RUNNER_TEMP/sintez-regressions.log"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: sintez-regression-proof
+          path: ${{ runner.temp }}/sintez-regressions.log
