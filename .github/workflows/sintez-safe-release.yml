@@ -51,6 +51,11 @@ jobs:
           node tests/sintez-intro.browser.test.js
           node tests/sintez-home.browser.test.js
           node tests/sintez-entry.browser.test.js
+          export KITCHEN_SINTEZ_RUNTIME_ROOT="$RUNNER_TEMP/unified-site"
+          export KITCHEN_SINTEZ_KEYS="$(python3 -c 'import json,os;print(json.dumps(json.load(open(os.environ["KITCHEN_SINTEZ_RUNTIME_ROOT"]+"/release-version.json"))["storage_names"]))')"
+          export KITCHEN_INTRO_SEEN_KEY=kitchen-calculator-presentation-seen-v1
+          export KITCHEN_ENTRY_ARTIFACTS="$RUNNER_TEMP/web-entry-proof"
+          node tests/sintez-entry.browser.test.js
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -63,6 +68,7 @@ jobs:
             ${{ runner.temp }}/intro-proof
             ${{ runner.temp }}/home-proof
             ${{ runner.temp }}/entry-proof
+            ${{ runner.temp }}/web-entry-proof
             ${{ runner.temp }}/unified-site/pwa/manifest.webmanifest
             ${{ runner.temp }}/unified-site/pwa/pwa-version.json
   regressions:

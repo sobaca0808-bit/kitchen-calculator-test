@@ -59,6 +59,10 @@ async function test(name,action,{width=1366,records={},query='presentation.html'
     await page.keyboard.press('End');await page.locator('[data-intro-install]').click();
     assert(await page.locator('[data-intro-install-help]').isVisible());assert.match(await page.locator('[data-intro-install-status]').textContent(),/установка не подтверждена/);
     for(const text of ['Android','Chrome или Microsoft Edge','iPhone или iPad'])assert(await page.locator('[data-intro-install-help] summary').filter({hasText:text}).count());
+    if(!await page.locator('link[rel=manifest]').count()){
+      assert(await page.locator('[data-intro-existing-pwa]').isVisible());assert(await page.locator('[data-intro-device-help]').isHidden());
+      assert.equal(await page.locator('[data-intro-existing-pwa] a').getAttribute('href'),'pwa/presentation.html');
+    }
     await page.screenshot({path:path.join(output,'install-instructions-mobile.png')});
     await page.keyboard.press('Escape');assert(await intro(page).isVisible());assert(await page.locator('[data-intro-install-help]').isHidden());assert.equal(await title(page).textContent(),'Для бизнеса');
     await page.keyboard.press('Escape');await hidden(page);assert(await page.locator('#sintez-home').isVisible());

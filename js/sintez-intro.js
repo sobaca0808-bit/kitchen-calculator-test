@@ -83,8 +83,12 @@
   install.addEventListener('click', () => {
     pause(); installHelp.hidden = false;
     const actualInstall = document.getElementById('pwa-install');
+    const pwaPage = !!document.querySelector('link[rel="manifest"]');
+    dialog.querySelector('[data-intro-existing-pwa]').hidden = pwaPage;
+    dialog.querySelector('[data-intro-device-help]').hidden = !pwaPage;
     const installed = matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
     if (installed) installStatus.textContent = 'Приложение уже открыто в отдельном окне. Можно продолжить работу.';
+    else if (!pwaPage) installStatus.textContent = 'Откройте страницу существующего приложения по ссылке ниже. Эта обычная веб-страница не предлагает отдельную установку; установка не подтверждена.';
     else if (actualInstall && !actualInstall.hidden) {
       installStatus.textContent = 'Запрошено системное окно установки. Подтвердите установку в браузере. Если вы закрыли окно, повторите через меню браузера.';
       actualInstall.click(); // Synchronous: keep this real user's activation.

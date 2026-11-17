@@ -45,6 +45,7 @@
 #sintez-presentation .sx-intro-install-help p {color:#dbe4ee;font-size:14px;line-height:1.6;}
 #sintez-presentation .sx-intro-install-help summary {cursor:pointer;padding:12px 0;min-height:44px;font-weight:600;}
 #sintez-presentation [data-intro-install] {border-color:#dbbb7c;}
+#sintez-presentation [data-intro-existing-pwa] a {display:inline-block;min-height:44px;padding:10px 0;color:#edcd8c;text-decoration:underline;}
 @media (min-width:900px) and (min-height:650px) {
   #sintez-presentation .sx-intro-shell {width:min(100%,1440px,calc((100dvh - 260px)*1672/941 + 56px));}
 }
