@@ -125,4 +125,14 @@
       if (!existing && localStorage.getItem(KEY) === null) open(!history.state?.[HISTORY], 'first');
     } catch (_) { /* Unreadable storage must never be treated as a new user. */ }
   }
+  // RELEASE_HISTORY: a reload can retain a replay marker while intentionally
+  // returning to Settings. Remove only that stale marker so the next replay
+  // has a real unmarked return entry; no recipe or preference store is touched.
+  if (!dialog.open && history.state?.[HISTORY]) {
+    try {
+      const state = {...history.state}; delete state[HISTORY];
+      history.replaceState(state, '', location.href);
+    } catch (_) { /* History restrictions must not affect the calculator. */ }
+  }
+  // /RELEASE_HISTORY
 })();

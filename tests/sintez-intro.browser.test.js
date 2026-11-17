@@ -112,6 +112,12 @@ async function settings(page) { await page.locator('#sintez-shell [data-sintez-r
     assert(await intro(page).isHidden());assert(await page.locator('#sintez-settings').isVisible());
     assert.equal(await page.evaluate(() => document.activeElement.id),'sintez-presentation-replay');
   });
+  await test('reload during replay permits a later replay to close without reopening itself', async ({page}) => {
+    await skip(page);await settings(page);await page.locator('#sintez-presentation-replay').click();
+    await page.reload();assert(await intro(page).isHidden());assert(await page.locator('#sintez-settings').isVisible());
+    await page.locator('#sintez-presentation-replay').click();await skip(page);
+    assert(await intro(page).isHidden());assert(await page.locator('#sintez-settings').isVisible());assert.equal(await raw(page),null);
+  });
   for (const section of ['dish','prep','products','packaging','expenses','settings']) {
     await test('direct link bypasses welcome: '+section, async ({page}) => {
       assert(await intro(page).isHidden());assert.equal(await raw(page),null);
@@ -174,6 +180,12 @@ async function settings(page) { await page.locator('#sintez-shell [data-sintez-r
     await page.waitForLoadState('networkidle');
     await page.locator('#sintez-workbar [data-sintez-home]').click();await settings(page);
     await page.locator('#sintez-presentation-replay').click();
+    if (await page.evaluate(()=>!!document.documentElement.dataset.pwaBuild)) {
+      await page.waitForFunction(()=>document.querySelector('#pwa-status').textContent.includes('Готово к запуску без интернета.'));
+      await page.reload();await page.waitForFunction(()=>!!navigator.serviceWorker.controller);
+      await page.evaluate(async()=>{await(await navigator.serviceWorker.getRegistration()).update();});
+      await page.waitForLoadState('networkidle');await page.locator('#sintez-presentation-replay').click();
+    }
     await context.setOffline(true);
     await page.keyboard.press('End');assert.equal(await title(page).textContent(),'Для бизнеса');await skip(page);
     await page.locator('#sintez-settings [data-sintez-home]').click();
