@@ -43,8 +43,9 @@ jobs:
             STATUS="$(gh api repos/${{ github.repository }}/actions/runs/$CHECK_RUN --jq .status)"
             if [ "$STATUS" = completed ]; then
               test "$(gh api repos/${{ github.repository }}/actions/runs/$CHECK_RUN --jq .conclusion)" = success
-              FREEZE_SHA="$(gh api repos/${{ github.repository }}/git/ref/tags/release/sintez-unified-candidate-v2 --jq .object.sha 2>/dev/null || true)"
-              if [ -n "$FREEZE_SHA" ]; then test "$FREEZE_SHA" = "$UNIFIED_SOURCE"; break; fi
+              if FREEZE_SHA="$(gh api repos/${{ github.repository }}/git/ref/tags/release/sintez-unified-candidate-v2 --jq .object.sha 2>/dev/null)"; then
+                test "$FREEZE_SHA" = "$UNIFIED_SOURCE"; break
+              fi
             fi
             echo "Waiting for the exact candidate checks ($ATTEMPT/120)."
             sleep 12
