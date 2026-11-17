@@ -59,7 +59,7 @@ async function settings(page) { await page.locator('#sintez-shell [data-sintez-r
   await fs.mkdir(output, {recursive:true});
   if (process.env.KITCHEN_INTRO_URL) {
     url = process.env.KITCHEN_INTRO_URL;
-    assert.equal(url, 'https://sobaca0808-bit.github.io/kitchen-calculator-test/sintez-intro/');
+    assert(['https://sobaca0808-bit.github.io/kitchen-calculator-test/sintez-intro/','https://sobaca0808-bit.github.io/kitchen-calculator-test/sintez-release/'].includes(url));
   } else {
     server = await start(process.env.KITCHEN_SINTEZ_RUNTIME_ROOT || path.resolve(__dirname,'..'), {home:true});
     url = server.url;
@@ -208,6 +208,6 @@ async function settings(page) { await page.locator('#sintez-shell [data-sintez-r
     }
     proof.push({name:'full Chrome process restart retains presentation choice without creating a database',passed:true});
   } finally {await fs.rm(profile,{recursive:true,force:true,maxRetries:3,retryDelay:100});}
-  await fs.writeFile(path.join(output,'intro-proof.json'),JSON.stringify({url,passed:proof.length,physicalAndroidTested:false,offlineColdStartSupported:false,scenarios:proof},null,2)+'\n');
+  await fs.writeFile(path.join(output,'intro-proof.json'),JSON.stringify({url,passed:proof.length,physicalAndroidTested:false,offlineColdStartTestedByThisSuite:false,scenarios:proof},null,2)+'\n');
   console.log(proof.length+' INTRO scenarios passed; 0 failures.');
 })().catch(error=>{console.error(error);process.exitCode=1;}).finally(async()=>{await browser?.close();await server?.close();});

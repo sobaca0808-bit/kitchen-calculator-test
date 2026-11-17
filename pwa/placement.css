@@ -1,0 +1,8 @@
+/* The existing PWA panel adapts to the launcher; workspace themes stay intact. */
+#sintez-shell .pwa-panel {background:#1b2833;color:#f2f5f8;border-color:#536a7a;}
+#sintez-shell .pwa-panel p,#sintez-shell .pwa-panel li,#sintez-shell .pwa-panel summary {color:#c8d4df;}
+#sintez-shell .pwa-panel h2 {font-size:20px;color:#f2f5f8;}
+#sintez-shell .pwa-panel button {color:#f2f5f8;}
+#sintez-shell .pwa-update-notice {background:#253744;color:#f2f5f8;border-color:#536a7a;}
+#sintez-shell .pwa-update-notice p {color:#dbe6ed;}
+@media (max-width:500px) {#sintez-shell .sintez-header:has(.pwa-control) .pwa-control {margin-left:auto;}}
