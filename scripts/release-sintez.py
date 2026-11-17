@@ -48,7 +48,9 @@ def build(output,proof,source,preview_source):
         protected={name:digest for name,digest in before.items() if name not in changed}
         for name,digest in protected.items():assert sha(output/name)==digest,name
         for name,digest in original_files.items():
-            if name not in changed:assert sha(output/name)==digest,name
+            # Only the explicitly frozen review package may differ from the
+            # previous review. All unrelated main/PWA/older resources stay strict.
+            if name not in changed and name not in preview_http:assert sha(output/name)==digest,name
         result={'source_commit':source,'preview_source':preview_source,'baseline_main':MAIN,'rollback_hosting':HOST,'url':URL,'before_https':before,'preserved_https':protected,'release_https':changed,'root_storage_names':web['storage_names'],'pwa_storage_names':pwa['storage_names'],'preview_storage_names':preview['storage_names'],'pwa_identity':{k:new_manifest[k] for k in ['id','start_url','scope','display']},'brand':{k:new_manifest[k] for k in ['name','short_name','icons']},'requires_owner_approval_before_main_or_live_pwa':True}
         proof.write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n')
         print(json.dumps({'prepared_release':source,'before_https':len(before),'preserved_https':len(protected),'new_root_and_pwa_https':len(changed),'pwa_identity_unchanged':True,'all_storage_names_unchanged':True,'not_published':True}))
