@@ -1,0 +1,29 @@
+name: Collect compact checked SINTEZ glass review evidence
+on:
+  push:
+    branches: [preview/browser]
+    paths: ['preview-hosting/sintez-glass-evidence/**', '.github/workflows/sintez-glass-evidence.yml']
+permissions:
+  contents: read
+  actions: read
+jobs:
+  evidence:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Prepare local screenshot compression
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y imagemagick
+      - name: Collect only successful source and public evidence
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EVIDENCE_OUTPUT: ${{ runner.temp }}/glass-review
+        run: python3 preview-hosting/sintez-glass-evidence/collect.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sintez-glass-review
+          path: ${{ runner.temp }}/glass-review
