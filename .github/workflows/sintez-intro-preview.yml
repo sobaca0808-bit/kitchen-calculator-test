@@ -18,8 +18,8 @@ jobs:
     env:
       APPROVED_MAIN: 9f45d0206022d5cfb66352b5a1518b3ff9a50abc
       HOME_SOURCE: 871155948134353c4219e6c1aa4dcb039848ea68
-      INTRO_SOURCE: d166f48d2907fb7c1e99dbff2300bdc75a82216f
-      CHECK_RUN: '44106016878'
+      INTRO_SOURCE: b0e1b3340dc2e376e53a1fcbfa0834edda3265fb
+      CHECK_RUN: '44108126063'
     environment:
       name: github-pages
       url: https://sobaca0808-bit.github.io/kitchen-calculator-test/sintez-intro/
@@ -40,6 +40,8 @@ jobs:
           test "$(gh api repos/${{ github.repository }}/actions/runs/$CHECK_RUN --jq .head_sha)" = "$INTRO_SOURCE"
           test "$(gh api repos/${{ github.repository }}/actions/runs/$CHECK_RUN --jq .path)" = .github/workflows/sintez-intro.yml
           for ATTEMPT in $(seq 1 120); do
+            test "$(gh api repos/${{ github.repository }}/git/ref/heads/main --jq .object.sha)" = "$APPROVED_MAIN"
+            test "$(gh api repos/${{ github.repository }}/git/ref/heads/feature/sintez-intro --jq .object.sha)" = "$INTRO_SOURCE"
             STATUS="$(gh api repos/${{ github.repository }}/actions/runs/$CHECK_RUN --jq .status)"
             if [ "$STATUS" = completed ]; then break; fi
             echo "Waiting for exact candidate checks ($ATTEMPT/120)."
