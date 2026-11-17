@@ -153,6 +153,9 @@ async function photoInfo(page,id){return page.evaluate(async id=>{const p=await 
   });
   await test('old one-photo JSON and local recipes remain readable without eager migration',async page=>{
    await edit(page);await upload(page,0,await picture(page));await save(page);const modern=await exportJSON(page),legacy=fixture();legacy.recipes[0].name='Старая карточка с одним снимком · импорт';legacy.recipes[0].photo=modern.recipes[0].photos[0];await importJSON(page,legacy);await page.waitForFunction(()=>!!KitchenStorage.load().data.recipes[0].photoId);
+   // The committed book is available before its asynchronous IDB gallery.
+   // Wait for actual card readiness, then retain all legacy/no-migration checks.
+   await page.waitForFunction(()=>{const print=document.querySelector('#print-recipe');return print&&!print.disabled;});
    const oldSaved=await stored(page);assert(oldSaved.recipes[0].photoId);assert.equal(oldSaved.recipes[0].photoIds,undefined);assert.equal(await page.locator('#card-photos [data-photo-slot]').count(),2);assert.equal(await page.locator('#card-photos img').count(),1);assert.deepEqual(await exportJSON(page),legacy);await page.reload();assert.deepEqual(await stored(page),oldSaved);
    await edit(page);await page.locator('#item-name').fill('Старая карточка, новое название');await save(page);assert.equal((await stored(page)).recipes[0].photoId,oldSaved.recipes[0].photoId,'A non-photo edit leaves the legacy reference intact');
    await upload(page,1,await picture(page,{color:'#643829'}));await save(page);assert.equal((await ids(page)).filter(Boolean).length,2);assert.equal((await stored(page)).recipes[0].photoId,undefined,'Only explicit photo edit adopts two-slot representation');
