@@ -1,0 +1,97 @@
+name: Publish isolated SINTEZ presentation preview
+on:
+  push:
+    branches: [preview/browser]
+    paths: ['preview-hosting/sintez-intro/**', '.github/workflows/sintez-intro-preview.yml']
+permissions:
+  actions: read
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: github-pages
+  cancel-in-progress: false
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    env:
+      APPROVED_MAIN: 9f45d0206022d5cfb66352b5a1518b3ff9a50abc
+      HOME_SOURCE: 871155948134353c4219e6c1aa4dcb039848ea68
+      INTRO_SOURCE: d166f48d2907fb7c1e99dbff2300bdc75a82216f
+      CHECK_RUN: '44106016878'
+    environment:
+      name: github-pages
+      url: https://sobaca0808-bit.github.io/kitchen-calculator-test/sintez-intro/
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify unchanged release, PR 30 and exact candidate checks
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          test '${{ github.repository }}' = sobaca0808-bit/kitchen-calculator-test
+          test "$(gh api repos/${{ github.repository }}/git/ref/heads/main --jq .object.sha)" = "$APPROVED_MAIN"
+          test "$(gh api repos/${{ github.repository }}/git/ref/heads/feature/sintez-home --jq .object.sha)" = "$HOME_SOURCE"
+          test "$(gh api repos/${{ github.repository }}/git/ref/heads/feature/sintez-intro --jq .object.sha)" = "$INTRO_SOURCE"
+          test "$(gh api repos/${{ github.repository }}/pulls/30 --jq .merged)" = false
+          test "$(gh api repos/${{ github.repository }}/actions/runs/$CHECK_RUN --jq .head_sha)" = "$INTRO_SOURCE"
+          test "$(gh api repos/${{ github.repository }}/actions/runs/$CHECK_RUN --jq .path)" = .github/workflows/sintez-intro.yml
+          for ATTEMPT in $(seq 1 120); do
+            STATUS="$(gh api repos/${{ github.repository }}/actions/runs/$CHECK_RUN --jq .status)"
+            if [ "$STATUS" = completed ]; then break; fi
+            echo "Waiting for exact candidate checks ($ATTEMPT/120)."
+            sleep 12
+          done
+          test "$(gh api repos/${{ github.repository }}/actions/runs/$CHECK_RUN --jq .conclusion)" = success
+      - name: Rebuild the prior publication exactly and append only the new route
+        run: python3 preview-hosting/sintez-intro/build.py --pages "$RUNNER_TEMP/intro-site" --proof "$RUNNER_TEMP/intro-publication.json" --source "$INTRO_SOURCE"
+      - name: Verify 296 old HTTPS files, including existing SINTEZ, before publication
+        run: python3 preview-hosting/sintez/verify.py "$RUNNER_TEMP/intro-publication.json" --phase before
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: ${{ runner.temp }}/intro-site
+      - name: Recheck unchanged main and exact source immediately before publishing
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          test "$(gh api repos/${{ github.repository }}/git/ref/heads/main --jq .object.sha)" = "$APPROVED_MAIN"
+          test "$(gh api repos/${{ github.repository }}/git/ref/heads/feature/sintez-home --jq .object.sha)" = "$HOME_SOURCE"
+          test "$(gh api repos/${{ github.repository }}/git/ref/heads/feature/sintez-intro --jq .object.sha)" = "$INTRO_SOURCE"
+      - name: Publish only the additional presentation preview
+        uses: actions/deploy-pages@v4
+      - name: Verify old files remain identical and new files match the candidate
+        run: python3 preview-hosting/sintez/verify.py "$RUNNER_TEMP/intro-publication.json" --phase after
+      - name: Prepare disposable public-browser checks
+        run: |
+          npm install --prefix "$RUNNER_TEMP/intro-tools" --ignore-scripts --no-audit --no-fund playwright@1.62.1
+          sudo apt-get update -qq
+          sudo apt-get install -y poppler-utils
+      - name: Verify the actual HTTPS presentation, calculator, data, JSON and A4
+        env:
+          NODE_PATH: ${{ runner.temp }}/intro-tools/node_modules
+          CHROMIUM_PATH: /usr/bin/google-chrome
+          KITCHEN_INTRO_ARTIFACTS: ${{ runner.temp }}/intro-live-proof
+          KITCHEN_SINTEZ_ARTIFACTS: ${{ runner.temp }}/home-live-proof
+        run: node preview-hosting/sintez-intro/check.cjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: sintez-intro-publication-proof
+          path: |
+            ${{ runner.temp }}/intro-publication.json
+            ${{ runner.temp }}/intro-live-proof
+            ${{ runner.temp }}/home-live-proof
+      - name: Report verified preview URL
+        run: |
+          cat >> "$GITHUB_STEP_SUMMARY" <<'REPORT'
+          https://sobaca0808-bit.github.io/kitchen-calculator-test/sintez-intro/
+
+          All older sites, including /sintez/, PWA and welcome.html, are unchanged.
+          Presentation and SINTEZ use the same existing five test storage names.
+          No migration, production data changes or PR merges were performed.
+          Real HTTPS Chromium desktop/mobile checks and browser restarts passed.
+          A physical Android check by the owner is still required.
+          REPORT
