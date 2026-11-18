@@ -28,7 +28,7 @@ async function card(page){await page.locator('[data-open=pie]').click();await pa
 async function settings(page){await page.locator('.sintez-header [data-sintez-route=settings]').click();}
 (async()=>{
   await fs.mkdir(output,{recursive:true});
-  if(process.env.SINTEZ_MODES_URL){url=process.env.SINTEZ_MODES_URL;assert.equal(url,'https://sobaca0808-bit.github.io/kitchen-calculator-test/sintez-modes/');}
+  if(process.env.SINTEZ_MODES_URL){url=process.env.SINTEZ_MODES_URL;assert(['https://sobaca0808-bit.github.io/kitchen-calculator-test/sintez-modes/','https://sobaca0808-bit.github.io/kitchen-calculator-test/sintez-glass/'].includes(url));}
   else{server=await start(process.env.KITCHEN_SINTEZ_RUNTIME_ROOT||path.resolve(__dirname,'..'),{home:true});url=server.url;}
   browser=await chromium.launch(launch);
   for(const [width,height]of [[1440,900],[1366,900],[1024,768],[768,1024],[390,844],[360,740],[320,690],[844,390]])await test('three equal accessible cards and clean home at '+width+'x'+height,async page=>{

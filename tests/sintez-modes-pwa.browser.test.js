@@ -4,6 +4,8 @@ const {start}=require('./helpers/pwa-server'),fixture=require('./helpers/design-
 const output=process.env.SINTEZ_MODES_PWA_ARTIFACTS||path.join(os.tmpdir(),'sintez-modes-pwa-proof'),versions=process.env.SINTEZ_MODES_PWA_VERSIONS,headful=process.env.KITCHEN_PWA_HEADFUL==='1';
 const keys={book:'kitchen-calculator-sintez-preview-v1',drafts:'kitchen-calculator-sintez-drafts-v1',photos:'kitchen-calculator-sintez-photos-v1',backups:'kitchen-calculator-sintez-import-backups-v1',appearance:'kitchen-calculator-sintez-appearance-v1'};
 const launch={executablePath:process.env.CHROMIUM_PATH||'/usr/bin/chromium',headless:!headful,args:['--no-sandbox','--disable-features=Translate']};
+const mount=process.env.SINTEZ_MODES_PWA_MOUNT||'/kitchen-calculator-test/sintez-modes/';
+assert(['/kitchen-calculator-test/sintez-modes/','/kitchen-calculator-test/sintez-glass/'].includes(mount));
 let server,browser,context,profile;const results=[],errors=[];
 function watch(ctx){ctx.on('page',p=>p.on('pageerror',e=>errors.push(e.message)));}
 async function poll(probe,label){const end=Date.now()+45000;while(Date.now()<end){if(await probe())return;await new Promise(r=>setTimeout(r,100));}throw Error('Timed out: '+label);}
@@ -17,7 +19,7 @@ function screen(file){if(process.platform==='win32'){const target=file.replace(/
 (async()=>{
   assert(versions);await fs.mkdir(output,{recursive:true});
   const paths=['one','two','bad'].map(n=>path.join(versions,n)),two=JSON.parse(await fs.readFile(path.join(paths[1],'pwa-version.json'),'utf8'));
-  server=await start(paths,{mount:'/kitchen-calculator-test/sintez-modes/'});browser=await chromium.launch(launch);context=await browser.newContext({viewport:{width:1366,height:900}});watch(context);await seed(context);
+  server=await start(paths,{mount});browser=await chromium.launch(launch);context=await browser.newContext({viewport:{width:1366,height:900}});watch(context);await seed(context);
   let page=await context.newPage();await page.goto(server.url);await ready(page);await page.reload();await page.waitForFunction(()=>!!navigator.serviceWorker.controller);
   assert.deepEqual(await page.evaluate(()=>({book:KitchenStorage.KEY,drafts:KitchenDrafts.KEY,photos:KitchenPhotos.DB_NAME,backups:KitchenImportTransaction.DB_NAME,appearance:KitchenAppearance.KEY})),keys);
   const original=await snapshot(page);assert.equal(await page.locator('[data-sintez-mode]').count(),3);assert(await page.locator('#pwa-toggle').isHidden());
@@ -36,7 +38,7 @@ function screen(file){if(process.platform==='win32'){const target=file.replace(/
   results.push({name:'corrupt cache cannot replace the working shell; its critical error is visible on home and recoverable through existing Settings controls',passed:true});
   await cleanup();
   if(headful){
-    server=await start([paths[0]],{mount:'/kitchen-calculator-test/sintez-modes/'});profile=await fs.mkdtemp(path.join(os.tmpdir(),'sintez-native-modes-'));
+    server=await start([paths[0]],{mount});profile=await fs.mkdtemp(path.join(os.tmpdir(),'sintez-native-modes-'));
     context=await chromium.launchPersistentContext(path.join(profile,'chrome'),{...launch,viewport:null,args:[...launch.args,'--window-size=1000,720','--window-position=8,8'],env:{...process.env,XDG_DATA_HOME:path.join(profile,'data'),XDG_CONFIG_HOME:path.join(profile,'config'),XDG_CACHE_HOME:path.join(profile,'cache')}});watch(context);await seed(context);page=await context.newPage();await page.goto(server.url);await ready(page);const expected=await snapshot(page),cdp=await context.newCDPSession(page);assert.deepEqual((await cdp.send('Page.getInstallabilityErrors')).installabilityErrors,[]);
     await cdp.send('PWA.install',{manifestId:server.url,installUrlOrBundleUrl:server.url});await cdp.send('PWA.changeAppUserSettings',{manifestId:server.url,displayMode:'standalone'});await cdp.send('PWA.launch',{manifestId:server.url});
     let app=await appWindow(context,page);await app.waitForLoadState();assert(await app.locator('#sintez-home').isVisible());assert.equal(await app.locator('[data-sintez-mode]').count(),3);assert(await app.locator('#pwa-toggle').isHidden());assert.deepEqual(await snapshot(app),expected);

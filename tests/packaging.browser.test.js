@@ -136,6 +136,8 @@ async function test(name,fn,{width=1366,data=fixture(false)}={}){
       assert.equal(await page.locator('.packaging-card .packaging-finance').count(),0);
       assert.doesNotMatch(await page.locator('.packaging-card').innerText(),/₽|себестоимост|закупочн|сумма|стоимость/i);
       assert.doesNotMatch(await page.locator('#recipe-card').innerText(),/₽|себестоимост/i);
+      if(process.env.KITCHEN_GLASS_TEST==='1')await require('./helpers/glass-material').assertGlassMaterial(page);
+      else {
       const background=await page.evaluate(async()=>{
         const body=getComputedStyle(document.body),response=await fetch('assets/warm-kitchen.css');
         return {image:body.backgroundImage,repeat:body.backgroundRepeat,status:response.status,type:response.headers.get('content-type'),bytes:(await response.arrayBuffer()).byteLength,
@@ -145,6 +147,7 @@ async function test(name,fn,{width=1366,data=fixture(false)}={}){
       assert(background.repeat.split(',').every(value=>value.trim()==='no-repeat'),'The continuous CSS surround has no tiled images');
       assert(background.bytes>0&&background.bytes<16*1024,'The local screen theme remains lightweight');
       assert.equal(background.editor,skin.paper);assert.equal(background.input,skin.field);
+      }
       await page.emulateMedia({media:'print'});
       assert.equal(await page.locator('.library').isVisible(),false);assert.equal(await page.locator('.card-controls').isVisible(),false);
       assert.equal(await page.locator('.packaging-card').isVisible(),true);

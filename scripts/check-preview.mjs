@@ -7,6 +7,10 @@ import {fileURLToPath} from 'node:url';
 import {resolve} from 'node:path';
 
 const root=fileURLToPath(new URL('../',import.meta.url));
+// The new glass matrix replaces only obsolete exact-color visual suites.
+// Existing functional suites still run on the actual redesigned application.
+const glass=process.argv.includes('--glass');
+if(glass)process.env.KITCHEN_GLASS_TEST='1';
 const mount='/kitchen-calculator-test';
 const logicTests=['calculations','storage','storage-extensions','json-merge','import-transaction','folders','recipe-view','recipe-card-model','profitability','preview-isolation','pages','packaging','drafts','photos','photo-print-selection','appearance','preview-persistence','establishment-expenses','recipe-expense-preferences'].map(name=>'tests/'+name+'.test.js');
 function run(args,env=process.env) {
@@ -21,6 +25,7 @@ function run(args,env=process.env) {
   });
 }
 const runtimeFiles=new Map([
+  ['/assets/sintez-glass.css','assets/sintez-glass.css'],['/assets/sintez-glass-kitchen.webp','assets/sintez-glass-kitchen.webp'],['/assets/sintez-glass-kitchen-mobile.webp','assets/sintez-glass-kitchen-mobile.webp'],
   ['/assets/sintez-matte.svg','assets/sintez-matte.svg'],
   ...['favicon.ico','icon-16.png','icon-32.png','icon-180.png'].map(name=>['/icons/sintez/'+name,'icons/sintez/'+name]),
   ['/assets/sintez-intro.css','assets/sintez-intro.css'],['/js/sintez-intro.js','js/sintez-intro.js'],
@@ -53,7 +58,7 @@ try {
   const selected=process.env.KITCHEN_TEST_THEME;
   const themes=selected?[selected]:['berry','graphite','sage'];
   if(themes.some(theme=>!['berry','graphite','sage'].includes(theme)))throw Error('Unknown test theme.');
-  const suites=['browser','products-list.browser','library-lists.browser','packaging.browser','task8.browser','two-photos.browser','card-modes.browser','profitability.browser','compact-print.browser','folders.browser','safe-json-merge.browser','import-transaction.browser','interface-controls.browser','warm-theme.browser'];
+  const suites=['browser','products-list.browser','library-lists.browser','packaging.browser','task8.browser','two-photos.browser','card-modes.browser','profitability.browser','compact-print.browser','folders.browser','safe-json-merge.browser','import-transaction.browser','interface-controls.browser',...(glass?[]:['warm-theme.browser'])];
   const results=await Promise.allSettled(themes.map(async theme=>{
     const folder=resolve(artifacts,theme),temporary=resolve(folder,'tmp');await mkdir(temporary,{recursive:true});
     const env={...process.env,KITCHEN_TEST_URL:testURL,KITCHEN_TEST_THEME:theme,KITCHEN_TEST_ARTIFACT_DIR:folder,TMPDIR:temporary};
@@ -61,7 +66,7 @@ try {
     console.log('THEME_MATRIX_PASS',theme);
   }));
   const failures=results.filter(result=>result.status==='rejected');if(failures.length)throw Error(failures.map(result=>result.reason.message).join('\n'));
-  await run(['tests/appearance.browser.test.js'],{...process.env,KITCHEN_TEST_URL:testURL,KITCHEN_TEST_THEME:'',KITCHEN_TEST_ARTIFACT_DIR:resolve(artifacts,'appearance')});
+  if(!glass)await run(['tests/appearance.browser.test.js'],{...process.env,KITCHEN_TEST_URL:testURL,KITCHEN_TEST_THEME:'',KITCHEN_TEST_ARTIFACT_DIR:resolve(artifacts,'appearance')});
   await run(['tests/establishment-expenses.browser.test.js'],{...process.env,KITCHEN_TEST_URL:testURL,KITCHEN_TEST_THEME:'',KITCHEN_TEST_ARTIFACT_DIR:resolve(artifacts,'expenses')});
   await run(['tests/preview-persistence.browser.test.js'],{...process.env,KITCHEN_TEST_THEME:'',KITCHEN_TEST_ARTIFACT_DIR:resolve(artifacts,'persistence')});
 } catch(error){console.error(error.message);process.exitCode=1;}
