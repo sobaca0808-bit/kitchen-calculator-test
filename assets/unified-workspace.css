@@ -6,7 +6,7 @@
     --g-field:rgba(8,30,43,.85);--g-select:rgba(28,60,72,.96);--g-selected:rgba(126,108,60,.34);--g-control:#78949d;
     --g-line:rgba(193,225,230,.26);--g-hover:rgba(29,81,91,.9);--g-success:#bce9da;--g-shadow:0 10px 34px #020b1552;
   }
-  html[data-sintez-unified] body {padding:0 0 14px;background:transparent!important;}
+  html[data-sintez-unified] body {padding:0 0 calc(14px + var(--editor-actions-gap,0px));background:transparent!important;}
   html[data-sintez-unified] {background:var(--g-page)!important;}
   html[data-sintez-unified] body::after {background:linear-gradient(180deg,transparent 65%,var(--g-wash));}
   html[data-sintez-unified] body::before {background-image:linear-gradient(var(--g-wash),var(--g-wash)),url('unified-kitchen.webp');background-position:center;background-size:cover;}
