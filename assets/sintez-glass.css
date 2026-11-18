@@ -83,6 +83,7 @@
   html[data-sintez-glass] .editor::before {content:'';position:absolute;inset:0;z-index:-1;pointer-events:none;border-radius:inherit;background:var(--g-panel);-webkit-backdrop-filter:blur(var(--g-blur)) saturate(115%);backdrop-filter:blur(var(--g-blur)) saturate(115%);}
   html[data-sintez-glass] .test-notice {background:var(--g-sub);color:var(--g-muted);border-color:var(--g-line);max-width:1360px;border-radius:8px;}
   html[data-sintez-glass] .app-header {max-width:1360px;padding:18px 22px;margin:16px auto;gap:16px;}
+  html[data-sintez-glass] .app-header:has(#appearance-panel:not([hidden])) {position:relative;z-index:170;}
   html[data-sintez-glass] .brand {color:var(--g-ink);box-shadow:none;background:transparent;border:0;}
   html[data-sintez-glass] .sintez-work-logo {width:38px;height:38px;flex:none;color:var(--g-accent);}
   html[data-sintez-glass] .brand-icon {background:var(--g-accent);color:var(--g-on-accent);}
@@ -195,7 +196,7 @@
   html[data-sintez-glass] .sintez-workbar>span {flex-basis:100%;order:3;font-size:12px;}
   html[data-sintez-glass] #sintez-workbar button {font-size:12px;padding:8px 10px;}
   html[data-sintez-glass] #sintez-workbar>div {gap:6px;}
-  html[data-sintez-glass] .appearance-panel {max-width:calc(100vw - 32px);}
+  html[data-sintez-glass] #appearance-panel {left:0;right:auto;width:min(360px,calc(100vw - 56px));max-width:calc(100vw - 56px);}
 }
 @media screen and (prefers-reduced-motion:reduce) {
   html[data-sintez-glass] button {transition:none;}
