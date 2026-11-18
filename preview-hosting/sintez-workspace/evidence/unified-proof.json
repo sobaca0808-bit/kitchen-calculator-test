@@ -1,0 +1,157 @@
+{
+  "url": "https://sobaca0808-bit.github.io/kitchen-calculator-test/sintez-workspace/",
+  "passed": 25,
+  "physicalAndroidTested": false,
+  "printProof": [
+    {
+      "form": "calculation",
+      "photos": "none",
+      "exactWordsAndCoordinates": true,
+      "exactPixels": true
+    },
+    {
+      "form": "calculation",
+      "photos": "first",
+      "exactWordsAndCoordinates": true,
+      "exactPixels": true
+    },
+    {
+      "form": "calculation",
+      "photos": "second",
+      "exactWordsAndCoordinates": true,
+      "exactPixels": true
+    },
+    {
+      "form": "calculation",
+      "photos": "both",
+      "exactWordsAndCoordinates": true,
+      "exactPixels": true
+    },
+    {
+      "form": "chef",
+      "photos": "none",
+      "exactWordsAndCoordinates": true,
+      "exactPixels": true
+    },
+    {
+      "form": "chef",
+      "photos": "first",
+      "exactWordsAndCoordinates": true,
+      "exactPixels": true
+    },
+    {
+      "form": "chef",
+      "photos": "second",
+      "exactWordsAndCoordinates": true,
+      "exactPixels": true
+    },
+    {
+      "form": "chef",
+      "photos": "both",
+      "exactWordsAndCoordinates": true,
+      "exactPixels": true
+    }
+  ],
+  "scenarios": [
+    {
+      "name": "home shared shell and real photo at 1672",
+      "passed": true
+    },
+    {
+      "name": "home shared shell and real photo at 390",
+      "passed": true
+    },
+    {
+      "name": "chef shared shell and real photo at 1672",
+      "passed": true
+    },
+    {
+      "name": "chef shared shell and real photo at 390",
+      "passed": true
+    },
+    {
+      "name": "business shared shell and real photo at 1672",
+      "passed": true
+    },
+    {
+      "name": "business shared shell and real photo at 390",
+      "passed": true
+    },
+    {
+      "name": "responsive navigation and focused fields fit 320",
+      "passed": true
+    },
+    {
+      "name": "responsive navigation and focused fields fit 768",
+      "passed": true
+    },
+    {
+      "name": "responsive navigation and focused fields fit 1024",
+      "passed": true
+    },
+    {
+      "name": "roles expand menus without exposing business reports in home or chef",
+      "passed": true
+    },
+    {
+      "name": "create product, prep and recipe in one database at 1440",
+      "passed": true
+    },
+    {
+      "name": "create product, prep and recipe in one database at 390",
+      "passed": true
+    },
+    {
+      "name": "cook time validates, clears and preserves old missing values",
+      "passed": true
+    },
+    {
+      "name": "favorite is a stored flag on the same record and JSON metadata remains compatible",
+      "passed": true
+    },
+    {
+      "name": "JSON merge retains photos, times, favorites and all financial data",
+      "passed": true
+    },
+    {
+      "name": "mode switching warns and retains raw draft fields, photos and hidden financial values",
+      "passed": true
+    },
+    {
+      "name": "home edit keeps photos, packaging, selling price and expense preference exactly",
+      "passed": true
+    },
+    {
+      "name": "photo replace, primary selection and removal use the existing draft controls",
+      "passed": true
+    },
+    {
+      "name": "legacy single photo and missing cooking field never migrate on viewing",
+      "passed": true
+    },
+    {
+      "name": "costs use actual engines: food548, packaging15.6, expenses296, full859.6",
+      "passed": true
+    },
+    {
+      "name": "footer has actual build metadata and all three information panels work",
+      "passed": true
+    },
+    {
+      "name": "Settings preserve three palettes, import/export and storage tools",
+      "passed": true
+    },
+    {
+      "name": "fresh entry does not create demo data or write a selected mode",
+      "passed": true
+    },
+    {
+      "name": "keyboard navigation, readable mode labels and reduced motion work on phone",
+      "passed": true
+    },
+    {
+      "name": "A4 retains old words, coordinates and pixels for both forms and all photos",
+      "passed": true
+    }
+  ]
+}

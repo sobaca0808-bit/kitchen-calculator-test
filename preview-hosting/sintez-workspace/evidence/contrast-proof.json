@@ -1,0 +1,69 @@
+{
+  "source": "cbf42009a0001bc3e91c6d305ebe302bcc2f3382",
+  "minimum": 5.566345888769722,
+  "rows": [
+    {
+      "theme": "graphite",
+      "name": "metric label",
+      "ratio": 8.89871437443558,
+      "font": "11px",
+      "conservativeWhiteBackdrop": true
+    },
+    {
+      "theme": "graphite",
+      "name": "metric number",
+      "ratio": 8.89871437443558,
+      "font": "21.76px",
+      "conservativeWhiteBackdrop": true
+    },
+    {
+      "theme": "graphite",
+      "name": "footer",
+      "ratio": 5.566345888769722,
+      "font": "11px",
+      "conservativeWhiteBackdrop": true
+    },
+    {
+      "theme": "berry",
+      "name": "metric label",
+      "ratio": 12.19004855780667,
+      "font": "11px",
+      "conservativeWhiteBackdrop": true
+    },
+    {
+      "theme": "berry",
+      "name": "metric number",
+      "ratio": 12.19004855780667,
+      "font": "21.76px",
+      "conservativeWhiteBackdrop": true
+    },
+    {
+      "theme": "berry",
+      "name": "footer",
+      "ratio": 8.082921258420841,
+      "font": "11px",
+      "conservativeWhiteBackdrop": true
+    },
+    {
+      "theme": "sage",
+      "name": "metric label",
+      "ratio": 10.77495022804254,
+      "font": "11px",
+      "conservativeWhiteBackdrop": true
+    },
+    {
+      "theme": "sage",
+      "name": "metric number",
+      "ratio": 10.77495022804254,
+      "font": "21.76px",
+      "conservativeWhiteBackdrop": true
+    },
+    {
+      "theme": "sage",
+      "name": "footer",
+      "ratio": 7.515263798090626,
+      "font": "11px",
+      "conservativeWhiteBackdrop": true
+    }
+  ]
+}
