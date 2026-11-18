@@ -99,6 +99,7 @@
   html[data-sintez-unified]:not([data-sintez-workspace-mode=business]) :is(#packaging-editor,.selling-price-editor,#profitability-preview,#expenses-preview,.expense-print-control) {display:none!important;}
   html[data-sintez-unified][data-sintez-workspace-mode=home] :is(.processing-option,.card-controls label:has(#card-mode)) {display:none!important;}
   html[data-sintez-unified] .unified-print-time {display:none;}
+  html[data-sintez-unified] #sintez-settings #appearance-panel {position:static;margin-top:12px;width:100%;max-width:none;}
   html[data-sintez-unified] .unified-footer {display:flex;justify-content:space-between;align-items:center;gap:16px;width:min(1560px,calc(100% - 64px));margin:22px auto 0;padding:10px 18px;border:1px solid var(--g-line);border-radius:16px;background:var(--g-panel);backdrop-filter:blur(12px);font-size:11px;color:var(--g-muted);}
   html[data-sintez-unified] .unified-footer strong {color:var(--g-accent);margin-right:12px;font-weight:600;}
   html[data-sintez-unified] .unified-footer nav {display:flex;gap:8px;flex-wrap:wrap;}
