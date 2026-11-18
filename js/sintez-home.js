@@ -1,6 +1,7 @@
 /* Navigation only: all modes share the existing calculator and its data. */
 (function () {
   'use strict';
+  if(document.documentElement.hasAttribute('data-sintez-unified'))return;
   const root=document.documentElement, navigation=globalThis.KitchenNavigation;
   const home=document.getElementById('sintez-home'), settings=document.getElementById('sintez-settings'), panel=document.getElementById('sintez-mode-panel');
   if(!home||!navigation||!panel)return;

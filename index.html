@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ru" data-sintez-screen="home" data-sintez-glass data-sintez-showcase data-default-kitchen-theme="graphite">
+<html lang="ru" data-sintez-screen="workspace" data-sintez-glass data-sintez-showcase data-sintez-unified data-default-kitchen-theme="graphite">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -28,6 +28,9 @@
   <script defer src="js/establishment-expenses.js?v=expenses-1"></script>
   <script defer src="js/establishment-expenses-ui.js?v=recipe-expenses-1"></script>
   <script defer src="js/recipe-showcase.js"></script>
+  <script defer src="js/workspace-policy.js"></script>
+  <script defer src="js/unified-card.js"></script>
+  <script defer src="js/build-info.js"></script>
   <script defer src="js/recipe-card-templates.js?v=recipe-expenses-1"></script>
   <script defer src="js/drafts.js?v=issue21-storage-1"></script>
   <script defer src="js/photo-viewer.js"></script>
@@ -41,6 +44,7 @@
   <!-- SINTEZ:ASSETS -->
   <link rel="stylesheet" href="assets/sintez-home.css">
   <script defer src="js/sintez-home.js"></script>
+  <script defer src="js/unified-workspace.js"></script>
   <link rel="stylesheet" href="assets/sintez-intro.css">
   <script defer src="js/sintez-intro.js"></script>
   <link rel="icon" type="image/x-icon" href="icons/sintez/favicon.ico">
@@ -52,12 +56,13 @@
   <link rel="stylesheet" href="assets/sintez-glass.css">
   <!-- /SINTEZ:GLASS -->
   <link rel="stylesheet" href="assets/recipe-showcase.css">
+  <link rel="stylesheet" href="assets/unified-workspace.css">
 </head>
 <body>
   <!-- SINTEZ:HOME -->
   <div class="sintez-shell" id="sintez-shell">
     <header class="sintez-header">
-      <div class="sintez-wordmark"><svg viewBox="0 0 38 38" aria-hidden="true"><path fill="currentColor" d="M3 29h22v5H3zm5-8h22v5H8zm5-8h22v5H13z"/><path fill="#dfbd82" d="M18 5h17v5H18z"/></svg><span>СИНТЕЗ МЕРЫ<small>Кухонный калькулятор</small></span></div>
+      <button type="button" class="sintez-wordmark unified-brand" data-unified-tool="dashboard" aria-label="СИНТЕЗ МЕРЫ — главная"><img src="icons/sintez/icon-192.png" alt="Фирменный логотип СИНТЕЗ МЕРЫ" width="76" height="76"><span>СИНТЕЗ МЕРЫ<small>Кухонный калькулятор</small></span></button>
       <button class="sintez-settings-access" data-sintez-route="settings" type="button" aria-label="Настройки" title="Настройки"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="m10 3-1 3-3 1-2 3 2 2v3l2 2 3-1 2 2 3-1 1-3 3-1v-4l-3-1-1-3-3-1-2 2Z"/><circle cx="12" cy="11" r="3"/></svg><span>Настройки</span><i id="sintez-settings-error" aria-hidden="true" hidden></i></button>
     </header>
     <section id="sintez-alert" class="sintez-alert" role="alert" hidden><p id="sintez-alert-text"></p><button id="sintez-alert-action" type="button">Подробнее</button></section>
@@ -68,7 +73,7 @@
       <nav class="sintez-grid sintez-mode-grid" aria-label="Режимы работы">
         <button class="sintez-mode-card" data-sintez-mode="home" type="button" aria-labelledby="sintez-home-name" aria-describedby="sintez-home-copy"><span class="sintez-mode-number" aria-hidden="true">01</span><span class="sintez-mode-icon"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 29 23-19 23 19M16 25v29h32V25M26 54V36h12v18M39 15v-5h7v11"/><path d="M7 58h50M22 29h5M37 29h5" opacity=".45"/></svg></span><span class="sintez-mode-title" id="sintez-home-name">Для дома</span><span class="sintez-mode-copy" id="sintez-home-copy">Продукты, рецепты и простые расчёты</span><span class="sintez-mode-action" aria-hidden="true"><span>Открыть</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></span></button>
         <button class="sintez-mode-card" data-sintez-mode="chef" type="button" aria-labelledby="sintez-chef-name" aria-describedby="sintez-chef-copy"><span class="sintez-mode-number" aria-hidden="true">02</span><span class="sintez-mode-icon"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 39a11 11 0 0 1-1-22 16 16 0 0 1 30 0 11 11 0 0 1-1 22v15H18ZM18 45h28M26 33v11M38 33v11"/><path d="M12 58h40M28 16a6 6 0 0 1 8 0" opacity=".45"/></svg></span><span class="sintez-mode-title" id="sintez-chef-name">Для повара</span><span class="sintez-mode-copy" id="sintez-chef-copy">Рецепты, техкарты и профессиональная работа</span><span class="sintez-mode-action" aria-hidden="true"><span>Открыть</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></span></button>
-        <button class="sintez-mode-card" data-sintez-mode="business" type="button" aria-labelledby="sintez-business-name" aria-describedby="sintez-business-copy"><span class="sintez-mode-number" aria-hidden="true">03</span><span class="sintez-mode-icon"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 55V15h32v40M43 29h10v26M7 55h50M19 23h5M31 23h4M19 31h5M31 31h4M19 39h5M28 55V44h7v11"/><path d="m32 11 8-5 7 4 9-7m-7 0h7v7" opacity=".65"/></svg></span><span class="sintez-mode-title" id="sintez-business-name">Для бизнеса</span><span class="sintez-mode-copy" id="sintez-business-copy">Себестоимость, расходы и управление затратами</span><span class="sintez-mode-action" aria-hidden="true"><span>Открыть</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></span></button>
+        <button class="sintez-mode-card" data-sintez-mode="business" type="button" aria-labelledby="sintez-business-name" aria-describedby="sintez-business-copy"><span class="sintez-mode-number" aria-hidden="true">03</span><span class="sintez-mode-icon"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 25h38v30H13zM9 25l5-14h36l5 14M9 25c0 10 11 10 12 0 0 10 11 10 11 0 0 10 11 10 11 0 0 10 12 10 12 0M22 55V40h20v15M14 19h36"/></svg></span><span class="sintez-mode-title" id="sintez-business-name">Для бизнеса</span><span class="sintez-mode-copy" id="sintez-business-copy">Себестоимость, расходы и управление затратами</span><span class="sintez-mode-action" aria-hidden="true"><span>Открыть</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></span></button>
       </nav>
       <button class="sintez-resume" id="sintez-resume" data-sintez-resume type="button" hidden>Продолжить открытую работу <span aria-hidden="true">→</span></button>
     </main>
@@ -114,6 +119,8 @@
     </div>
   </header>
   <div id="message" role="status" aria-live="polite" hidden></div>
+  <button id="unified-menu-toggle" type="button" aria-controls="unified-sidebar" aria-expanded="false">☰ Разделы</button>
+  <div id="unified-layout"><aside id="unified-sidebar" aria-label="Инструменты режима"><nav id="unified-menu" aria-label="Основные разделы"></nav></aside><div id="unified-content"></div></div>
   <nav class="tabs" aria-label="Разделы"><button data-tab="dish">Мои рецепты <span id="count-dish"></span></button><button data-tab="prep">Полуфабрикаты <span id="count-prep"></span></button><button data-tab="products">Продукты <span id="count-products"></span></button><button data-tab="packaging">Упаковка и фасовка <span id="count-packaging"></span></button><button data-tab="expenses">Расходы заведения</button></nav>
   <section id="import-panel" class="import-panel" aria-label="Предварительный просмотр импорта" aria-busy="false" hidden>
     <h2>Проверка перед импортом</h2><p id="import-file-name" class="import-file-name"></p>
@@ -160,7 +167,8 @@
     </aside>
     <section id="editor" class="editor" aria-label="Редактор"></section>
   </main>
-  <footer class="page-footer">Продукты и упаковка · Расходы заведения — отдельная плановая оценка</footer>
+  <footer class="unified-footer"><div><strong>СИНТЕЗ МЕРЫ</strong><span id="unified-build"></span></div><nav aria-label="Информация"><button type="button" data-info="feedback">Обратная связь</button><button type="button" data-info="about">О программе</button><button type="button" data-info="help">Помощь</button></nav></footer>
+  <dialog id="unified-info" aria-labelledby="unified-info-title"><header><h2 id="unified-info-title"></h2><button id="unified-info-close" type="button" aria-label="Закрыть информационную панель">×</button></header><div id="unified-info-body"></div></dialog>
   <!-- SINTEZ:PRESENTATION -->
   <dialog id="sintez-presentation" aria-label="Знакомство с СИНТЕЗ МЕРЫ">
     <div class="sx-intro-shell">

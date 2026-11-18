@@ -112,6 +112,16 @@ async function scenario(width, count) {
     assert.equal(await page.locator('#library-list').getAttribute('aria-labelledby'), 'section-title');
     assert.equal(await page.locator('#library-list').getAttribute('tabindex'), '0');
 
+    if(process.env.KITCHEN_UNIFIED_TEST==='1') {
+      // The action bar reserves space on the next animation frame. Measure the
+      // settled layout for every library size, never its intermediate frame.
+      await page.evaluate(()=>document.fonts.ready);
+      await page.waitForFunction(()=>{
+        const bar=document.querySelector('#editor .form-actions');
+        const gap=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--editor-actions-gap'));
+        return bar?.dataset.fixed==='true' && gap>0 && Math.abs(gap-bar.getBoundingClientRect().height)<.5;
+      });
+    }
     const sizes = await page.locator('#library-list').evaluate(list => {
       const css = getComputedStyle(list), box = list.getBoundingClientRect();
       return { height: box.height, clientHeight: list.clientHeight, scrollHeight: list.scrollHeight,

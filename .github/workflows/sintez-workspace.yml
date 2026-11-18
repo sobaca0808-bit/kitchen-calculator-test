@@ -1,0 +1,145 @@
+name: SINTEZ unified workspace, data, A4 and PWA
+on:
+  push:
+    branches: [feature/sintez-unified-workspace]
+permissions:
+  contents: read
+concurrency:
+  group: '${{ github.workflow }}-${{ github.ref }}'
+  cancel-in-progress: true
+jobs:
+  glass:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Install disposable checks
+        run: |
+          npm install --prefix "$RUNNER_TEMP/modes-tools" --ignore-scripts --no-audit --no-fund playwright@1.62.1
+          python3 -m venv "$RUNNER_TEMP/modes-python"
+          "$RUNNER_TEMP/modes-python/bin/pip" install Pillow==12.0.0
+          sudo apt-get update -qq
+          sudo apt-get install -y poppler-utils
+      - name: Protect existing formulas, storage, photos, presentation, print and PWA
+        run: |
+          python3 scripts/check-unified-core.py > "$RUNNER_TEMP/glass-core.json"
+          node --test tests/sintez-glass.test.js tests/recipe-showcase.test.js tests/workspace-policy.test.js
+          "$RUNNER_TEMP/modes-python/bin/python" tests/sintez-release-build.test.py
+          python3 tests/sintez-release-verifier.test.py
+          python3 scripts/build-sintez-release-candidate.py --output "$RUNNER_TEMP/modes-site" --target workspace --source '${{ github.sha }}'
+      - name: Build the exact PR36 A4 reference without changing any branch
+        run: |
+          git worktree add --detach "$RUNNER_TEMP/pr35" a71c0bf0f285d82e315b9146224bb8250d564268
+          python3 "$RUNNER_TEMP/pr35/scripts/build-sintez-release-candidate.py" --output "$RUNNER_TEMP/pr35-site" --target showcase
+          git worktree remove "$RUNNER_TEMP/pr35"
+      - name: Test all modes, mobile and keyboard navigation, JSON, photos, drafts and A4
+        env:
+          NODE_PATH: ${{ runner.temp }}/modes-tools/node_modules
+          CHROMIUM_PATH: /usr/bin/google-chrome
+          KITCHEN_SINTEZ_RUNTIME_ROOT: ${{ runner.temp }}/modes-site
+          SINTEZ_MODES_ARTIFACTS: ${{ runner.temp }}/modes-proof
+          SINTEZ_GLASS_ARTIFACTS: ${{ runner.temp }}/glass-proof
+          SINTEZ_UNIFIED_ARTIFACTS: ${{ runner.temp }}/card-proof
+          SINTEZ_UNIFIED_BASE_ROOT: ${{ runner.temp }}/pr35-site
+        run: |
+          node tests/unified-workspace.browser.test.js
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: sintez-workspace-ui
+          path: |
+            ${{ runner.temp }}/glass-core.json
+            ${{ runner.temp }}/modes-proof
+            ${{ runner.temp }}/glass-proof
+            ${{ runner.temp }}/card-proof
+            ${{ runner.temp }}/modes-site/pwa-version.json
+            ${{ runner.temp }}/modes-site/manifest.webmanifest
+  regressions:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Install disposable regression tools
+        run: |
+          npm install --prefix "$RUNNER_TEMP/modes-tools" --ignore-scripts --no-audit --no-fund playwright@1.62.1
+          sudo apt-get update -qq
+          sudo apt-get install -y poppler-utils
+      - name: Run existing logic and functional browser scenarios on all palettes
+        shell: bash
+        env:
+          NODE_PATH: ${{ runner.temp }}/modes-tools/node_modules
+          CHROMIUM_PATH: /usr/bin/google-chrome
+          KITCHEN_TEST_ARTIFACT_ROOT: ${{ runner.temp }}/regressions
+        run: node scripts/check-preview.mjs --glass --unified 2>&1 | tee "$RUNNER_TEMP/modes-regressions.log"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: sintez-workspace-regressions
+          path: |
+            ${{ runner.temp }}/modes-regressions.log
+            ${{ runner.temp }}/regressions/**/screen-*.png
+  native-linux:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Prepare graphical Chrome and versioned test caches
+        run: |
+          npm install --prefix "$RUNNER_TEMP/modes-tools" --ignore-scripts --no-audit --no-fund playwright@1.62.1
+          sudo apt-get update -qq
+          sudo apt-get install -y xvfb xauth scrot
+          python3 scripts/prepare-sintez-modes-pwa-tests.py --target workspace --output "$RUNNER_TEMP/modes-versions"
+      - name: Verify native install, offline modes, safe waiting update and critical errors
+        env:
+          NODE_PATH: ${{ runner.temp }}/modes-tools/node_modules
+          CHROMIUM_PATH: /usr/bin/google-chrome
+          SINTEZ_MODES_PWA_MOUNT: /kitchen-calculator-test/sintez-workspace/
+          SINTEZ_MODES_PWA_VERSIONS: ${{ runner.temp }}/modes-versions
+          SINTEZ_MODES_PWA_ARTIFACTS: ${{ runner.temp }}/modes-pwa-proof
+          KITCHEN_PWA_HEADFUL: '1'
+        run: xvfb-run -a -s '-screen 0 1440x1000x24' node tests/sintez-modes-pwa.browser.test.js
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: sintez-workspace-native-linux
+          path: ${{ runner.temp }}/modes-pwa-proof
+  native-windows:
+    runs-on: windows-latest
+    timeout-minutes: 15
+    env:
+      PYTHONUTF8: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Prepare real Chrome tests
+        run: |
+          npm install --prefix "$env:RUNNER_TEMP/modes-tools" --ignore-scripts --no-audit --no-fund playwright@1.62.1
+          python scripts/prepare-sintez-modes-pwa-tests.py --target workspace --output "$env:RUNNER_TEMP/modes-versions"
+      - name: Verify native Windows install and safe mode updates
+        env:
+          NODE_PATH: ${{ runner.temp }}/modes-tools/node_modules
+          CHROMIUM_PATH: C:\Program Files\Google\Chrome\Application\chrome.exe
+          SINTEZ_MODES_PWA_MOUNT: /kitchen-calculator-test/sintez-workspace/
+          SINTEZ_MODES_PWA_VERSIONS: ${{ runner.temp }}/modes-versions
+          SINTEZ_MODES_PWA_ARTIFACTS: ${{ runner.temp }}/modes-pwa-proof
+          KITCHEN_PWA_HEADFUL: '1'
+        run: node tests/sintez-modes-pwa.browser.test.js
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: sintez-workspace-native-windows
+          path: ${{ runner.temp }}/modes-pwa-proof

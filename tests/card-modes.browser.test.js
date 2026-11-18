@@ -114,7 +114,7 @@ function pdfDetails(file){
   await test('calculation keeps the original cost, raw amount, output and preparation labels',async page=>{
    const before=await stored(page),proof=await page.evaluate(()=>{const state=KitchenStorage.load().data,recipe=state.recipes.find(r=>r.id==='dish');return {food:KitchenCalc.calcRecipe(state,'dish').knownCost,packing:KitchenPackaging.calculate(state,recipe,5).knownCost};});
    assert(Math.abs(proof.food-726.6666666666667)<1e-8);assert.equal(proof.packing,50);
-   assert.match(await page.locator('.card-cost').innerText(),/776,67/);assert.equal(await page.locator('.food-ingredients th').count(),4);
+   assert.match(await page.locator('.card-cost').innerText(),/776,67/);assert.equal(await page.locator('.food-ingredients th').count(),process.env.KITCHEN_UNIFIED_TEST==='1'?5:4,'The unified screen adds a unit-price column; existing raw/output/cost columns remain');
    assert.match(await row(page,'dish-potato').innerText(),/800\s*г/);assert.match(await row(page,'dish-potato').innerText(),/500/);assert.match(await row(page,'dish-meat').innerText(),/416,67/);
    assert.equal(await page.locator('.food-ingredients .prep-label').count(),2);
    await mode(page,'chef');await mode(page,'calculation');await ready(page);assert.match(await page.locator('.card-cost').innerText(),/776,67/);assert.deepEqual(await stored(page),before);

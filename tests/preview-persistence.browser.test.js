@@ -1,4 +1,5 @@
 'use strict';
+if(process.env.KITCHEN_UNIFIED_TEST==='1')require('./helpers/unified-navigation').bootstrap();
 const assert=require('node:assert/strict'),fs=require('node:fs/promises'),path=require('node:path'),os=require('node:os'),{chromium}=require('playwright');
 const {start}=require('./helpers/combined-preview-server.js'),{lifecycle,PREVIEW,TEST}=require('./helpers/persistence-lifecycle.js');
 const root=path.resolve(__dirname,'..'),output=process.env.KITCHEN_TEST_ARTIFACT_DIR||path.join(os.tmpdir(),'kitchen-issue21-proof');
@@ -91,6 +92,7 @@ async function dbCount(page,name,store){return page.evaluate(async({name,store})
   for(const select of await page.locator('[data-conflict-choice]').all())await select.selectOption('both');await page.waitForFunction(()=>!document.querySelector('#import-apply').disabled);
   await page.evaluate(bookKey=>{const get=Storage.prototype.getItem,set=Storage.prototype.setItem;let written=false;Storage.prototype.setItem=function(key,value){const result=set.call(this,key,value);if(key===bookKey)written=true;return result;};Storage.prototype.getItem=function(key){if(key===bookKey&&written)throw new DOMException('Fictional verification denial','SecurityError');return get.call(this,key);};},PREVIEW.book);
   await apply(page);assert.match(await page.locator('#message').innerText(),/не подтвердил/);const actual=JSON.parse(await raw(page)),saved=actual.recipes.find(r=>r.id==='new-dish');assert(saved.photoId);assert.equal(await dbCount(page,PREVIEW.photos,'photos'),1);assert.equal(await dbCount(page,PREVIEW.backups,'backups'),1);
+  if(process.env.KITCHEN_UNIFIED_TEST==='1')page.once('dialog',dialog=>dialog.accept());
   await page.reload();await page.locator('[data-open="new-dish"]').click();await page.waitForFunction(()=>!document.querySelector('#print-recipe').disabled);assert.equal(await page.locator('#card-photos img').count(),1);
  });
  await test('denied storage does not replace anything and has an explicit diagnosis',{}, {},async(page,context)=>{

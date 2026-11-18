@@ -11,6 +11,7 @@ const root=fileURLToPath(new URL('../',import.meta.url));
 // Existing functional suites still run on the actual redesigned application.
 const glass=process.argv.includes('--glass');
 if(glass)process.env.KITCHEN_GLASS_TEST='1';
+if(process.argv.includes('--unified'))process.env.KITCHEN_UNIFIED_TEST='1';
 const mount='/kitchen-calculator-test';
 const logicTests=['calculations','storage','storage-extensions','json-merge','import-transaction','folders','recipe-view','recipe-card-model','profitability','preview-isolation','pages','packaging','drafts','photos','photo-print-selection','appearance','preview-persistence','establishment-expenses','recipe-expense-preferences'].map(name=>'tests/'+name+'.test.js');
 function run(args,env=process.env) {
@@ -25,6 +26,7 @@ function run(args,env=process.env) {
   });
 }
 const runtimeFiles=new Map([
+  ['/assets/unified-workspace.css','assets/unified-workspace.css'],['/assets/mode-chef.svg','assets/mode-chef.svg'],['/icons/sintez/icon-192.png','icons/sintez/icon-192.png'],['/assets/unified-kitchen.webp','assets/unified-kitchen.webp'],['/assets/unified-kitchen-mobile.webp','assets/unified-kitchen-mobile.webp'],...['workspace-policy','unified-card','build-info','unified-workspace'].map(name=>['/js/'+name+'.js','js/'+name+'.js']),
   ['/assets/recipe-showcase.css','assets/recipe-showcase.css'],['/js/recipe-showcase.js','js/recipe-showcase.js'],
   ['/assets/sintez-glass.css','assets/sintez-glass.css'],['/assets/sintez-glass-kitchen.webp','assets/sintez-glass-kitchen.webp'],['/assets/sintez-glass-kitchen-mobile.webp','assets/sintez-glass-kitchen-mobile.webp'],
   ['/assets/sintez-matte.svg','assets/sintez-matte.svg'],
@@ -63,12 +65,16 @@ try {
   const results=await Promise.allSettled(themes.map(async theme=>{
     const folder=resolve(artifacts,theme),temporary=resolve(folder,'tmp');await mkdir(temporary,{recursive:true});
     const env={...process.env,KITCHEN_TEST_URL:testURL,KITCHEN_TEST_THEME:theme,KITCHEN_TEST_ARTIFACT_DIR:folder,TMPDIR:temporary};
-    for(const suite of suites)await run(['tests/'+suite+'.test.js'],env);
+    const suiteFailures=[];
+    for(const suite of suites){try{await run(['tests/'+suite+'.test.js'],env);}catch(error){suiteFailures.push(error);console.error('SUITE_FAILURE',theme,suite,error.message);}}
+    if(suiteFailures.length)throw Error(suiteFailures.map(error=>error.message).join('\n'));
     console.log('THEME_MATRIX_PASS',theme);
   }));
-  const failures=results.filter(result=>result.status==='rejected');if(failures.length)throw Error(failures.map(result=>result.reason.message).join('\n'));
-  if(!glass)await run(['tests/appearance.browser.test.js'],{...process.env,KITCHEN_TEST_URL:testURL,KITCHEN_TEST_THEME:'',KITCHEN_TEST_ARTIFACT_DIR:resolve(artifacts,'appearance')});
-  await run(['tests/establishment-expenses.browser.test.js'],{...process.env,KITCHEN_TEST_URL:testURL,KITCHEN_TEST_THEME:'',KITCHEN_TEST_ARTIFACT_DIR:resolve(artifacts,'expenses')});
-  await run(['tests/preview-persistence.browser.test.js'],{...process.env,KITCHEN_TEST_THEME:'',KITCHEN_TEST_ARTIFACT_DIR:resolve(artifacts,'persistence')});
+  const failures=results.filter(result=>result.status==='rejected').map(result=>result.reason);
+  async function common(args,env){try{await run(args,env);}catch(error){failures.push(error);}}
+  if(!glass)await common(['tests/appearance.browser.test.js'],{...process.env,KITCHEN_TEST_URL:testURL,KITCHEN_TEST_THEME:'',KITCHEN_TEST_ARTIFACT_DIR:resolve(artifacts,'appearance')});
+  await common(['tests/establishment-expenses.browser.test.js'],{...process.env,KITCHEN_TEST_URL:testURL,KITCHEN_TEST_THEME:'',KITCHEN_TEST_ARTIFACT_DIR:resolve(artifacts,'expenses')});
+  await common(['tests/preview-persistence.browser.test.js'],{...process.env,KITCHEN_TEST_THEME:'',KITCHEN_TEST_ARTIFACT_DIR:resolve(artifacts,'persistence')});
+  if(failures.length)throw Error(failures.map(error=>error.message).join('\n'));
 } catch(error){console.error(error.message);process.exitCode=1;}
 finally {await new Promise(done=>server.close(done));}

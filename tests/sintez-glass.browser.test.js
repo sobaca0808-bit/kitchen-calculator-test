@@ -35,7 +35,7 @@ async function contrast(p,selector,label,min=4.5){
  assert(value>=min,label+' contrast '+value.toFixed(2)+' < '+min);measurements.push({label,minimumContrast:Number(value.toFixed(2)),required:min,backgroundBoundedByBlackAndWhite:true});
 }
 (async()=>{
- await fs.mkdir(output,{recursive:true});if(process.env.SINTEZ_GLASS_URL){url=process.env.SINTEZ_GLASS_URL;assert(['https://sobaca0808-bit.github.io/kitchen-calculator-test/sintez-glass/','https://sobaca0808-bit.github.io/kitchen-calculator-test/sintez-card/'].includes(url));}else{server=await start(process.env.KITCHEN_SINTEZ_RUNTIME_ROOT||path.resolve(__dirname,'..'),{home:true});url=server.url;}
+ await fs.mkdir(output,{recursive:true});if(process.env.SINTEZ_GLASS_URL){url=process.env.SINTEZ_GLASS_URL;assert(['https://sobaca0808-bit.github.io/kitchen-calculator-test/sintez-glass/','https://sobaca0808-bit.github.io/kitchen-calculator-test/sintez-card/','https://sobaca0808-bit.github.io/kitchen-calculator-test/sintez-home-work/'].includes(url));}else{server=await start(process.env.KITCHEN_SINTEZ_RUNTIME_ROOT||path.resolve(__dirname,'..'),{home:true});url=server.url;}
  browser=await chromium.launch(launch);
  await test('fresh glass entry is dark and never seeds or rewrites any recipe database',async p=>{assert.equal(await p.evaluate(()=>KitchenAppearance.current()),'graphite');assert.equal(await p.evaluate(()=>localStorage.getItem(KitchenStorage.KEY)),null);assert.equal(await p.evaluate(()=>localStorage.getItem(KitchenAppearance.KEY)),null);assert.equal(await p.locator('[data-sintez-mode]').count(),3);},{empty:true});
  for(const theme of ['graphite','berry','sage'])for(const width of [1366,390])await test(theme+' shares glass surfaces across every existing section at '+width+'px',async p=>{
