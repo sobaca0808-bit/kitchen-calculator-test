@@ -1,0 +1,107 @@
+name: Publish only SINTEZ recipe showcase stage 1
+on:
+  push:
+    branches: [preview/browser]
+    paths: ['preview-hosting/sintez-card/**', '.github/workflows/sintez-card-preview.yml']
+permissions:
+  contents: read
+  actions: read
+  pages: write
+  id-token: write
+concurrency:
+  group: github-pages
+  cancel-in-progress: false
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    environment:
+      name: github-pages
+      url: https://sobaca0808-bit.github.io/kitchen-calculator-test/sintez-card/
+    env:
+      APPROVED_MAIN: 9f45d0206022d5cfb66352b5a1518b3ff9a50abc
+      PARENT_SOURCE: bc61c94cee52cf363ff9e0c750f53bdca68e7f87
+      CARD_SOURCE: a71c0bf0f285d82e315b9146224bb8250d564268
+      CHECK_RUN: '44272416068'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Require unchanged main and exact source on every CI wait
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          test '${{ github.repository }}' = sobaca0808-bit/kitchen-calculator-test
+          for ATTEMPT in $(seq 1 120); do
+            test "$(gh api repos/${{ github.repository }}/git/ref/heads/main --jq .object.sha)" = "$APPROVED_MAIN"
+            test "$(gh api repos/${{ github.repository }}/git/ref/heads/feature/sintez-glass --jq .object.sha)" = "$PARENT_SOURCE"
+            test "$(gh api repos/${{ github.repository }}/git/ref/heads/feature/sintez-recipe-showcase --jq .object.sha)" = "$CARD_SOURCE"
+            test "$(gh api repos/${{ github.repository }}/actions/runs/$CHECK_RUN --jq .head_sha)" = "$CARD_SOURCE"
+            test "$(gh api repos/${{ github.repository }}/actions/runs/$CHECK_RUN --jq .path)" = .github/workflows/sintez-card.yml
+            STATUS="$(gh api repos/${{ github.repository }}/actions/runs/$CHECK_RUN --jq .status)"
+            if [ "$STATUS" = completed ]; then break; fi
+            echo "Waiting for all candidate checks ($ATTEMPT/120)."
+            sleep 12
+          done
+          test "$(gh api repos/${{ github.repository }}/actions/runs/$CHECK_RUN --jq .conclusion)" = success
+      - name: Rebuild the exact old publication and append only the new card route
+        run: python3 preview-hosting/sintez-card/build.py --pages "$RUNNER_TEMP/modes-site" --proof "$RUNNER_TEMP/modes-publication.json" --source "$CARD_SOURCE"
+      - name: Verify all 528 existing HTTPS resources before publication
+        run: python3 preview-hosting/sintez-card/verify.py "$RUNNER_TEMP/modes-publication.json" --phase before
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: ${{ runner.temp }}/modes-site
+      - name: Recheck main, parent and source immediately before deployment
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          test "$(gh api repos/${{ github.repository }}/git/ref/heads/main --jq .object.sha)" = "$APPROVED_MAIN"
+          test "$(gh api repos/${{ github.repository }}/git/ref/heads/feature/sintez-glass --jq .object.sha)" = "$PARENT_SOURCE"
+          test "$(gh api repos/${{ github.repository }}/git/ref/heads/feature/sintez-recipe-showcase --jq .object.sha)" = "$CARD_SOURCE"
+      - uses: actions/deploy-pages@v4
+      - name: Verify all 528 preserved and 66 new HTTPS resources
+        run: python3 preview-hosting/sintez-card/verify.py "$RUNNER_TEMP/modes-publication.json" --phase after
+      - name: Install disposable public-browser checks
+        run: |
+          npm install --prefix "$RUNNER_TEMP/modes-tools" --ignore-scripts --no-audit --no-fund playwright@1.62.1
+          sudo apt-get update -qq
+          sudo apt-get install -y poppler-utils
+      - name: Verify actual HTTPS modes, all palettes, phone layouts, saved data, JSON and A4
+        env:
+          NODE_PATH: ${{ runner.temp }}/modes-tools/node_modules
+          CHROMIUM_PATH: /usr/bin/google-chrome
+          SINTEZ_MODES_ARTIFACTS: ${{ runner.temp }}/modes-live-proof
+          SINTEZ_GLASS_ARTIFACTS: ${{ runner.temp }}/glass-live-proof
+          SINTEZ_CARD_ARTIFACTS: ${{ runner.temp }}/card-live-proof
+        run: node preview-hosting/sintez-card/check.cjs
+      - name: Prepare compact public screenshots, A4 examples and proofs
+        run: |
+          python3 -m venv "$RUNNER_TEMP/card-evidence-python"
+          "$RUNNER_TEMP/card-evidence-python/bin/pip" install Pillow==12.0.0
+          "$RUNNER_TEMP/card-evidence-python/bin/python" preview-hosting/sintez-card/evidence.py --input "$RUNNER_TEMP/card-live-proof" --output "$RUNNER_TEMP/card-review" --publication "$RUNNER_TEMP/modes-publication.json"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sintez-card-review
+          path: ${{ runner.temp }}/card-review
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: sintez-card-publication-proof
+          path: |
+            ${{ runner.temp }}/modes-publication.json
+            ${{ runner.temp }}/modes-live-proof
+            ${{ runner.temp }}/glass-live-proof
+            ${{ runner.temp }}/card-live-proof
+      - name: Report the verified separate card preview
+        run: |
+          cat >> "$GITHUB_STEP_SUMMARY" <<'REPORT'
+          https://sobaca0808-bit.github.io/kitchen-calculator-test/sintez-card/
+
+          Only the additional /sintez-card/ stand was published.
+          All earlier files and 528 existing HTTP resources are preserved.
+          34 mode, 17 glass-system and 22 showcase HTTPS Chrome checks cover phone/desktop, modes, JSON, photos, drafts and A4.
+          The five existing SINTEZ test storage names remain shared; no new database or migration.
+          Main, all previous stands, existing PWA installations and Pages settings are unchanged.
+          Physical Android and owner approval are still required before any main release.
+          REPORT
