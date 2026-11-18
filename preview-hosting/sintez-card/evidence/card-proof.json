@@ -1,0 +1,352 @@
+{
+  "url": "https://sobaca0808-bit.github.io/kitchen-calculator-test/sintez-card/",
+  "baselineURL": "https://sobaca0808-bit.github.io/kitchen-calculator-test/sintez-glass/",
+  "passed": 22,
+  "physicalAndroidTested": false,
+  "contrast": [
+    {
+      "label": "graphite-1366",
+      "selector": ".showcase-metric-food>dd",
+      "minimum": 9.77,
+      "required": 4.5
+    },
+    {
+      "label": "graphite-1366",
+      "selector": ".showcase-metric>dt",
+      "minimum": 9.39,
+      "required": 4.5
+    },
+    {
+      "label": "graphite-1366",
+      "selector": ".showcase-metric>p",
+      "minimum": 9.39,
+      "required": 4.5
+    },
+    {
+      "label": "graphite-390",
+      "selector": ".showcase-metric-food>dd",
+      "minimum": 9.77,
+      "required": 4.5
+    },
+    {
+      "label": "graphite-390",
+      "selector": ".showcase-metric>dt",
+      "minimum": 9.39,
+      "required": 4.5
+    },
+    {
+      "label": "graphite-390",
+      "selector": ".showcase-metric>p",
+      "minimum": 9.39,
+      "required": 4.5
+    },
+    {
+      "label": "berry-1366",
+      "selector": ".showcase-metric-food>dd",
+      "minimum": 6.65,
+      "required": 4.5
+    },
+    {
+      "label": "berry-1366",
+      "selector": ".showcase-metric>dt",
+      "minimum": 7.79,
+      "required": 4.5
+    },
+    {
+      "label": "berry-1366",
+      "selector": ".showcase-metric>p",
+      "minimum": 7.79,
+      "required": 4.5
+    },
+    {
+      "label": "berry-390",
+      "selector": ".showcase-metric-food>dd",
+      "minimum": 6.65,
+      "required": 4.5
+    },
+    {
+      "label": "berry-390",
+      "selector": ".showcase-metric>dt",
+      "minimum": 7.79,
+      "required": 4.5
+    },
+    {
+      "label": "berry-390",
+      "selector": ".showcase-metric>p",
+      "minimum": 7.79,
+      "required": 4.5
+    },
+    {
+      "label": "sage-1366",
+      "selector": ".showcase-metric-food>dd",
+      "minimum": 6.84,
+      "required": 4.5
+    },
+    {
+      "label": "sage-1366",
+      "selector": ".showcase-metric>dt",
+      "minimum": 7.4,
+      "required": 4.5
+    },
+    {
+      "label": "sage-1366",
+      "selector": ".showcase-metric>p",
+      "minimum": 7.4,
+      "required": 4.5
+    },
+    {
+      "label": "sage-390",
+      "selector": ".showcase-metric-food>dd",
+      "minimum": 6.84,
+      "required": 4.5
+    },
+    {
+      "label": "sage-390",
+      "selector": ".showcase-metric>dt",
+      "minimum": 7.4,
+      "required": 4.5
+    },
+    {
+      "label": "sage-390",
+      "selector": ".showcase-metric>p",
+      "minimum": 7.4,
+      "required": 4.5
+    }
+  ],
+  "printComparisons": [
+    {
+      "theme": "graphite",
+      "mode": "calculation",
+      "photos": "none",
+      "exactWordsCoordinatesAndPixels": true
+    },
+    {
+      "theme": "graphite",
+      "mode": "calculation",
+      "photos": "first",
+      "exactWordsCoordinatesAndPixels": true
+    },
+    {
+      "theme": "graphite",
+      "mode": "calculation",
+      "photos": "second",
+      "exactWordsCoordinatesAndPixels": true
+    },
+    {
+      "theme": "graphite",
+      "mode": "calculation",
+      "photos": "both",
+      "exactWordsCoordinatesAndPixels": true
+    },
+    {
+      "theme": "graphite",
+      "mode": "chef",
+      "photos": "none",
+      "exactWordsCoordinatesAndPixels": true
+    },
+    {
+      "theme": "graphite",
+      "mode": "chef",
+      "photos": "first",
+      "exactWordsCoordinatesAndPixels": true
+    },
+    {
+      "theme": "graphite",
+      "mode": "chef",
+      "photos": "second",
+      "exactWordsCoordinatesAndPixels": true
+    },
+    {
+      "theme": "graphite",
+      "mode": "chef",
+      "photos": "both",
+      "exactWordsCoordinatesAndPixels": true
+    },
+    {
+      "theme": "berry",
+      "mode": "calculation",
+      "photos": "none",
+      "exactWordsCoordinatesAndPixels": true
+    },
+    {
+      "theme": "berry",
+      "mode": "calculation",
+      "photos": "first",
+      "exactWordsCoordinatesAndPixels": true
+    },
+    {
+      "theme": "berry",
+      "mode": "calculation",
+      "photos": "second",
+      "exactWordsCoordinatesAndPixels": true
+    },
+    {
+      "theme": "berry",
+      "mode": "calculation",
+      "photos": "both",
+      "exactWordsCoordinatesAndPixels": true
+    },
+    {
+      "theme": "berry",
+      "mode": "chef",
+      "photos": "none",
+      "exactWordsCoordinatesAndPixels": true
+    },
+    {
+      "theme": "berry",
+      "mode": "chef",
+      "photos": "first",
+      "exactWordsCoordinatesAndPixels": true
+    },
+    {
+      "theme": "berry",
+      "mode": "chef",
+      "photos": "second",
+      "exactWordsCoordinatesAndPixels": true
+    },
+    {
+      "theme": "berry",
+      "mode": "chef",
+      "photos": "both",
+      "exactWordsCoordinatesAndPixels": true
+    },
+    {
+      "theme": "sage",
+      "mode": "calculation",
+      "photos": "none",
+      "exactWordsCoordinatesAndPixels": true
+    },
+    {
+      "theme": "sage",
+      "mode": "calculation",
+      "photos": "first",
+      "exactWordsCoordinatesAndPixels": true
+    },
+    {
+      "theme": "sage",
+      "mode": "calculation",
+      "photos": "second",
+      "exactWordsCoordinatesAndPixels": true
+    },
+    {
+      "theme": "sage",
+      "mode": "calculation",
+      "photos": "both",
+      "exactWordsCoordinatesAndPixels": true
+    },
+    {
+      "theme": "sage",
+      "mode": "chef",
+      "photos": "none",
+      "exactWordsCoordinatesAndPixels": true
+    },
+    {
+      "theme": "sage",
+      "mode": "chef",
+      "photos": "first",
+      "exactWordsCoordinatesAndPixels": true
+    },
+    {
+      "theme": "sage",
+      "mode": "chef",
+      "photos": "second",
+      "exactWordsCoordinatesAndPixels": true
+    },
+    {
+      "theme": "sage",
+      "mode": "chef",
+      "photos": "both",
+      "exactWordsCoordinatesAndPixels": true
+    }
+  ],
+  "scenarios": [
+    {
+      "name": "graphite photo, green cost and distinct totals at 1366",
+      "passed": true
+    },
+    {
+      "name": "graphite photo, green cost and distinct totals at 390",
+      "passed": true
+    },
+    {
+      "name": "berry photo, green cost and distinct totals at 1366",
+      "passed": true
+    },
+    {
+      "name": "berry photo, green cost and distinct totals at 390",
+      "passed": true
+    },
+    {
+      "name": "sage photo, green cost and distinct totals at 1366",
+      "passed": true
+    },
+    {
+      "name": "sage photo, green cost and distinct totals at 390",
+      "passed": true
+    },
+    {
+      "name": "zero/one/second-only photo keeps old data 0",
+      "passed": true
+    },
+    {
+      "name": "zero/one/second-only photo keeps old data 1",
+      "passed": true
+    },
+    {
+      "name": "zero/one/second-only photo keeps old data second",
+      "passed": true
+    },
+    {
+      "name": "legacy photoId remains intact when simply viewed, scaled or exported",
+      "passed": true
+    },
+    {
+      "name": "expense switch changes the showcase immediately and saves only the existing preference",
+      "passed": true
+    },
+    {
+      "name": "no configured expenses and partial procurement never look like a full calculation",
+      "passed": true
+    },
+    {
+      "name": "chef card reveals no financial values in the showcase or detailed card",
+      "passed": true
+    },
+    {
+      "name": "primary selection is draft-only, survives reload, and saves without changing photo bytes",
+      "passed": true
+    },
+    {
+      "name": "showcase controls and details fit 320",
+      "passed": true
+    },
+    {
+      "name": "showcase controls and details fit 768",
+      "passed": true
+    },
+    {
+      "name": "showcase controls and details fit 1024",
+      "passed": true
+    },
+    {
+      "name": "primary selection cannot overwrite the old recipe when saving runs out of space",
+      "passed": true
+    },
+    {
+      "name": "true Chrome restart retains chosen primary photo and the complete database",
+      "passed": true
+    },
+    {
+      "name": "graphite A4 pixels match PR35 in both forms and four photo options",
+      "passed": true
+    },
+    {
+      "name": "berry A4 pixels match PR35 in both forms and four photo options",
+      "passed": true
+    },
+    {
+      "name": "sage A4 pixels match PR35 in both forms and four photo options",
+      "passed": true
+    }
+  ]
+}

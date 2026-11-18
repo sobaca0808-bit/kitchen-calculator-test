@@ -1,0 +1,833 @@
+{
+  "url": "https://sobaca0808-bit.github.io/kitchen-calculator-test/sintez-card/",
+  "passed": 17,
+  "physicalAndroidTested": false,
+  "contrast": [
+    {
+      "label": "graphite-1366 home title",
+      "minimumContrast": 14.35,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "graphite-1366 home copy",
+      "minimumContrast": 9.7,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "graphite-1366 work navigation",
+      "minimumContrast": 10.06,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "graphite-1366 recipe title",
+      "minimumContrast": 14.88,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "graphite-1366 ingredient",
+      "minimumContrast": 14.88,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "graphite-1366 photo dialog",
+      "minimumContrast": 12.87,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "graphite-1366 recipe field",
+      "minimumContrast": 16.25,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "graphite-1366 primary",
+      "minimumContrast": 9.49,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "graphite-1366 products name",
+      "minimumContrast": 12.87,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "graphite-1366 products label",
+      "minimumContrast": 8.7,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "graphite-1366 products danger",
+      "minimumContrast": 9.07,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "graphite-1366 prep name",
+      "minimumContrast": 12.87,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "graphite-1366 prep label",
+      "minimumContrast": 8.7,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "graphite-1366 prep danger",
+      "minimumContrast": 9.07,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "graphite-1366 packaging name",
+      "minimumContrast": 12.87,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "graphite-1366 packaging label",
+      "minimumContrast": 8.7,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "graphite-1366 packaging danger",
+      "minimumContrast": 9.07,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "graphite-1366 expenses input",
+      "minimumContrast": 16.25,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "graphite-1366 expenses explanation",
+      "minimumContrast": 10.06,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "graphite-1366 settings explanation",
+      "minimumContrast": 10.21,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "graphite-1366 import title",
+      "minimumContrast": 14.88,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "graphite-390 home title",
+      "minimumContrast": 14.35,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "graphite-390 home copy",
+      "minimumContrast": 9.7,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "graphite-390 work navigation",
+      "minimumContrast": 10.06,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "graphite-390 recipe title",
+      "minimumContrast": 14.88,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "graphite-390 ingredient",
+      "minimumContrast": 14.88,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "graphite-390 photo dialog",
+      "minimumContrast": 12.87,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "graphite-390 recipe field",
+      "minimumContrast": 16.25,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "graphite-390 primary",
+      "minimumContrast": 9.49,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "graphite-390 products name",
+      "minimumContrast": 12.87,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "graphite-390 products label",
+      "minimumContrast": 8.7,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "graphite-390 products danger",
+      "minimumContrast": 9.07,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "graphite-390 prep name",
+      "minimumContrast": 12.87,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "graphite-390 prep label",
+      "minimumContrast": 8.7,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "graphite-390 prep danger",
+      "minimumContrast": 9.07,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "graphite-390 packaging name",
+      "minimumContrast": 12.87,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "graphite-390 packaging label",
+      "minimumContrast": 8.7,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "graphite-390 packaging danger",
+      "minimumContrast": 9.07,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "graphite-390 expenses input",
+      "minimumContrast": 16.25,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "graphite-390 expenses explanation",
+      "minimumContrast": 10.06,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "graphite-390 settings explanation",
+      "minimumContrast": 10.21,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "graphite-390 import title",
+      "minimumContrast": 14.88,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "berry-1366 home title",
+      "minimumContrast": 7.76,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "berry-1366 home copy",
+      "minimumContrast": 5.07,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "berry-1366 work navigation",
+      "minimumContrast": 7.23,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "berry-1366 recipe title",
+      "minimumContrast": 11.06,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "berry-1366 ingredient",
+      "minimumContrast": 11.06,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "berry-1366 photo dialog",
+      "minimumContrast": 10.86,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "berry-1366 recipe field",
+      "minimumContrast": 12.64,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "berry-1366 primary",
+      "minimumContrast": 6.01,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "berry-1366 products name",
+      "minimumContrast": 10.86,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "berry-1366 products label",
+      "minimumContrast": 7.11,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "berry-1366 products danger",
+      "minimumContrast": 6.59,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "berry-1366 prep name",
+      "minimumContrast": 10.86,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "berry-1366 prep label",
+      "minimumContrast": 7.11,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "berry-1366 prep danger",
+      "minimumContrast": 6.59,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "berry-1366 packaging name",
+      "minimumContrast": 10.86,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "berry-1366 packaging label",
+      "minimumContrast": 7.11,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "berry-1366 packaging danger",
+      "minimumContrast": 6.59,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "berry-1366 expenses input",
+      "minimumContrast": 12.64,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "berry-1366 expenses explanation",
+      "minimumContrast": 7.23,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "berry-1366 settings explanation",
+      "minimumContrast": 6.4,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "berry-1366 import title",
+      "minimumContrast": 11.06,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "berry-390 home title",
+      "minimumContrast": 7.76,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "berry-390 home copy",
+      "minimumContrast": 5.07,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "berry-390 work navigation",
+      "minimumContrast": 7.23,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "berry-390 recipe title",
+      "minimumContrast": 11.06,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "berry-390 ingredient",
+      "minimumContrast": 11.06,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "berry-390 photo dialog",
+      "minimumContrast": 10.86,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "berry-390 recipe field",
+      "minimumContrast": 12.64,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "berry-390 primary",
+      "minimumContrast": 6.01,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "berry-390 products name",
+      "minimumContrast": 10.86,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "berry-390 products label",
+      "minimumContrast": 7.11,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "berry-390 products danger",
+      "minimumContrast": 6.59,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "berry-390 prep name",
+      "minimumContrast": 10.86,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "berry-390 prep label",
+      "minimumContrast": 7.11,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "berry-390 prep danger",
+      "minimumContrast": 6.59,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "berry-390 packaging name",
+      "minimumContrast": 10.86,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "berry-390 packaging label",
+      "minimumContrast": 7.11,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "berry-390 packaging danger",
+      "minimumContrast": 6.59,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "berry-390 expenses input",
+      "minimumContrast": 12.64,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "berry-390 expenses explanation",
+      "minimumContrast": 7.23,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "berry-390 settings explanation",
+      "minimumContrast": 6.4,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "berry-390 import title",
+      "minimumContrast": 11.06,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "sage-1366 home title",
+      "minimumContrast": 6.85,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "sage-1366 home copy",
+      "minimumContrast": 4.7,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "sage-1366 work navigation",
+      "minimumContrast": 7.58,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "sage-1366 recipe title",
+      "minimumContrast": 11.05,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "sage-1366 ingredient",
+      "minimumContrast": 11.05,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "sage-1366 photo dialog",
+      "minimumContrast": 9.74,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "sage-1366 recipe field",
+      "minimumContrast": 11.34,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "sage-1366 primary",
+      "minimumContrast": 6.44,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "sage-1366 products name",
+      "minimumContrast": 9.74,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "sage-1366 products label",
+      "minimumContrast": 6.68,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "sage-1366 products danger",
+      "minimumContrast": 6.31,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "sage-1366 prep name",
+      "minimumContrast": 9.74,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "sage-1366 prep label",
+      "minimumContrast": 6.68,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "sage-1366 prep danger",
+      "minimumContrast": 6.31,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "sage-1366 packaging name",
+      "minimumContrast": 9.74,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "sage-1366 packaging label",
+      "minimumContrast": 6.68,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "sage-1366 packaging danger",
+      "minimumContrast": 6.31,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "sage-1366 expenses input",
+      "minimumContrast": 11.34,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "sage-1366 expenses explanation",
+      "minimumContrast": 7.58,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "sage-1366 settings explanation",
+      "minimumContrast": 5.94,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "sage-1366 import title",
+      "minimumContrast": 11.05,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "sage-390 home title",
+      "minimumContrast": 6.85,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "sage-390 home copy",
+      "minimumContrast": 4.7,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "sage-390 work navigation",
+      "minimumContrast": 7.58,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "sage-390 recipe title",
+      "minimumContrast": 11.05,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "sage-390 ingredient",
+      "minimumContrast": 11.05,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "sage-390 photo dialog",
+      "minimumContrast": 9.74,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "sage-390 recipe field",
+      "minimumContrast": 11.34,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "sage-390 primary",
+      "minimumContrast": 6.44,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "sage-390 products name",
+      "minimumContrast": 9.74,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "sage-390 products label",
+      "minimumContrast": 6.68,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "sage-390 products danger",
+      "minimumContrast": 6.31,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "sage-390 prep name",
+      "minimumContrast": 9.74,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "sage-390 prep label",
+      "minimumContrast": 6.68,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "sage-390 prep danger",
+      "minimumContrast": 6.31,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "sage-390 packaging name",
+      "minimumContrast": 9.74,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "sage-390 packaging label",
+      "minimumContrast": 6.68,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "sage-390 packaging danger",
+      "minimumContrast": 6.31,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "sage-390 expenses input",
+      "minimumContrast": 11.34,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "sage-390 expenses explanation",
+      "minimumContrast": 7.58,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "sage-390 settings explanation",
+      "minimumContrast": 5.94,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    },
+    {
+      "label": "sage-390 import title",
+      "minimumContrast": 11.05,
+      "required": 4.5,
+      "backgroundBoundedByBlackAndWhite": true
+    }
+  ],
+  "scenarios": [
+    {
+      "name": "fresh glass entry is dark and never seeds or rewrites any recipe database",
+      "passed": true
+    },
+    {
+      "name": "graphite shares glass surfaces across every existing section at 1366px",
+      "passed": true
+    },
+    {
+      "name": "graphite shares glass surfaces across every existing section at 390px",
+      "passed": true
+    },
+    {
+      "name": "berry shares glass surfaces across every existing section at 1366px",
+      "passed": true
+    },
+    {
+      "name": "berry shares glass surfaces across every existing section at 390px",
+      "passed": true
+    },
+    {
+      "name": "sage shares glass surfaces across every existing section at 1366px",
+      "passed": true
+    },
+    {
+      "name": "sage shares glass surfaces across every existing section at 390px",
+      "passed": true
+    },
+    {
+      "name": "graphite retains small-screen navigation, form buttons and table readability at 320px",
+      "passed": true
+    },
+    {
+      "name": "berry retains small-screen navigation, form buttons and table readability at 320px",
+      "passed": true
+    },
+    {
+      "name": "sage retains small-screen navigation, form buttons and table readability at 320px",
+      "passed": true
+    },
+    {
+      "name": "graphite keeps A4 white, financial modes and all four photo options",
+      "passed": true
+    },
+    {
+      "name": "berry keeps A4 white, financial modes and all four photo options",
+      "passed": true
+    },
+    {
+      "name": "sage keeps A4 white, financial modes and all four photo options",
+      "passed": true
+    },
+    {
+      "name": "full palette switching updates home, work surfaces and settings without changing data",
+      "passed": true
+    },
+    {
+      "name": "workspace appearance popup stays in the phone viewport and above glass panels",
+      "passed": true
+    },
+    {
+      "name": "reduced transparency and forced colors preserve controls and keyboard focus",
+      "passed": true
+    },
+    {
+      "name": "long recipe keeps the fixed bar clear of the final input in every palette",
+      "passed": true
+    }
+  ]
+}

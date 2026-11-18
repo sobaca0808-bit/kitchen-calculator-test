@@ -1,0 +1,143 @@
+{
+  "url": "https://sobaca0808-bit.github.io/kitchen-calculator-test/sintez-card/",
+  "passed": 34,
+  "physicalAndroidTested": false,
+  "scenarios": [
+    {
+      "name": "three equal accessible cards and clean home at 1440x900",
+      "passed": true
+    },
+    {
+      "name": "three equal accessible cards and clean home at 1366x900",
+      "passed": true
+    },
+    {
+      "name": "three equal accessible cards and clean home at 1024x768",
+      "passed": true
+    },
+    {
+      "name": "three equal accessible cards and clean home at 768x1024",
+      "passed": true
+    },
+    {
+      "name": "three equal accessible cards and clean home at 390x844",
+      "passed": true
+    },
+    {
+      "name": "three equal accessible cards and clean home at 360x740",
+      "passed": true
+    },
+    {
+      "name": "three equal accessible cards and clean home at 320x690",
+      "passed": true
+    },
+    {
+      "name": "three equal accessible cards and clean home at 844x390",
+      "passed": true
+    },
+    {
+      "name": "every feature remains reachable with one shared database in home",
+      "passed": true
+    },
+    {
+      "name": "every feature remains reachable with one shared database in chef",
+      "passed": true
+    },
+    {
+      "name": "every feature remains reachable with one shared database in business",
+      "passed": true
+    },
+    {
+      "name": "business expenses are a work section, not a Settings item",
+      "passed": true
+    },
+    {
+      "name": "recipe photos and unsaved draft survive switching modes and reload",
+      "passed": true
+    },
+    {
+      "name": "calculator creates only an explicit unsaved recipe, mode choice alone never creates one",
+      "passed": true
+    },
+    {
+      "name": "unsaved product fields survive home and cancelled navigation",
+      "passed": true
+    },
+    {
+      "name": "existing product saving and dependent costs still update after navigation",
+      "passed": true
+    },
+    {
+      "name": "Settings retains all three themes, PWA controls and replay",
+      "passed": true
+    },
+    {
+      "name": "JSON transfer keeps both photos, folders, expenses and unknown fields; A4 stays clean",
+      "passed": true
+    },
+    {
+      "name": "empty first launch shows the selector and never seeds a database",
+      "passed": true
+    },
+    {
+      "name": "corrupt saved data has an actionable warning and is never overwritten",
+      "passed": true
+    },
+    {
+      "name": "real unavailable PWA registration keeps its critical error reachable from clean home",
+      "passed": true
+    },
+    {
+      "name": "invalid mode safely returns to the selector: ?mode=__proto__&section=mode",
+      "passed": true
+    },
+    {
+      "name": "invalid mode safely returns to the selector: ?mode=toString&section=mode",
+      "passed": true
+    },
+    {
+      "name": "invalid mode safely returns to the selector: ?mode=unknown&section=mode",
+      "passed": true
+    },
+    {
+      "name": "existing deep link remains usable: dish",
+      "passed": true
+    },
+    {
+      "name": "existing deep link remains usable: prep",
+      "passed": true
+    },
+    {
+      "name": "existing deep link remains usable: products",
+      "passed": true
+    },
+    {
+      "name": "existing deep link remains usable: packaging",
+      "passed": true
+    },
+    {
+      "name": "existing deep link remains usable: expenses",
+      "passed": true
+    },
+    {
+      "name": "existing deep link remains usable: settings",
+      "passed": true
+    },
+    {
+      "name": "explicit public presentation is unchanged and ends at the new selector",
+      "passed": true
+    },
+    {
+      "name": "large existing library does not create mode-specific records or overflow",
+      "passed": true
+    },
+    {
+      "name": "mode URL reload and mobile Settings remain usable",
+      "passed": true
+    },
+    {
+      "name": "full Chrome restart preserves prices, photos, folders, expenses and opens the selector",
+      "passed": true
+    }
+  ]
+}
