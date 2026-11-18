@@ -21,8 +21,8 @@ jobs:
     env:
       APPROVED_MAIN: 9f45d0206022d5cfb66352b5a1518b3ff9a50abc
       PARENT_SOURCE: b44c1f59dc363adb68270dad75056aa0565d78dd
-      GLASS_SOURCE: d2ebdea871bf9dfa019d3a2660d96e5bed9453ad
-      CHECK_RUN: '44208250019'
+      GLASS_SOURCE: bc61c94cee52cf363ff9e0c750f53bdca68e7f87
+      CHECK_RUN: '44209661530'
     steps:
       - uses: actions/checkout@v4
         with:
