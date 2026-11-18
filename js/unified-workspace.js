@@ -35,7 +35,7 @@
   function show(id,{create=false,focus=true}={}){
     if(!P.menus[mode].includes(id))return false;
     const section={dashboard:'dish',calculator:'dish',recipes:'dish',products:'products',prep:'prep',cards:'dish',processing:'prep',scaling:'dish',analysis:'dish',packaging:'packaging',expenses:'expenses',financials:'dish',favorites:'dish'}[id];
-    if(nav.current().dirty&&(create||id==='calculator'||section!==nav.current().section)&&!confirm('Есть несохранённые изменения. Продолжить? Рецепт сохранится отдельно в черновиках.'))return false;
+    if(nav.current().dirty&&(create||id==='calculator'||section!==nav.current().section)&&!confirm('Есть несохранённые изменения. Продолжить переход?'))return false;
     if(!nav.open(section,create||id==='calculator'))return false;
     nav.favorites(id==='favorites');active=id;paint();notice('');
     if(focus){const target=id==='calculator'?$('#item-name'):['scaling'].includes(id)?$('#view-portions'):$('#section-title');target?.focus({preventScroll:true});}
@@ -46,12 +46,12 @@
     if(!P.valid(next))return;
     const current=nav.current();
     if(current.dirty&&!P.allowed(current.section,next)){notice('Сохраните открытую запись перед переключением режима. Введённые значения остаются на экране.');return;}
-    if(next!==mode&&current.dirty&&!confirm('Есть несохранённые изменения. Переключить режим? Введённые поля сохранятся, рецепт останется в черновиках до нажатия «Сохранить».'))return;
+    if(next!==mode&&current.dirty&&!confirm('Есть несохранённые изменения. Переключить режим? Введённые поля останутся в редакторе. Сохраните запись кнопкой «Сохранить».'))return;
     if(!nav.park()||!nav.setMode(next))return;mode=next;
     if(!P.menus[mode].includes(active))active={dish:'recipes',prep:'prep',products:'products'}[nav.current().section]||'dashboard';
     paint();notice('');
   }
-  function settings(){if(root.dataset.sintezScreen==='workspace'&&nav.current().dirty&&!confirm('Есть несохранённые изменения. Открыть настройки? Рецепт останется в черновиках.'))return;if(!nav.park())return;$('#sintez-settings').hidden=false;root.dataset.sintezScreen='settings';$('#sintez-settings-title').focus({preventScroll:true});for(const input of $('#sintez-settings').querySelectorAll('[name=sintez-theme]'))input.checked=input.value===KitchenAppearance.current();}
+  function settings(){if(root.dataset.sintezScreen==='workspace'&&nav.current().dirty&&!confirm('Есть несохранённые изменения. Открыть настройки? Введённые поля останутся в редакторе.'))return;if(!nav.park())return;$('#sintez-settings').hidden=false;root.dataset.sintezScreen='settings';$('#sintez-settings-title').focus({preventScroll:true});for(const input of $('#sintez-settings').querySelectorAll('[name=sintez-theme]'))input.checked=input.value===KitchenAppearance.current();}
   function leaveSettings(){paint();}
   document.addEventListener('click',e=>{
     const b=e.target.closest('button');if(!b)return;
