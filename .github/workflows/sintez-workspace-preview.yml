@@ -21,8 +21,8 @@ jobs:
     env:
       APPROVED_MAIN: 9f45d0206022d5cfb66352b5a1518b3ff9a50abc
       PARENT_SOURCE: a71c0bf0f285d82e315b9146224bb8250d564268
-      WORKSPACE_SOURCE: af48432556f74638891cfc0eaf2d7b86a30763de
-      CHECK_RUN: '44297775979'
+      WORKSPACE_SOURCE: e7a2c7d055c4c69bae9ea4e00d0aaabef3bb6a3e
+      CHECK_RUN: '44298096645'
     steps:
       - uses: actions/checkout@v4
         with:
