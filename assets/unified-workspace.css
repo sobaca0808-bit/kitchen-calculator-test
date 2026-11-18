@@ -1,0 +1,165 @@
+/* Approved navy / teal glass composition. One shell, the existing calculator. */
+@media screen {
+  :root[data-sintez-unified][data-kitchen-theme=graphite] {
+    --g-page:#081923;--g-ink:#f0f4f5;--g-muted:#c1cdd1;--g-accent:#edcf8b;--g-on-accent:#112b34;
+    --g-wash:rgba(3,17,27,.27);--g-panel:rgba(18,43,57,.78);--g-card:rgba(17,71,81,.62);--g-sub:rgba(20,51,65,.77);
+    --g-field:rgba(8,30,43,.85);--g-select:rgba(28,60,72,.96);--g-selected:rgba(126,108,60,.34);--g-control:#78949d;
+    --g-line:rgba(193,225,230,.26);--g-hover:rgba(29,81,91,.9);--g-success:#bce9da;--g-shadow:0 10px 34px #020b1552;
+  }
+  html[data-sintez-unified] body {padding:0 0 14px;background:transparent!important;}
+  html[data-sintez-unified] {background:var(--g-page)!important;}
+  html[data-sintez-unified] body::after {background:linear-gradient(180deg,transparent 65%,var(--g-wash));}
+  html[data-sintez-unified] body::before {background-image:linear-gradient(var(--g-wash),var(--g-wash)),url('unified-kitchen.webp');background-position:center;background-size:cover;}
+  html[data-sintez-unified] #sintez-shell {display:block!important;width:min(1560px,calc(100% - 64px));max-width:none;min-height:0;margin:0 auto;padding:0;}
+  html[data-sintez-unified] #sintez-shell::before {display:none;}
+  html[data-sintez-unified] #sintez-home {display:contents!important;}
+  html[data-sintez-unified] :is(.sintez-intro,.sintez-ruler,#sintez-resume,#sintez-mode-panel,#sintez-workbar,.test-notice,.app-header,.local-note,.page-footer) {display:none!important;}
+  html[data-sintez-unified] #sintez-shell .sintez-header {min-height:100px;padding:10px 18px 10px 28px;gap:18px;background:linear-gradient(130deg,rgba(75,109,119,.3),var(--g-panel));border:1px solid var(--g-line);border-top:0;border-radius:0 0 28px 28px;box-shadow:inset 0 1px 1px #e2f6ff32,0 10px 40px #02091140;backdrop-filter:blur(16px);}
+  html[data-sintez-unified] #sintez-shell .unified-brand {display:flex;align-items:center;gap:24px;border:0;background:none;box-shadow:none;text-align:left;padding:0;border-radius:0;font-weight:400;font-size:clamp(23px,2.7vw,42px);letter-spacing:.075em;color:var(--g-accent);line-height:1.15;}
+  html[data-sintez-unified] .unified-brand img {display:block;width:76px;height:76px;object-fit:contain;flex:none;border-radius:14px;}
+  html[data-sintez-unified] .unified-brand>span {border-left:1px solid var(--g-accent);padding-left:30px;}
+  html[data-sintez-unified] #sintez-shell .unified-brand small {font-size:clamp(12px,1.4vw,20px);letter-spacing:.2em;color:var(--g-muted);margin-top:4px;}
+  html[data-sintez-unified] #sintez-shell .sintez-settings-access {border-radius:28px;padding:12px 20px;color:var(--g-ink);font-size:17px;background:linear-gradient(165deg,#c7e1e226 0%,transparent 50%,#041a2355 90%),var(--g-card);border-color:var(--g-control);box-shadow:inset 0 1px 2px #ffdaa871,0 4px 18px #0004;}
+  html[data-sintez-unified] #sintez-shell .sintez-mode-grid {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:36px;max-width:1060px;margin:28px auto 30px;padding-left:60px;align-items:center;}
+  html[data-sintez-unified] #sintez-shell .sintez-mode-card {
+    display:flex;flex-direction:column;width:100%;height:248px;min-height:0;max-height:none;padding:24px;align-items:center;justify-content:center;gap:12px;
+    background:radial-gradient(ellipse at 48% 110%,#10d9d6a8 0%,#13879050 35%,transparent 65%),linear-gradient(150deg,#aad8db5c 1%,#07506171 30%,#003744e0 70%,#0c6574af 98%);
+    border:2px solid #81ccd273;border-radius:34px;box-shadow:inset 0 3px 3px #c5f4f471,inset 0 -5px 6px #2de4e267,0 0 0 5px #04232b8a,0 6px 20px #020c1490;color:#f2f9f8;text-align:center;overflow:hidden;
+    transition:box-shadow .18s,filter .18s,transform .18s;backdrop-filter:blur(8px);
+  }
+  html[data-sintez-unified] #sintez-shell .sintez-mode-card::after {inset:8px 11px 48%;width:auto;height:auto;border:0;border-radius:inherit;background:linear-gradient(155deg,#e7ffff25,transparent);pointer-events:none;}
+  html[data-sintez-unified] #sintez-shell .sintez-mode-card[data-sintez-mode=home] {max-width:252px;justify-self:center;}
+  html[data-sintez-unified] #sintez-shell .sintez-mode-card[data-sintez-mode=chef] {height:258px;border-radius:43% 57% 49% 51% / 32% 41% 59% 68%;}
+  html[data-sintez-unified] #sintez-shell .sintez-mode-card[data-sintez-mode=chef] {background:transparent;border:0;box-shadow:none;backdrop-filter:none;}
+  html[data-sintez-unified] #sintez-shell .sintez-mode-card[data-sintez-mode=chef]::before {content:'';position:absolute;inset:0;background:url('mode-chef.svg') center/100% 100% no-repeat;z-index:0;}
+  html[data-sintez-unified] #sintez-shell .sintez-mode-card[data-sintez-mode=chef]::after {display:none;}
+  html[data-sintez-unified] #sintez-shell .sintez-mode-card[data-sintez-mode=business] {max-width:264px;height:264px;justify-self:center;border-radius:50%;}
+  html[data-sintez-unified] #sintez-shell .sintez-mode-card[aria-pressed=true] {border-color:#bbecde;box-shadow:inset 0 3px 5px #dafffc96,inset 0 -5px 8px #30f8e4a0,0 0 0 4px #a5e4d31f,0 0 22px #0fcbb34d;}
+  html[data-sintez-unified] #sintez-shell .sintez-mode-card:hover {transform:translateY(-2px);filter:brightness(1.1);}
+  html[data-sintez-unified] #sintez-shell .sintez-mode-card:active {transform:translateY(1px);filter:brightness(.93);}
+  html[data-sintez-unified] :is(.sintez-mode-number,.sintez-mode-copy,.sintez-mode-action) {display:none!important;}
+  html[data-sintez-unified] #sintez-shell .sintez-mode-icon {margin:0;color:#f5d58e;z-index:1;}
+  html[data-sintez-unified] #sintez-shell .sintez-mode-icon svg {width:65px;height:65px;}
+  html[data-sintez-unified] #sintez-shell .sintez-mode-title {font-size:28px;font-weight:600;letter-spacing:0;z-index:1;margin:0;}
+  html[data-sintez-unified] #unified-layout {display:grid;grid-template-columns:230px minmax(0,1fr);gap:22px;width:min(1560px,calc(100% - 64px));margin:auto;align-items:start;}
+  html[data-sintez-unified] #unified-content {min-width:0;}
+  html[data-sintez-unified] #unified-sidebar {position:sticky;top:16px;min-width:0;padding:16px 12px;border:1px solid var(--g-control);border-radius:26px;background:linear-gradient(145deg,#6f9fa02b,transparent),var(--g-panel);box-shadow:inset 0 1px #f3df9f8a,inset -6px -6px 20px #5f9daf24,var(--g-shadow);backdrop-filter:blur(14px);}
+  html[data-sintez-unified] #unified-sidebar .tabs {display:flex;flex-direction:column;margin:0;padding:0;gap:7px;border:0;box-shadow:none;background:transparent;backdrop-filter:none;}
+  html[data-sintez-unified] #unified-sidebar .tabs button {display:flex;align-items:center;gap:14px;width:100%;text-align:left;padding:12px 12px;min-height:51px;border-radius:15px;flex:none;font-size:16px;font-weight:400;}
+  html[data-sintez-unified] #unified-sidebar button[hidden] {display:none!important;}
+  html[data-sintez-unified] #unified-sidebar .tabs svg {width:26px;height:26px;flex:none;}
+  html[data-sintez-unified] #unified-sidebar .tabs .unified-menu-label {background:none;padding:0;border-radius:0;font:inherit;color:inherit;}
+  html[data-sintez-unified] #unified-sidebar button[aria-current=page] {color:var(--g-accent);font-weight:600;border-color:#c4a46793;box-shadow:inset 2px 0 9px #f4cf8780;}
+  html[data-sintez-unified] #unified-sidebar [data-unified-tool=favorites] {margin-top:14px;border-top:1px solid var(--g-line);border-radius:0 0 12px 12px;}
+  html[data-sintez-unified] .workspace {max-width:none;margin:0;grid-template-columns:210px minmax(0,1fr);gap:16px;}
+  html[data-sintez-unified][data-unified-tool=dashboard] .workspace,html[data-sintez-unified][data-unified-tool=calculator] .workspace {display:block;}
+  html[data-sintez-unified][data-unified-tool=dashboard] .library,html[data-sintez-unified][data-unified-tool=calculator] .library {display:none;}
+  html[data-sintez-unified] .editor {border-width:1px;border-radius:26px;}
+  html[data-sintez-unified] .recipe-card {padding:18px 24px 24px;line-height:1.5;}
+  html[data-sintez-unified] .card-controls {padding:12px 24px;background:transparent;align-items:center;border-bottom:1px solid var(--g-line);gap:9px;}
+  html[data-sintez-unified] .card-controls button {font-size:12px;padding:7px 12px;}
+  html[data-sintez-unified] .card-controls>#view-error:empty {display:none;}
+  html[data-sintez-unified] .unified-card-caption {color:var(--g-accent);font-weight:600;margin-right:auto;}
+  html[data-sintez-unified][data-unified-tool=dashboard] #back-list {display:none;}
+  html[data-sintez-unified] .unified-card-options {margin-left:auto;}
+  html[data-sintez-unified] .unified-card-options>summary {cursor:pointer;min-height:44px;display:flex;align-items:center;color:var(--g-accent);font-size:12px;}
+  html[data-sintez-unified] .unified-card-option-fields {display:flex;flex-wrap:wrap;gap:12px;padding-top:12px;}
+  html[data-sintez-unified] .unified-card-options[open] {flex:1 1 100%;}
+  html[data-sintez-unified] .unified-card-option-fields label {font-size:12px;min-width:120px;}
+  html[data-sintez-unified] .unified-card-option-fields input {max-width:150px;}
+  html[data-sintez-unified] .unified-recipe-hero {display:grid;grid-template-columns:minmax(170px,.9fr) minmax(150px,.9fr) minmax(0,2fr);grid-template-areas:'photo name metrics';gap:18px;align-items:start;margin:8px 0 16px;}
+  html[data-sintez-unified] .unified-recipe-name {grid-area:name;min-width:0;}
+  html[data-sintez-unified] .unified-recipe-name h1 {font-size:clamp(20px,1.7vw,28px);line-height:1.2;margin:8px 0 15px;}
+  html[data-sintez-unified] .unified-recipe-photo {grid-area:photo;position:relative;min-width:0;}
+  html[data-sintez-unified] .unified-recipe-photo .recipe-photos {display:block;margin:0;position:relative;}
+  html[data-sintez-unified] .unified-recipe-photo .photo-slot[data-empty=true] {display:none;}
+  html[data-sintez-unified] .unified-recipe-photo .photo-slot[data-empty=false] {width:100%;}
+  html[data-sintez-unified] .unified-recipe-photo .photo-open {height:auto;aspect-ratio:16/10;border:1px solid var(--g-control);border-radius:15px;}
+  html[data-sintez-unified] .unified-recipe-photo .photo-open img {aspect-ratio:16/10;object-fit:contain;}
+  html[data-sintez-unified] .unified-recipe-photo .photo-slot[data-empty=false]~.photo-slot[data-empty=false] {position:absolute;bottom:9px;right:9px;width:72px;}
+  html[data-sintez-unified] .unified-recipe-photo .photo-slot[data-empty=false]~.photo-slot[data-empty=false] .photo-open,html[data-sintez-unified] .unified-recipe-photo .photo-slot[data-empty=false]~.photo-slot[data-empty=false] img {aspect-ratio:4/3;}
+  html[data-sintez-unified] .unified-recipe-photo .recipe-photos:not(:has(.photo-slot[data-empty=false]))>.photo-slot:first-child {display:flex;aspect-ratio:16/10;border:1px dashed var(--g-control);border-radius:15px;}
+  html[data-sintez-unified] .unified-photo-edit {position:absolute;bottom:8px;left:8px;min-width:44px;min-height:44px;border-radius:10px;padding:4px;font-size:24px;background:var(--g-field);}
+  html[data-sintez-unified] .unified-recipe-chips {display:flex;gap:8px;flex-wrap:wrap;}
+  html[data-sintez-unified] .unified-recipe-chips>span {display:flex;align-items:center;gap:7px;min-height:36px;padding:7px 10px;border-radius:22px;background:var(--g-card);color:var(--g-ink);font-size:12px;white-space:nowrap;}
+  html[data-sintez-unified] .unified-recipe-chips svg {width:20px;height:20px;}
+  html[data-sintez-unified] .favorite-recipe {padding:7px 0;border:0;background:transparent;font-size:12px;color:var(--g-accent);box-shadow:none;}
+  html[data-sintez-unified] .unified-recipe-metrics {grid-area:metrics;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:0;min-width:0;}
+  html[data-sintez-unified] .unified-metric {min-width:0;padding:14px 12px;border:1px solid var(--g-control);border-radius:18px;background:linear-gradient(155deg,#c5eeeb19,transparent 45%,#147d8233),var(--g-card);box-shadow:inset 0 1px #d9f5f538,inset 0 -3px 10px #45bac222;}
+  html[data-sintez-unified] .unified-metric dt {display:flex;align-items:start;gap:8px;font-size:11px;line-height:1.4;color:var(--g-ink);}
+  html[data-sintez-unified] .unified-metric svg {width:26px;height:26px;flex:none;color:var(--g-accent);}
+  html[data-sintez-unified] .unified-metric dd {font-size:clamp(19px,1.7vw,29px);font-weight:650;line-height:1.2;margin:22px 0 5px;color:var(--g-ink);font-variant-numeric:tabular-nums;overflow-wrap:anywhere;}
+  html[data-sintez-unified] .recipe-card>.card-portions {display:none;}
+  html[data-sintez-unified][data-sintez-workspace-mode=home] .calculation-output,html[data-sintez-unified][data-sintez-workspace-mode=home] .calculation-ingredients th:nth-child(3) {display:none;}
+  html[data-sintez-unified] .food-ingredients {margin:12px 0 18px;}
+  html[data-sintez-unified] .food-ingredients :is(th,td) {padding:8px;border-width:0 0 1px;border-color:var(--g-line);font-size:13px;}
+  html[data-sintez-unified] .food-ingredients th:first-child {width:36%;}
+  html[data-sintez-unified] .food-ingredients th {font-weight:500;background:rgba(156,204,215,.09);}
+  html[data-sintez-unified] .food-ingredients tbody tr:nth-child(even) {background:transparent;}
+  html[data-sintez-unified]:not([data-sintez-workspace-mode=business]) :is(#packaging-editor,.selling-price-editor,#profitability-preview,#expenses-preview,.expense-print-control) {display:none!important;}
+  html[data-sintez-unified][data-sintez-workspace-mode=home] :is(.processing-option,.card-controls label:has(#card-mode)) {display:none!important;}
+  html[data-sintez-unified] .unified-print-time {display:none;}
+  html[data-sintez-unified] .unified-footer {display:flex;justify-content:space-between;align-items:center;gap:16px;width:min(1560px,calc(100% - 64px));margin:22px auto 0;padding:10px 18px;border:1px solid var(--g-line);border-radius:16px;background:var(--g-panel);backdrop-filter:blur(12px);font-size:11px;color:var(--g-muted);}
+  html[data-sintez-unified] .unified-footer strong {color:var(--g-accent);margin-right:12px;font-weight:600;}
+  html[data-sintez-unified] .unified-footer nav {display:flex;gap:8px;flex-wrap:wrap;}
+  html[data-sintez-unified] .unified-footer button {padding:6px 9px;font-size:11px;background:transparent;min-height:44px;}
+  html[data-sintez-unified] #unified-info {width:min(600px,calc(100% - 24px));max-height:calc(100svh - 40px);padding:22px;border:1px solid var(--g-control);border-radius:24px;background:var(--g-panel-fallback);color:var(--g-ink);}
+  html[data-sintez-unified] #unified-info::backdrop {background:#04121bcc;backdrop-filter:blur(5px);}
+  html[data-sintez-unified] #unified-info header {display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:16px;}
+  html[data-sintez-unified] #unified-info p {line-height:1.7;margin-bottom:16px;}
+  html[data-sintez-unified] #unified-info :is(label,textarea) {display:block;width:100%;margin:12px 0;}
+  html[data-sintez-unified] #unified-menu-toggle {display:none;}
+  html[data-sintez-unified] body>.tabs,html[data-sintez-unified] body>.workspace {display:none;}
+  html[data-sintez-unified][data-sintez-screen=settings] #unified-layout,html[data-sintez-unified][data-sintez-screen=settings] #unified-menu-toggle {display:none!important;}
+  @media(max-width:1250px) {
+    html[data-sintez-unified] #unified-layout {grid-template-columns:190px minmax(0,1fr);gap:16px;}
+    html[data-sintez-unified] .workspace {grid-template-columns:minmax(0,1fr);}
+    html[data-sintez-unified] .unified-recipe-hero {grid-template-columns:minmax(160px,1fr) minmax(0,1.5fr);grid-template-areas:'photo name' 'metrics metrics';}
+    html[data-sintez-unified] #unified-sidebar .tabs button {font-size:13px;gap:9px;padding:9px 8px;}
+    html[data-sintez-unified] .library {max-height:330px;overflow:auto;}
+  }
+  @media(max-width:760px) {
+    html[data-sintez-unified] body::before {background-image:linear-gradient(var(--g-wash),var(--g-wash)),url('unified-kitchen-mobile.webp');}
+    html[data-sintez-unified] #sintez-shell,html[data-sintez-unified] #unified-layout,html[data-sintez-unified] .unified-footer {width:calc(100% - 24px);}
+    html[data-sintez-unified] #sintez-shell .sintez-header {min-height:77px;padding:9px 11px;border-radius:0 0 18px 18px;gap:8px;}
+    html[data-sintez-unified] #sintez-shell .unified-brand {font-size:clamp(14px,4vw,22px);gap:9px;letter-spacing:.04em;}
+    html[data-sintez-unified] .unified-brand img {width:44px;height:44px;border-radius:9px;}
+    html[data-sintez-unified] .unified-brand>span {padding-left:10px;}
+    html[data-sintez-unified] #sintez-shell .unified-brand small {font-size:9px;letter-spacing:.07em;}
+    html[data-sintez-unified] #sintez-shell .sintez-settings-access {font-size:0;min-width:44px;padding:9px;}
+    html[data-sintez-unified] #sintez-shell .sintez-settings-access svg {width:22px;height:22px;}
+    html[data-sintez-unified] #sintez-shell .sintez-mode-grid {gap:12px;margin:22px 0 18px;padding:0;}
+    html[data-sintez-unified] #sintez-shell .sintez-mode-card,html[data-sintez-unified] #sintez-shell .sintez-mode-card[data-sintez-mode=chef],html[data-sintez-unified] #sintez-shell .sintez-mode-card[data-sintez-mode=business] {height:112px;padding:10px 4px;gap:7px;max-width:none;}
+    html[data-sintez-unified] #sintez-shell .sintez-mode-card[data-sintez-mode=home] {border-radius:20px;}
+    html[data-sintez-unified] #sintez-shell .sintez-mode-icon svg {width:32px;height:32px;}
+    html[data-sintez-unified] #sintez-shell .sintez-mode-title {font-size:clamp(11px,3.1vw,15px);white-space:nowrap;}
+    html[data-sintez-unified] #unified-layout {display:block;}
+    html[data-sintez-unified] #unified-menu-toggle {display:block;margin:0 12px 12px;width:calc(100% - 24px);min-height:46px;text-align:left;padding:10px 16px;border-radius:14px;}
+    html[data-sintez-unified] #unified-sidebar {display:none;position:static;margin-bottom:14px;padding:10px;}
+    html[data-sintez-unified] #unified-sidebar.is-open {display:block;}
+    html[data-sintez-unified] #unified-sidebar .tabs {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));}
+    html[data-sintez-unified] .workspace {display:block;}
+    html[data-sintez-unified] .library {margin-bottom:14px;}
+    html[data-sintez-unified] .recipe-card {padding:16px 12px;}
+    html[data-sintez-unified] .card-controls {padding:10px 12px;flex-wrap:wrap;}
+    html[data-sintez-unified] .unified-recipe-hero {grid-template-columns:minmax(0,1fr);grid-template-areas:'photo' 'name' 'metrics';gap:12px;}
+    html[data-sintez-unified] .unified-recipe-photo {max-width:500px;width:100%;}
+    html[data-sintez-unified] .unified-recipe-metrics {gap:6px;}
+    html[data-sintez-unified] .unified-metric {padding:10px 7px;border-radius:12px;}
+    html[data-sintez-unified] .unified-metric dt {font-size:10px;gap:5px;}
+    html[data-sintez-unified] .unified-metric svg {width:20px;height:20px;}
+    html[data-sintez-unified] .unified-metric dd {font-size:18px;margin-top:14px;}
+    html[data-sintez-unified] .food-ingredients :is(th,td) {font-size:11px;padding:7px 4px;}
+    html[data-sintez-unified] .unified-unit-price {display:none;}
+    html[data-sintez-unified] .unified-footer {align-items:start;flex-direction:column;gap:8px;}
+  }
+  @media(prefers-reduced-motion:reduce) {html[data-sintez-unified] *,html[data-sintez-unified] *::before,html[data-sintez-unified] *::after {transition:none!important;animation:none!important;}}
+  @media(prefers-reduced-transparency:reduce) {html[data-sintez-unified] #sintez-shell .sintez-header,html[data-sintez-unified] #unified-sidebar {background:var(--g-panel-fallback);backdrop-filter:none;}}
+  @media(forced-colors:active) {html[data-sintez-unified] body::before {display:none;}html[data-sintez-unified] #sintez-shell .sintez-mode-card {background:Canvas;border:2px solid ButtonText;color:ButtonText;box-shadow:none;}}
+}
+@media print {
+  html[data-sintez-unified] body>#unified-layout,html[data-sintez-unified] #unified-content {display:contents!important;}
+  html[data-sintez-unified] #unified-sidebar,html[data-sintez-unified] #unified-content>:not(.workspace),.unified-footer,#unified-info,.unified-unit-price {display:none!important;}
+  .unified-recipe-hero,.unified-recipe-name,.unified-recipe-photo {display:contents;}
+  .unified-recipe-chips,.unified-recipe-metrics,.unified-photo-edit,.favorite-recipe,.unified-incomplete {display:none!important;}
+}

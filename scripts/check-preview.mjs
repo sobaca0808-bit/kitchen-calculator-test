@@ -11,6 +11,7 @@ const root=fileURLToPath(new URL('../',import.meta.url));
 // Existing functional suites still run on the actual redesigned application.
 const glass=process.argv.includes('--glass');
 if(glass)process.env.KITCHEN_GLASS_TEST='1';
+if(process.argv.includes('--unified'))process.env.KITCHEN_UNIFIED_TEST='1';
 const mount='/kitchen-calculator-test';
 const logicTests=['calculations','storage','storage-extensions','json-merge','import-transaction','folders','recipe-view','recipe-card-model','profitability','preview-isolation','pages','packaging','drafts','photos','photo-print-selection','appearance','preview-persistence','establishment-expenses','recipe-expense-preferences'].map(name=>'tests/'+name+'.test.js');
 function run(args,env=process.env) {
@@ -25,7 +26,7 @@ function run(args,env=process.env) {
   });
 }
 const runtimeFiles=new Map([
-  ['/assets/home-workspace.css','assets/home-workspace.css'],['/js/home-workspace.js','js/home-workspace.js'],
+  ['/assets/unified-workspace.css','assets/unified-workspace.css'],['/assets/mode-chef.svg','assets/mode-chef.svg'],['/icons/sintez/icon-192.png','icons/sintez/icon-192.png'],['/assets/unified-kitchen.webp','assets/unified-kitchen.webp'],['/assets/unified-kitchen-mobile.webp','assets/unified-kitchen-mobile.webp'],...['workspace-policy','unified-card','build-info','unified-workspace'].map(name=>['/js/'+name+'.js','js/'+name+'.js']),
   ['/assets/recipe-showcase.css','assets/recipe-showcase.css'],['/js/recipe-showcase.js','js/recipe-showcase.js'],
   ['/assets/sintez-glass.css','assets/sintez-glass.css'],['/assets/sintez-glass-kitchen.webp','assets/sintez-glass-kitchen.webp'],['/assets/sintez-glass-kitchen-mobile.webp','assets/sintez-glass-kitchen-mobile.webp'],
   ['/assets/sintez-matte.svg','assets/sintez-matte.svg'],

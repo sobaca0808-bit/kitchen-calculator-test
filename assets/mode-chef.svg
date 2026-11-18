@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 285" fill="none">
+<defs><linearGradient id="glass" x1="60" y1="8" x2="230" y2="270" gradientUnits="userSpaceOnUse"><stop stop-color="#618f98" stop-opacity=".75"/><stop offset=".4" stop-color="#084956" stop-opacity=".9"/><stop offset=".76" stop-color="#075360" stop-opacity=".93"/><stop offset="1" stop-color="#0eb9b9" stop-opacity=".8"/></linearGradient><linearGradient id="rim" x1="4" y1="20" x2="298" y2="285" gradientUnits="userSpaceOnUse"><stop stop-color="#d8fcfa" stop-opacity=".8"/><stop offset=".45" stop-color="#7bbbc2" stop-opacity=".35"/><stop offset="1" stop-color="#4cf7ea" stop-opacity=".95"/></linearGradient><linearGradient id="light" x1="90" y1="10" x2="160" y2="130" gradientUnits="userSpaceOnUse"><stop stop-color="#e9ffff" stop-opacity=".2"/><stop offset="1" stop-color="#e9ffff" stop-opacity="0"/></linearGradient></defs>
+<path d="M27 49C56 8 144 2 225 17c61 11 112 32 122 71 20 67-75 152-136 182-32 15-75-19-119-64C41 155-2 92 27 49Z" fill="url(#glass)" stroke="#123d48" stroke-width="10"/>
+<path d="M27 49C56 8 144 2 225 17c61 11 112 32 122 71 20 67-75 152-136 182-32 15-75-19-119-64C41 155-2 92 27 49Z" stroke="url(#rim)" stroke-width="4"/>
+<path d="M36 49C79 12 179 14 256 37c26 8 55 18 65 37-69-25-143-16-207 14-32 15-49 27-59 36-20-27-35-59-19-75Z" fill="url(#light)"/>
+<path d="M128 222c33 30 59 49 82 38 42-19 94-63 117-101-17 43-73 91-112 111-25 13-55-9-87-48Z" fill="#77fff1" fill-opacity=".16"/>
+</svg>

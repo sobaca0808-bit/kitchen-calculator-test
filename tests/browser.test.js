@@ -120,7 +120,7 @@ async function importJSON(page,data,accept=true){return replaceJSONFromFile(page
     assert.equal(await page.locator('#recipe-card tbody tr').count(),9);
     const before = await stored(page);
     await page.locator('#view-portions').fill('10');
-    assert.match(await page.locator('#recipe-card').innerText(),/Количество порций: 10/);
+    assert.match(await page.locator(process.env.KITCHEN_UNIFIED_TEST==='1'?'.unified-recipe-chips':'#recipe-card').innerText(),process.env.KITCHEN_UNIFIED_TEST==='1'?/10 порции/:/Количество порций: 10/);
     assert.deepEqual(await stored(page),before);
     await page.locator('#card-mode').selectOption('chef');
     assert.doesNotMatch(await page.locator('#recipe-card').innerText(),/₽|стоимост/i);
@@ -153,10 +153,10 @@ async function importJSON(page,data,accept=true){return replaceJSONFromFile(page
     await page.locator('#item-name').fill('Не терять');
     await page.locator('#technology').fill('Незавершённая технология');
     page.removeAllListeners('dialog');
-    const dialogs=[];page.on('dialog',dialog=>{dialogs.push(dialog.message());dialog.dismiss();});
+    const dialogs=[];page.on('dialog',dialog=>{dialogs.push(dialog.message());if(process.env.KITCHEN_UNIFIED_TEST==='1')dialog.accept();else dialog.dismiss();});
     await page.locator('[data-tab="products"]').click();
     assert.equal(await page.locator('.workspace').getAttribute('data-section'),'products');
-    assert.deepEqual(dialogs,[],'A safely saved recipe draft needs no discard confirmation');
+    assert.deepEqual(dialogs,process.env.KITCHEN_UNIFIED_TEST==='1'?['Есть несохранённые изменения. Продолжить? Текущая рецептура будет сохранена отдельно как черновик.']:[],'Unified navigation explicitly warns while preserving the separate draft');
     assert.deepEqual(await stored(page),before,'Autosaving never modifies the saved recipe');
     await page.locator('[data-tab="dish"]').click();
     assert.equal(await page.locator('#recipe-card h1').innerText(),original.name,'The main card remains saved');
