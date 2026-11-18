@@ -1,0 +1,49 @@
+/* Stage 1: the saved dish showcase only. Shared themes and A4 stay unchanged. */
+@media screen {
+  html[data-sintez-showcase] .recipe-card>h1 {font-size:clamp(26px,2.7vw,38px);line-height:1.18;letter-spacing:-.025em;margin:8px 0 22px;}
+  html[data-sintez-showcase] .recipe-showcase {display:grid;grid-template-columns:minmax(0,.92fr) minmax(0,1.08fr);gap:22px;align-items:start;margin-bottom:24px;}
+  html[data-sintez-showcase] .showcase-visual,html[data-sintez-showcase] .showcase-summary {min-width:0;}
+  html[data-sintez-showcase] .recipe-showcase .recipe-photos {display:flex;flex-direction:column;align-items:flex-start;margin:0;gap:10px;}
+  html[data-sintez-showcase] .recipe-showcase .photo-slot {width:100%;}
+  html[data-sintez-showcase] .recipe-showcase .photo-slot[data-empty=true] {display:none;}
+  html[data-sintez-showcase] .recipe-showcase .photo-slot[data-empty=false]~.photo-slot[data-empty=false] {width:88px;}
+  html[data-sintez-showcase] .recipe-showcase .photo-open {height:auto;aspect-ratio:4/3;border:1px solid var(--g-control);border-radius:14px;background:var(--g-field);}
+  html[data-sintez-showcase] .recipe-showcase .photo-open img {aspect-ratio:4/3;object-fit:contain;}
+  html[data-sintez-showcase] .recipe-showcase .recipe-photos:not(:has(.photo-slot[data-empty=false]))>.photo-slot:first-child {display:flex;aspect-ratio:4/3;border:1px dashed var(--g-control);border-radius:14px;}
+  html[data-sintez-showcase] .recipe-showcase .recipe-photos:not(:has(.photo-slot[data-empty=false])) .photo-empty {font-size:0;}
+  html[data-sintez-showcase] .recipe-showcase .recipe-photos:not(:has(.photo-slot[data-empty=false])) .photo-empty::after {content:'Фото блюда пока нет. Добавьте его в редакторе.';font-size:14px;}
+  html[data-sintez-showcase] .showcase-photo-hint {font-size:11px;color:var(--g-muted);margin:9px 0 0;}
+  html[data-sintez-showcase] .showcase-visual:has(.recipe-photos:not(:has(.photo-slot[data-empty=false]))) .showcase-photo-hint {display:none;}
+  html[data-sintez-showcase] .showcase-basis {display:flex;justify-content:space-between;flex-wrap:wrap;gap:4px 12px;font-size:11px;color:var(--g-muted);margin-bottom:10px;}
+  html[data-sintez-showcase] .showcase-basis>span:first-child {font-weight:700;color:var(--g-ink);}
+  html[data-sintez-showcase] .showcase-metrics {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:0;}
+  html[data-sintez-showcase] .showcase-metric {min-width:0;padding:14px;background:var(--g-card);border:1px solid var(--g-line);border-radius:13px;box-shadow:var(--g-rim);}
+  html[data-sintez-showcase] .showcase-metric dt {font-size:12px;line-height:1.4;color:var(--g-muted);}
+  html[data-sintez-showcase] .showcase-metric dd {margin:8px 0 6px;font-size:clamp(19px,2vw,25px);font-weight:750;line-height:1.15;color:var(--g-ink);font-variant-numeric:tabular-nums;overflow-wrap:anywhere;}
+  html[data-sintez-showcase] .showcase-metric p {margin:0;font-size:11px;line-height:1.5;color:var(--g-muted);}
+  html[data-sintez-showcase] .showcase-metric-food dd {font-size:clamp(26px,2.6vw,34px);color:#8fe0ac;}
+  html[data-sintez-showcase]:not([data-kitchen-theme]) .showcase-metric-food dd,html[data-sintez-showcase][data-kitchen-theme=sage] .showcase-metric-food dd {color:#24623c;}
+  html[data-sintez-showcase] .showcase-metric[data-disabled] dd {font-size:15px;font-weight:600;color:var(--g-muted);}
+  html[data-sintez-showcase] .showcase-expense-details {margin-top:8px;font-size:11px;}
+  html[data-sintez-showcase] .showcase-expense-details summary {cursor:pointer;min-height:32px;padding-top:6px;color:var(--g-ink);}
+  html[data-sintez-showcase] .showcase-expense-details dl {margin:4px 0 0;}
+  html[data-sintez-showcase] .showcase-expense-details dl>div {display:flex;justify-content:space-between;gap:6px;margin:7px 0;}
+  html[data-sintez-showcase] .showcase-expense-details dd {font-size:11px;margin:0;white-space:nowrap;}
+  html[data-sintez-showcase] .showcase-edit {margin-top:12px;min-height:44px;}
+  html[data-sintez-showcase] .recipe-showcase:has(+.card-portions)~.card-portions {margin-bottom:18px;}
+  @media(max-width:1100px) and (min-width:761px) {html[data-sintez-showcase] .recipe-showcase {grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:14px;}}
+  @media(max-width:600px) {
+    html[data-sintez-showcase] .recipe-showcase {grid-template-columns:minmax(0,1fr);gap:16px;}
+    html[data-sintez-showcase] .showcase-metric {padding:12px;}
+    html[data-sintez-showcase] .recipe-card>h1 {margin-bottom:16px;}
+    html[data-sintez-showcase] .recipe-showcase .photo-slot[data-empty=false]~.photo-slot[data-empty=false] {width:72px;}
+    html[data-sintez-showcase] .showcase-edit {width:100%;}
+  }
+  @media(forced-colors:active) {html[data-sintez-showcase] .showcase-metric-food dd {color:CanvasText;}}
+}
+@media print {
+  /* Flatten only the new wrappers. The original gallery/title keep the exact
+     existing photo selection, dimensions, pagination and financial modes. */
+  .recipe-showcase,.showcase-visual {display:contents;}
+  .showcase-summary,.showcase-photo-hint {display:none!important;}
+}

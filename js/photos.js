@@ -274,12 +274,21 @@
     }
     return {ready,readyFor,dispose(){previews.forEach(preview=>preview.dispose());}};
   }
-  function mountEditor(host,{recipe,onChange=()=>{},onStatus=()=>{}}) {
+  function mountEditor(host,{recipe,primarySelection=false,onChange=()=>{},onStatus=()=>{}}) {
     host.classList.add('photo-editor');
     const suffix=index=>index===0?'':'-2';
     host.innerHTML='<h3>Фотографии блюда</h3><div class="photo-editor-grid">'+[0,1].map(index=>`<div class="photo-editor-slot" data-photo-slot="${index}" role="group" aria-label="Фотография ${index+1}"><strong>Фото ${index+1}</strong><button type="button" class="photo-frame-button" aria-label="Добавить или заменить фотографию ${index+1}"><span class="photo-empty">Нажмите, чтобы добавить</span></button><div class="photo-slot-actions"><button type="button" class="photo-pick">Галерея</button><button type="button" class="photo-camera-pick">Камера</button><button id="remove-photo${suffix(index)}" type="button" class="danger">Удалить фото</button></div><input id="photo-file${suffix(index)}" type="file" accept="image/jpeg,image/png,image/webp" hidden><input id="photo-camera${suffix(index)}" type="file" accept="image/jpeg,image/png,image/webp" capture="environment" hidden><p class="photo-status" role="status" aria-live="polite"></p></div>`).join('')+'</div><button id="swap-photos" type="button">Поменять фотографии местами</button><p class="field-help">До двух фотографий JPEG, PNG или WebP до 10 МБ каждая. Снимки уменьшаются до 1920 пикселей и 500 КБ и хранятся в этом браузере. Для переноса используйте экспорт JSON. Камера доступна, если её поддерживает устройство и браузер.</p>';
     const slots=[...host.querySelectorAll('[data-photo-slot]')].map(node=>({node,frame:node.querySelector('.photo-frame-button'),file:node.querySelector('input:not([capture])'),camera:node.querySelector('input[capture]'),pick:node.querySelector('.photo-pick'),cameraPick:node.querySelector('.photo-camera-pick'),remove:node.querySelector('[id^="remove-photo"]'),status:node.querySelector('.photo-status'),busy:false,url:null,version:0}));
     const swap=host.querySelector('#swap-photos');let disposed=false;
+    // The first occupied slot is the showcase photo. Selection reuses the
+    // existing draft-only swap: no new data field, photo copy or implicit save.
+    let makePrimary;
+    if(primarySelection){
+      host.querySelectorAll('.photo-editor-slot>strong').forEach((label,index)=>{label.textContent=index===0?'Фото 1 · Основное':'Фото 2 · Дополнительное';});
+      makePrimary=document.createElement('button');makePrimary.type='button';makePrimary.id='make-primary-photo';makePrimary.textContent='Сделать основным';
+      slots[1].node.querySelector('.photo-slot-actions').append(makePrimary);
+      makePrimary.addEventListener('click',()=>swap.click());
+    }
     const anyBusy=()=>slots.some(slot=>slot.busy);
     function say(index,text,error=false) {if(disposed)return;const el=slots[index].status;el.textContent=text;el.classList.toggle('inline-error',error);if(error)onStatus(text,error);}
     function controls() {
@@ -290,6 +299,7 @@
         slot.frame.setAttribute('aria-label',(values[index]?'Заменить':'Добавить')+' фотографию '+(index+1));
       });
       swap.disabled=anyBusy() || !values.some(Boolean);
+      if(makePrimary){makePrimary.disabled=anyBusy()||!values[1];makePrimary.hidden=!values[1];}
     }
     async function draw(index) {
       const slot=slots[index],version=++slot.version,id=ids(recipe)[index];
