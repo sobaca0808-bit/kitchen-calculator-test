@@ -1,0 +1,105 @@
+name: Publish only the SINTEZ unified workspace review
+on:
+  push:
+    branches: [preview/browser]
+    paths: ['preview-hosting/sintez-workspace/**', '.github/workflows/sintez-workspace-preview.yml']
+permissions:
+  contents: read
+  actions: read
+  pages: write
+  id-token: write
+concurrency:
+  group: github-pages
+  cancel-in-progress: false
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    environment:
+      name: github-pages
+      url: https://sobaca0808-bit.github.io/kitchen-calculator-test/sintez-workspace/
+    env:
+      APPROVED_MAIN: 9f45d0206022d5cfb66352b5a1518b3ff9a50abc
+      PARENT_SOURCE: a71c0bf0f285d82e315b9146224bb8250d564268
+      WORKSPACE_SOURCE: ff4cdda88ba98a9f0f4e1fad4d3c349a4a110f4a
+      CHECK_RUN: '44293890116'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Require unchanged main and exact source on every CI wait
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          test '${{ github.repository }}' = sobaca0808-bit/kitchen-calculator-test
+          for ATTEMPT in $(seq 1 120); do
+            test "$(gh api repos/${{ github.repository }}/git/ref/heads/main --jq .object.sha)" = "$APPROVED_MAIN"
+            test "$(gh api repos/${{ github.repository }}/git/ref/heads/feature/sintez-recipe-showcase --jq .object.sha)" = "$PARENT_SOURCE"
+            test "$(gh api repos/${{ github.repository }}/git/ref/heads/feature/sintez-unified-workspace --jq .object.sha)" = "$WORKSPACE_SOURCE"
+            test "$(gh api repos/${{ github.repository }}/actions/runs/$CHECK_RUN --jq .head_sha)" = "$WORKSPACE_SOURCE"
+            test "$(gh api repos/${{ github.repository }}/actions/runs/$CHECK_RUN --jq .path)" = .github/workflows/sintez-workspace.yml
+            STATUS="$(gh api repos/${{ github.repository }}/actions/runs/$CHECK_RUN --jq .status)"
+            if [ "$STATUS" = completed ]; then break; fi
+            echo "Waiting for all candidate checks ($ATTEMPT/120)."
+            sleep 12
+          done
+          test "$(gh api repos/${{ github.repository }}/actions/runs/$CHECK_RUN --jq .conclusion)" = success
+      - name: Rebuild the exact old publication and append only the new unified route
+        run: python3 preview-hosting/sintez-workspace/build.py --pages "$RUNNER_TEMP/modes-site" --proof "$RUNNER_TEMP/modes-publication.json" --source "$WORKSPACE_SOURCE"
+      - name: Verify all 594 existing HTTPS resources before publication
+        run: python3 preview-hosting/sintez-workspace/verify.py "$RUNNER_TEMP/modes-publication.json" --phase before
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: ${{ runner.temp }}/modes-site
+      - name: Recheck main, parent and source immediately before deployment
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          test "$(gh api repos/${{ github.repository }}/git/ref/heads/main --jq .object.sha)" = "$APPROVED_MAIN"
+          test "$(gh api repos/${{ github.repository }}/git/ref/heads/feature/sintez-recipe-showcase --jq .object.sha)" = "$PARENT_SOURCE"
+          test "$(gh api repos/${{ github.repository }}/git/ref/heads/feature/sintez-unified-workspace --jq .object.sha)" = "$WORKSPACE_SOURCE"
+      - uses: actions/deploy-pages@v4
+      - name: Verify all 594 preserved and 74 new HTTPS resources
+        run: python3 preview-hosting/sintez-workspace/verify.py "$RUNNER_TEMP/modes-publication.json" --phase after
+      - name: Install disposable public-browser checks
+        run: |
+          npm install --prefix "$RUNNER_TEMP/modes-tools" --ignore-scripts --no-audit --no-fund playwright@1.62.1
+          sudo apt-get update -qq
+          sudo apt-get install -y poppler-utils
+      - name: Verify actual HTTPS modes, all palettes, phone layouts, saved data, JSON and A4
+        env:
+          NODE_PATH: ${{ runner.temp }}/modes-tools/node_modules
+          CHROMIUM_PATH: /usr/bin/google-chrome
+          SINTEZ_UNIFIED_ARTIFACTS: ${{ runner.temp }}/workspace-live-proof
+        run: node preview-hosting/sintez-workspace/check.cjs
+      - name: Prepare compact public screenshots, A4 examples and proofs
+        run: |
+          python3 -m venv "$RUNNER_TEMP/card-evidence-python"
+          "$RUNNER_TEMP/card-evidence-python/bin/pip" install Pillow==12.0.0
+          "$RUNNER_TEMP/card-evidence-python/bin/python" preview-hosting/sintez-workspace/evidence.py --input "$RUNNER_TEMP/workspace-live-proof" --output "$RUNNER_TEMP/workspace-review" --publication "$RUNNER_TEMP/modes-publication.json"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sintez-workspace-review
+          path: ${{ runner.temp }}/workspace-review
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: sintez-workspace-publication-proof
+          path: |
+            ${{ runner.temp }}/modes-publication.json
+            ${{ runner.temp }}/modes-live-proof
+            ${{ runner.temp }}/glass-live-proof
+            ${{ runner.temp }}/workspace-live-proof
+      - name: Report the verified separate card preview
+        run: |
+          cat >> "$GITHUB_STEP_SUMMARY" <<'REPORT'
+          https://sobaca0808-bit.github.io/kitchen-calculator-test/sintez-workspace/
+
+          Only the additional /sintez-workspace/ stand was published.
+          All earlier files and 594 existing HTTP resources are preserved.
+          The dedicated unified HTTPS Chrome scenarios cover desktop/phone, three modes, CRUD, JSON, photos, drafts and A4.
+          The five existing SINTEZ test storage names remain shared; no new database or migration.
+          Main, all previous stands, existing PWA installations and Pages settings are unchanged.
+          Physical Android and owner approval are still required before any main release.
+          REPORT
