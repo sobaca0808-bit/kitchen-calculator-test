@@ -41,7 +41,7 @@
   html[data-sintez-unified] #sintez-shell .sintez-mode-icon {margin:0;color:#f5d58e;z-index:1;}
   html[data-sintez-unified] #sintez-shell .sintez-mode-icon svg {width:65px;height:65px;}
   html[data-sintez-unified] #sintez-shell .sintez-mode-title {font-size:28px;font-weight:600;letter-spacing:0;z-index:1;margin:0;}
-  html[data-sintez-unified] #unified-layout {display:grid;grid-template-columns:230px minmax(0,1fr);gap:22px;width:min(1560px,calc(100% - 64px));margin:auto;align-items:start;}
+  html[data-sintez-unified] #unified-layout {position:relative;z-index:1;display:grid;grid-template-columns:230px minmax(0,1fr);gap:22px;width:min(1560px,calc(100% - 64px));margin:auto;align-items:start;}
   html[data-sintez-unified] #unified-content {min-width:0;}
   html[data-sintez-unified] #unified-sidebar {position:sticky;top:16px;min-width:0;padding:16px 12px;border:1px solid var(--g-control);border-radius:26px;background:linear-gradient(145deg,#6f9fa02b,transparent),var(--g-panel);box-shadow:inset 0 1px #f3df9f8a,inset -6px -6px 20px #5f9daf24,var(--g-shadow);backdrop-filter:blur(14px);}
   html[data-sintez-unified] #unified-sidebar .tabs {display:flex;flex-direction:column;margin:0;padding:0;gap:7px;border:0;box-shadow:none;background:transparent;backdrop-filter:none;}
