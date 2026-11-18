@@ -42,6 +42,7 @@
     --g-warning:#714e26;--g-warning-bg:rgba(254,241,217,.98);--g-success:#234d2e;--g-success-bg:#d8edd3;
     --g-shadow:0 12px 36px rgba(25,61,34,.13);--g-rim:inset 0 1px rgba(255,255,255,.80);--g-panel-fallback:#f1faee;
   }
+  :root[data-sintez-glass][data-default-kitchen-theme] {background:var(--g-page);}
   html[data-sintez-glass] body {background:transparent;color:var(--g-ink);isolation:isolate;min-height:100svh;}
   html[data-sintez-glass] body::before {
     content:'';position:fixed;inset:0;z-index:-2;pointer-events:none;
