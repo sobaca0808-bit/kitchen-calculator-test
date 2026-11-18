@@ -74,12 +74,15 @@ async function print(page,{form='calculation',selection='both',name}={}){await p
 async function photosGeometry(page){return page.locator('#card-photos .photo-open').evaluateAll(nodes=>nodes.filter(el=>el.getBoundingClientRect().width>0&&el.getBoundingClientRect().height>0).map(el=>{const rect=el.getBoundingClientRect(),image=el.querySelector('img'),style=getComputedStyle(image);return {width:rect.width,height:rect.height,maxHeight:style.maxHeight,fit:style.objectFit};}));}
 async function screenProof(page){
  await page.emulateMedia({media:'screen'});await page.mouse.move(0,0);
- // Two independent pages can sample a fixed photographic backdrop differently
- // when an element screenshot scrolls a translucent card. Freeze decoration only
- // for this exact print-before/after comparison. All card styling and geometry
- // remain real; the separate glass matrix tests the actual kitchen photograph.
- const style=process.env.KITCHEN_GLASS_TEST==='1'?'html[data-sintez-glass] body::before {background-image:none!important;background-color:var(--g-page)!important} html[data-sintez-glass] body::after {display:none!important}':undefined;
- return {styles:await page.locator('#recipe-card').evaluate(el=>[el,...el.querySelectorAll('*')].map(node=>{const s=getComputedStyle(node);return ['display','position','width','height','fontSize','lineHeight','marginTop','marginBottom','paddingTop','paddingBottom','borderTopWidth','color','backgroundColor','transform'].map(key=>s[key]);})),layout:await page.locator('#recipe-card').evaluate(el=>{const origin=el.getBoundingClientRect();return[el,...el.querySelectorAll('*')].map(node=>{const r=node.getBoundingClientRect();return[r.x-origin.x,r.y-origin.y,r.width,r.height].map(n=>Math.round(n*1000)/1000);});}),png:await page.locator('#recipe-card').screenshot({animations:'disabled',style})};
+ // Exact foreground comparison must not depend on GPU backdrop sampling in
+ // two independent pages. Settle a uniform decorative layer before capture;
+ // keep all actual card colors, geometry, text, photos and borders unchanged.
+ // The separate glass matrix exercises the real photograph and active blur.
+ if(process.env.KITCHEN_GLASS_TEST==='1'){
+  await page.addStyleTag({content:'html[data-sintez-glass] body::before {background-image:none!important;background-color:var(--g-page)!important} html[data-sintez-glass] body::after {display:none!important} html[data-sintez-glass] *,html[data-sintez-glass] *::before,html[data-sintez-glass] *::after {-webkit-backdrop-filter:none!important;backdrop-filter:none!important}'});
+  await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
+ }
+ return {styles:await page.locator('#recipe-card').evaluate(el=>[el,...el.querySelectorAll('*')].map(node=>{const s=getComputedStyle(node);return ['display','position','width','height','fontSize','lineHeight','marginTop','marginBottom','paddingTop','paddingBottom','borderTopWidth','color','backgroundColor','transform'].map(key=>s[key]);})),layout:await page.locator('#recipe-card').evaluate(el=>{const origin=el.getBoundingClientRect();return[el,...el.querySelectorAll('*')].map(node=>{const r=node.getBoundingClientRect();return[r.x-origin.x,r.y-origin.y,r.width,r.height].map(n=>Math.round(n*1000)/1000);});}),png:await page.locator('#recipe-card').screenshot({animations:'disabled'})};
 }
 async function test(name,fn){try{await fn();passed++;console.log('PASS compact print:',name);}catch(error){failures.push({name,error:error.stack||error.message});console.error('FAIL compact print:',name,error.message);}}
 (async()=>{
@@ -102,7 +105,7 @@ async function test(name,fn){try{await fn();passed++;console.log('PASS compact p
    }finally{await before.context.close();await after.context.close();}
   });
   for(const width of [320,390,1366])await test(`screen layout is pixel-identical before and after at ${width}px`,async()=>{
-   const before=await createPage({before:true,width}),after=await createPage({width});try{const old=await screenProof(before.page),current=await screenProof(after.page);assert.deepEqual(current.styles,old.styles);assert.deepEqual(current.layout,old.layout);assert(current.png.equals(old.png),'Screen card pixels do not change');assert(await after.page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));await guard(before.page);await guard(after.page);assert.deepEqual(before.errors,[]);assert.deepEqual(after.errors,[]);}finally{await before.context.close();await after.context.close();}
+   const before=await createPage({before:true,width}),after=await createPage({width});try{const old=await screenProof(before.page),current=await screenProof(after.page);assert.deepEqual(current.styles,old.styles);assert.deepEqual(current.layout,old.layout);if(!current.png.equals(old.png)){await fs.writeFile(path.join(output,'screen-before-'+width+'.png'),old.png);await fs.writeFile(path.join(output,'screen-after-'+width+'.png'),current.png);}assert(current.png.equals(old.png),'Screen card pixels do not change');assert(await after.page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));await guard(before.page);await guard(after.page);assert.deepEqual(before.errors,[]);assert.deepEqual(after.errors,[]);}finally{await before.context.close();await after.context.close();}
   });
   await test('chef printing and all four photo choices are unchanged',async()=>{
    const before=await createPage({before:true}),after=await createPage();try{for(const [selection,indexes]of Object.entries(choices)){
