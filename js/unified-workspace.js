@@ -70,7 +70,7 @@
     if(e.target.closest('#library-list [data-open],#create,#view-recipe,.unified-core-tabs [data-tab]')&&!confirm('Есть несохранённые изменения. Продолжить? Текущая рецептура будет сохранена отдельно как черновик.')){e.preventDefault();e.stopImmediatePropagation();}
   },true);
   $('#sintez-settings').querySelectorAll('[name=sintez-theme]').forEach(input=>input.addEventListener('change',()=>{if(input.checked){const r=KitchenAppearance.select(input.value);$('#sintez-theme-status').textContent=r.ok?'Оформление сохранено.':r.error;}}));
-  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!e.defaultPrevented&&root.dataset.sintezScreen==='settings'&&!$('#sintez-presentation').open&&$('#appearance-panel')?.hidden!==false&&$('#pwa-panel')?.hidden!==false)leaveSettings();});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!e.defaultPrevented&&root.dataset.sintezScreen==='settings'&&!$('#sintez-presentation').open&&!$('#unified-info').open&&$('#appearance-panel')?.hidden!==false&&$('#pwa-panel')?.hidden!==false)leaveSettings();});
   function critical(){const message=$('#message'),error=!message.hidden&&message.classList.contains('error');$('#sintez-alert').hidden=!error&&!pwaError;$('#sintez-settings-error').hidden=!error&&!pwaError;$('#sintez-alert-text').textContent=error?message.textContent:pwaError;$('#sintez-alert-action').onclick=error?()=>{paint();$('#storage-diagnostics-open').click();}:()=>{settings();if($('#pwa-panel')?.hidden)$('#pwa-toggle').click();};}
   new MutationObserver(critical).observe($('#message'),{attributes:true,childList:true,subtree:true});critical();
   root.addEventListener('sintez-pwa-status',e=>{pwaError=e.detail.error||'';critical();});
