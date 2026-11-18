@@ -55,7 +55,7 @@ async function runCycle({chromium,url,rootURL,keys,width,cycles,output,launch,th
  let {expected,ids,price}=state;const report=state.report;let context;
  try{
    await fs.mkdir(path.join(profile,'downloads'),{recursive:true});
-   context=await chromium.launchPersistentContext(profile,{...launch,viewport:{width,height:900},isMobile:width<768,hasTouch:width<768,acceptDownloads:true,downloadsPath:path.join(profile,'downloads'),timezoneId:'Europe/Moscow'});
+   context=await chromium.launchPersistentContext(profile,{...launch,viewport:{width,height:900},isMobile:width<768,hasTouch:width<768,acceptDownloads:true,downloadsPath:path.join(profile,'downloads'),timezoneId:'Europe/Moscow',env:{...process.env,...launch.env,XDG_DATA_HOME:path.join(profile,'xdg-data'),XDG_CONFIG_HOME:path.join(profile,'xdg-config'),XDG_CACHE_HOME:path.join(profile,'xdg-cache')}});
    await context.route('**/favicon.ico',route=>route.fulfill({status:204,body:''}));
    if(runtimeBundle){
     const bundle=JSON.parse(await fs.readFile(runtimeBundle,'utf8'));

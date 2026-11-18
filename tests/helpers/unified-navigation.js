@@ -5,7 +5,7 @@
 const installed=new WeakSet(),preparing=new WeakSet();let patched=false;
 function install(context){
   if(installed.has(context))return context;installed.add(context);
-  function dialogs(p){if(p.listenerCount('dialog')===0)p.on('dialog',d=>{if(p.listenerCount('dialog')!==1)return;if(d.type()==='beforeunload'||/^Есть несохранённые изменения\./.test(d.message()))d.accept();else d.dismiss();});}
+  function dialogs(p){if(p.listenerCount('dialog')===0)p.on('dialog',d=>{if(p.listenerCount('dialog')!==1)return;if(/^Есть несохранённые изменения\./.test(d.message()))d.accept();else d.dismiss();});}
   function page(p){
     dialogs(p);
     if(patched)return;patched=true;
