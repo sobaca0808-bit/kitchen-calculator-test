@@ -342,7 +342,8 @@
         // neither recreate photo records nor alter their order or bytes.
         const galleryElement=$('#card-photos',card);
         const includeExpenses=ExpensePreferences.enabled(draft),expenseResult=cardMode==='calculation'&&includeExpenses?KitchenExpenses.calculate(state,draft.id,viewPortions):undefined;
-        card.innerHTML=KitchenRecipeCardTemplates.render(state,model,{expenseResult});
+        card.innerHTML=KitchenRecipeCardTemplates.render(state,model,{expenseResult,includeExpenses,showcase:document.documentElement.hasAttribute('data-sintez-showcase')});
+        card.querySelector('[data-showcase-edit]')?.addEventListener('click',()=>$('#edit-recipe').click());
         expensePrintControl.hidden=cardMode!=='calculation'||!includeExpenses;
         card.dataset.printExpenseDetail=expensePrintDetail;
         if(cardMode==='calculation'){
@@ -455,7 +456,7 @@
       if(event.target.value) draft.folderId = event.target.value;else delete draft.folderId;
       markDirty();
     });
-    photoEditor=Photos.mountEditor($('#photo-editor'),{recipe:draft,
+    photoEditor=Photos.mountEditor($('#photo-editor'),{recipe:draft,primarySelection:section==='dish'&&document.documentElement.hasAttribute('data-sintez-showcase'),
       onChange:({previousPhotoId,previousPhotoIds=[]})=>{[previousPhotoId,...previousPhotoIds].filter(Boolean).forEach(id=>unusedPhotos.add(id));markDirty();flushDraft();},
       onStatus:(text)=>{if(text)message(text,true);}
     });

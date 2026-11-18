@@ -18,17 +18,17 @@
     const label = root.KitchenCalc.units[amount.unit]?.label;
     return label ? esc(num(amount.quantity,8))+' '+esc(label) : 'Не задано';
   }
-  function header(model, title) {
+  function header(model, title, options={}) {
     const recipe = model.view.recipe;
-    return `<p class="eyebrow">${title}</p><h1>${esc(recipe.name)}</h1><div id="card-photos"></div><p class="card-portions">Количество порций: ${esc(num(recipe.portions,8))}</p>`;
+    return `<p class="eyebrow">${title}</p><h1>${esc(recipe.name)}</h1>`+(options.showcase ? root.KitchenRecipeShowcase.render(model,options) : '<div id="card-photos"></div>')+`<p class="card-portions">Количество порций: ${esc(num(recipe.portions,8))}</p>`;
   }
   function details(recipe) {
     return `${recipe.technology?.trim() ? `<h2>Способ приготовления</h2><div class="card-text recipe-technology">${esc(recipe.technology)}</div>` : ''}${recipe.note?.trim() ? `<h2>Примечания</h2><div class="card-text recipe-notes">${esc(recipe.note)}</div>` : ''}`;
   }
-  function chef(state, model) {
+  function chef(state, model, options={}) {
     const {recipe} = model.view, count = recipe.portions, batch = count !== 1;
     const perPortionYield = model.perPortionView?.yieldGrams;
-    return header(model,'КАРТА ПОВАРА')+
+    return header(model,'КАРТА ПОВАРА',options)+
       `<table class="food-ingredients chef-ingredients"><thead><tr><th>Ингредиент</th><th>На 1 порцию</th>${batch ? `<th>Всего на ${esc(num(count,8))} порций</th>` : ''}</tr></thead><tbody>${model.rows.map(row => `<tr ${attributes(row)}><td>${ingredient(row)}</td><td class="chef-per-portion">${serving(row.perPortion)}</td>${batch ? `<td class="chef-total">${serving(row.total)}</td>` : ''}</tr>`).join('')}</tbody></table>`+
       root.KitchenPackagingUI.renderCard(state,recipe,count,false)+
       (perPortionYield == null ? '' : `<p class="chef-yield">Выход на 1 порцию: <strong>${esc(num(perPortionYield))} г</strong></p>`)+
@@ -44,7 +44,7 @@
     const adjusted=options.expenseResult;
     const totals=adjusted ? `<p class="card-base-cost">Продукты и упаковка без расходов: ${esc(money(total))}${complete?'':' (неполно)'}</p><p class="card-cost" data-cost-basis="with-expenses">Расчётная себестоимость с расходами: ${Number.isFinite(adjusted.totalCost)?esc(money(adjusted.totalCost)):'не рассчитано'}</p><p class="portion-cost">На одну порцию с расходами: ${Number.isFinite(adjusted.fullCostPerPortion)?esc(money(adjusted.fullCostPerPortion)):'не рассчитано'}</p>`
       : `<p class="card-cost">${complete ? 'Общая себестоимость' : 'Известная часть стоимости (расчёт неполный)'}: ${esc(money(total))}</p><p class="portion-cost">На одну порцию: ${esc(money(total/count))}${complete ? '' : ' (неполно)'}</p>`;
-    return header(model,'КАЛЬКУЛЯЦИОННАЯ КАРТА')+
+    return header(model,'КАЛЬКУЛЯЦИОННАЯ КАРТА',{...options,packaging,total,complete})+
       `<table class="food-ingredients calculation-ingredients"><thead><tr><th>Ингредиент</th><th>Кол-во</th><th>Выход, г</th><th>Сумма</th></tr></thead><tbody>${recipe.ingredients.map((source,index) => {
         const row = model.rows[index], computed = result.rows[index];
         const unit = root.KitchenCalc.units[source.unit]?.label;

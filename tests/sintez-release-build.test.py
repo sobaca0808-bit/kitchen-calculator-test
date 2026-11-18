@@ -37,7 +37,7 @@ class UnifiedBuild(unittest.TestCase):
         self.assertEqual((a/'sw.js').read_bytes(),(b/'sw.js').read_bytes())
         config=json.loads(re.search(r'const BUILD = (.*); // PWA_BUILD',(a/'sw.js').read_text())[1])
         self.assertEqual(config['revision'],first['revision'])
-        self.assertEqual(len(config['assets']),62)
+        self.assertEqual(len(config['assets']),64)
         self.assertIn('assets/sintez-matte.svg',first['files'])
         self.assertIn('presentation.html',first['files'])
         self.assertIn('js/sintez-entry-v2.js',first['files']);self.assertIn('assets/sintez-entry-v2.css',first['files'])
@@ -46,7 +46,7 @@ class UnifiedBuild(unittest.TestCase):
         for asset in config['assets']:self.assertEqual(hashlib.sha256((a/asset['url']).read_bytes()).hexdigest(),asset['sha256'])
         self.assertTrue(all('assets/sintez-intro/'+n+'.jpg' in first['files'] for n in ['01_intro','02_home','03_chef','04_business']))
     def test_namespace_binding_is_the_only_change_in_data_modules(self):
-        for target in ['pwa','preview','web','modes','glass']:
+        for target in ['pwa','preview','web','modes','glass','showcase']:
             root,version=self.build(target,target)
             for kind,(file,old) in module.FILES.items():self.assertEqual((root/file).read_text().replace(version['storage_names'][kind],old),(ROOT/file).read_text())
             for file in ['js/app.js','js/calculations.js','js/photos.js','js/recipe-card-templates.js']:
@@ -73,5 +73,12 @@ class UnifiedBuild(unittest.TestCase):
         for file,budget in [('assets/sintez-glass-kitchen.webp',110000),('assets/sintez-glass-kitchen-mobile.webp',40000)]:
             self.assertIn(file,version['files']);self.assertLess((root/file).stat().st_size,budget)
         self.assertIn('data-default-kitchen-theme="graphite"',(root/'index.html').read_text())
+
+    def test_card_stand_has_own_identity_and_reuses_the_same_test_data(self):
+        root,version=self.build('showcase');manifest=json.loads((root/'manifest.webmanifest').read_text())
+        self.assertEqual(manifest['id'],'/kitchen-calculator-test/sintez-card/')
+        self.assertEqual(version['storage_names'],module.SINTEZ_NAMES)
+        self.assertEqual(version['presentation_key'],'kitchen-calculator-sintez-presentation-seen-v1')
+        self.assertIn('assets/recipe-showcase.css',version['files']);self.assertIn('js/recipe-showcase.js',version['files'])
 
 if __name__=='__main__':unittest.main()

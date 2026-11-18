@@ -1,0 +1,62 @@
+{
+  "js/app.js": [
+    {
+      "old": "        card.innerHTML=KitchenRecipeCardTemplates.render(state,model,{expenseResult});\n",
+      "new": "        card.innerHTML=KitchenRecipeCardTemplates.render(state,model,{expenseResult,includeExpenses,showcase:document.documentElement.hasAttribute('data-sintez-showcase')});\n        card.querySelector('[data-showcase-edit]')?.addEventListener('click',()=>$('#edit-recipe').click());\n"
+    },
+    {
+      "old": "    photoEditor=Photos.mountEditor($('#photo-editor'),{recipe:draft,\n",
+      "new": "    photoEditor=Photos.mountEditor($('#photo-editor'),{recipe:draft,primarySelection:section==='dish'&&document.documentElement.hasAttribute('data-sintez-showcase'),\n"
+    }
+  ],
+  "js/photos.js": [
+    {
+      "old": "  function mountEditor(host,{recipe,onChange=()=>{},onStatus=()=>{}}) {\n",
+      "new": "  function mountEditor(host,{recipe,primarySelection=false,onChange=()=>{},onStatus=()=>{}}) {\n"
+    },
+    {
+      "old": "",
+      "new": "    // The first occupied slot is the showcase photo. Selection reuses the\n    // existing draft-only swap: no new data field, photo copy or implicit save.\n    let makePrimary;\n    if(primarySelection){\n      host.querySelectorAll('.photo-editor-slot>strong').forEach((label,index)=>{label.textContent=index===0?'Фото 1 · Основное':'Фото 2 · Дополнительное';});\n      makePrimary=document.createElement('button');makePrimary.type='button';makePrimary.id='make-primary-photo';makePrimary.textContent='Сделать основным';\n      slots[1].node.querySelector('.photo-slot-actions').append(makePrimary);\n      makePrimary.addEventListener('click',()=>swap.click());\n    }\n"
+    },
+    {
+      "old": "",
+      "new": "      if(makePrimary){makePrimary.disabled=anyBusy()||!values[1];makePrimary.hidden=!values[1];}\n"
+    }
+  ],
+  "js/recipe-card-templates.js": [
+    {
+      "old": "  function header(model, title) {\n",
+      "new": "  function header(model, title, options={}) {\n"
+    },
+    {
+      "old": "    return `<p class=\"eyebrow\">${title}</p><h1>${esc(recipe.name)}</h1><div id=\"card-photos\"></div><p class=\"card-portions\">Количество порций: ${esc(num(recipe.portions,8))}</p>`;\n",
+      "new": "    return `<p class=\"eyebrow\">${title}</p><h1>${esc(recipe.name)}</h1>`+(options.showcase ? root.KitchenRecipeShowcase.render(model,options) : '<div id=\"card-photos\"></div>')+`<p class=\"card-portions\">Количество порций: ${esc(num(recipe.portions,8))}</p>`;\n"
+    },
+    {
+      "old": "  function chef(state, model) {\n",
+      "new": "  function chef(state, model, options={}) {\n"
+    },
+    {
+      "old": "    return header(model,'КАРТА ПОВАРА')+\n",
+      "new": "    return header(model,'КАРТА ПОВАРА',options)+\n"
+    },
+    {
+      "old": "    return header(model,'КАЛЬКУЛЯЦИОННАЯ КАРТА')+\n",
+      "new": "    return header(model,'КАЛЬКУЛЯЦИОННАЯ КАРТА',{...options,packaging,total,complete})+\n"
+    }
+  ],
+  "index.html": [
+    {
+      "old": "<html lang=\"ru\" data-sintez-screen=\"home\" data-sintez-glass data-default-kitchen-theme=\"graphite\">\n",
+      "new": "<html lang=\"ru\" data-sintez-screen=\"home\" data-sintez-glass data-sintez-showcase data-default-kitchen-theme=\"graphite\">\n"
+    },
+    {
+      "old": "",
+      "new": "  <script defer src=\"js/recipe-showcase.js\"></script>\n"
+    },
+    {
+      "old": "",
+      "new": "  <link rel=\"stylesheet\" href=\"assets/recipe-showcase.css\">\n"
+    }
+  ]
+}
