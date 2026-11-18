@@ -70,9 +70,11 @@ try {
     if(suiteFailures.length)throw Error(suiteFailures.map(error=>error.message).join('\n'));
     console.log('THEME_MATRIX_PASS',theme);
   }));
-  const failures=results.filter(result=>result.status==='rejected');if(failures.length)throw Error(failures.map(result=>result.reason.message).join('\n'));
-  if(!glass)await run(['tests/appearance.browser.test.js'],{...process.env,KITCHEN_TEST_URL:testURL,KITCHEN_TEST_THEME:'',KITCHEN_TEST_ARTIFACT_DIR:resolve(artifacts,'appearance')});
-  await run(['tests/establishment-expenses.browser.test.js'],{...process.env,KITCHEN_TEST_URL:testURL,KITCHEN_TEST_THEME:'',KITCHEN_TEST_ARTIFACT_DIR:resolve(artifacts,'expenses')});
-  await run(['tests/preview-persistence.browser.test.js'],{...process.env,KITCHEN_TEST_THEME:'',KITCHEN_TEST_ARTIFACT_DIR:resolve(artifacts,'persistence')});
+  const failures=results.filter(result=>result.status==='rejected').map(result=>result.reason);
+  async function common(args,env){try{await run(args,env);}catch(error){failures.push(error);}}
+  if(!glass)await common(['tests/appearance.browser.test.js'],{...process.env,KITCHEN_TEST_URL:testURL,KITCHEN_TEST_THEME:'',KITCHEN_TEST_ARTIFACT_DIR:resolve(artifacts,'appearance')});
+  await common(['tests/establishment-expenses.browser.test.js'],{...process.env,KITCHEN_TEST_URL:testURL,KITCHEN_TEST_THEME:'',KITCHEN_TEST_ARTIFACT_DIR:resolve(artifacts,'expenses')});
+  await common(['tests/preview-persistence.browser.test.js'],{...process.env,KITCHEN_TEST_THEME:'',KITCHEN_TEST_ARTIFACT_DIR:resolve(artifacts,'persistence')});
+  if(failures.length)throw Error(failures.map(error=>error.message).join('\n'));
 } catch(error){console.error(error.message);process.exitCode=1;}
 finally {await new Promise(done=>server.close(done));}

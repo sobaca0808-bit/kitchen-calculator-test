@@ -1,4 +1,5 @@
 'use strict';
+if(process.env.KITCHEN_UNIFIED_TEST==='1')require('./helpers/unified-navigation').bootstrap();
 const assert=require('node:assert/strict'),fs=require('node:fs/promises'),path=require('node:path'),os=require('node:os'),{chromium}=require('playwright');
 const {start}=require('./helpers/combined-preview-server.js'),{lifecycle,PREVIEW,TEST}=require('./helpers/persistence-lifecycle.js');
 const root=path.resolve(__dirname,'..'),output=process.env.KITCHEN_TEST_ARTIFACT_DIR||path.join(os.tmpdir(),'kitchen-issue21-proof');

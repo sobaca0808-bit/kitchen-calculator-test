@@ -1,4 +1,5 @@
 'use strict';
+if(process.env.KITCHEN_UNIFIED_TEST==='1')require('./helpers/unified-navigation').bootstrap();
 const assert=require('node:assert/strict'),fs=require('node:fs/promises'),path=require('node:path'),os=require('node:os'),{execFileSync}=require('node:child_process'),{chromium}=require('playwright');
 const {start}=require('./helpers/runtime-server');
 const keys=process.env.KITCHEN_EXPENSES_NAMESPACE_JSON?JSON.parse(process.env.KITCHEN_EXPENSES_NAMESPACE_JSON):{book:'kitchen-calculator-pr2-browser-test-v1',drafts:'kitchen-calculator-pr2-browser-drafts-v1',photos:'kitchen-calculator-test-photos-v1',backups:'kitchen-calculator-test-import-backups-v1',appearance:'kitchen-calculator-appearance-test-v1'};
@@ -28,6 +29,7 @@ async function open({width=390,theme='berry',data=fixture(),context}={}){
  const errors=[],page=await context.newPage();page.setDefaultTimeout(20000);page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});
  page.on('dialog',dialog=>dialog.accept());await page.goto(url);await page.waitForFunction(()=>window.KitchenExpensesUI&&window.KitchenStorage);
  if(theme!=='berry'){await page.locator('#appearance-toggle').click();await page.locator(`input[name=kitchen-appearance][value=${theme}]`).check();await page.keyboard.press('Escape');}
+ if(await page.locator('html[data-sintez-unified]').count()){if(await page.locator('html').getAttribute('data-sintez-screen')==='settings')await page.locator('#sintez-settings [data-sintez-home]').click();if(await page.locator('#unified-sidebar').isHidden())await page.locator('#unified-menu-toggle').click();}
  return {page,context,errors};
 }
 async function test(name,fn,options={}){
