@@ -1,0 +1,41 @@
+/* The home mode uses the same mounted library/editor. Other modes retain their UI. */
+.home-workspace-heading {display:none;}
+@media screen {
+  html[data-sintez-workspace-mode=home] {scroll-padding-top:96px;}
+  html[data-sintez-workspace-mode=home] #editor :is(input,select,textarea) {scroll-margin-top:96px;}
+  html[data-sintez-workspace-mode=home] :is(.app-header,.test-notice,.local-note,.page-footer,#sintez-workbar [data-sintez-mode-back],#sintez-work-hint) {display:none!important;}
+  html[data-sintez-workspace-mode=home] .home-workspace-heading {display:flex;align-items:center;gap:16px;max-width:1360px;margin:22px auto 18px;padding:0 8px;}
+  html[data-sintez-workspace-mode=home] .home-workspace-heading svg {width:48px;height:48px;flex:none;color:var(--g-accent);}
+  html[data-sintez-workspace-mode=home] .home-workspace-heading h1 {font-size:clamp(25px,3vw,34px);line-height:1.2;margin:0 0 6px;color:var(--g-ink);}
+  html[data-sintez-workspace-mode=home] .home-workspace-heading p {font-size:14px;color:var(--g-muted);line-height:1.5;margin:0;}
+  html[data-sintez-workspace-mode=home] .tabs {position:sticky;top:0;z-index:140;margin-bottom:18px;}
+  html[data-sintez-workspace-mode=home] .tabs [data-tab] {flex:1 1 0;min-width:0;}
+  html[data-sintez-workspace-mode=home] .tabs :is([data-tab=packaging],[data-tab=expenses]) {display:none!important;}
+  html[data-sintez-workspace-mode=home] :is(.recipe-photo-editor,.photo-editor,#packaging-editor,.selling-price-editor,#profitability-preview,#expenses-preview,.processing-option,.expense-print-control,.card-controls label:has(#card-mode),.card-controls label:has(#print-photos)) {display:none!important;}
+  html[data-sintez-workspace-mode=home] .card-controls {gap:10px;}
+  html[data-sintez-workspace-mode=home] .row-extra .extra-grid {grid-template-columns:minmax(0,1fr);}
+  html[data-sintez-workspace-mode=home] .home-recipe-results {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:20px 0;}
+  html[data-sintez-workspace-mode=home] .home-recipe-results>div {min-width:0;border:1px solid var(--g-line);border-radius:12px;background:var(--g-card);padding:16px;}
+  html[data-sintez-workspace-mode=home] .home-recipe-results dt {font-size:12px;color:var(--g-muted);line-height:1.5;}
+  html[data-sintez-workspace-mode=home] .home-recipe-results dd {font-size:23px;line-height:1.25;font-weight:700;color:var(--g-ink);margin:8px 0 0;overflow-wrap:anywhere;font-variant-numeric:tabular-nums;}
+  html[data-sintez-workspace-mode=home] .home-recipe-results .home-food-cost {color:var(--g-success);}
+  html[data-sintez-workspace-mode=home] .home-cost-status {color:var(--g-warning);}
+  html[data-sintez-workspace-mode=home] .home-ingredients th:first-child {width:48%;}
+  @media(max-width:1439px) {html[data-sintez-workspace-mode=home] .home-workspace-heading {margin-inline:30px;}}
+  @media(max-width:1000px) {html[data-sintez-workspace-mode=home] .home-recipe-results {grid-template-columns:repeat(2,minmax(0,1fr));}html[data-sintez-workspace-mode=home] .home-recipe-results>div:last-child {grid-column:1/-1;}}
+  @media(max-width:760px) {
+    html[data-sintez-workspace-mode=home] .home-workspace-heading {margin:20px 12px 16px;padding:0 4px;gap:12px;}
+    html[data-sintez-workspace-mode=home] .home-workspace-heading svg {width:38px;height:38px;}
+    html[data-sintez-workspace-mode=home] .home-workspace-heading p {font-size:12px;}
+    html[data-sintez-workspace-mode=home] .tabs {gap:3px;padding:4px;}
+    html[data-sintez-workspace-mode=home] .tabs [data-tab] {font-size:12px;padding:10px 4px;line-height:1.4;}
+    html[data-sintez-workspace-mode=home] .tabs [data-tab] span {font-size:10px;}
+    html[data-sintez-workspace-mode=home] .home-recipe-results>div {padding:12px;}
+  }
+}
+@media print {
+  .home-workspace-heading {display:none!important;}
+  .home-recipe-results {display:flex;gap:8mm;flex-wrap:wrap;margin:4mm 0;}
+  .home-recipe-results dt {font-size:10pt;}
+  .home-recipe-results dd {margin:0;font-size:12pt;font-weight:700;}
+}

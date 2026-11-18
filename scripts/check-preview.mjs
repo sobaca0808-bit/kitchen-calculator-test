@@ -25,6 +25,7 @@ function run(args,env=process.env) {
   });
 }
 const runtimeFiles=new Map([
+  ['/assets/home-workspace.css','assets/home-workspace.css'],['/js/home-workspace.js','js/home-workspace.js'],
   ['/assets/recipe-showcase.css','assets/recipe-showcase.css'],['/js/recipe-showcase.js','js/recipe-showcase.js'],
   ['/assets/sintez-glass.css','assets/sintez-glass.css'],['/assets/sintez-glass-kitchen.webp','assets/sintez-glass-kitchen.webp'],['/assets/sintez-glass-kitchen-mobile.webp','assets/sintez-glass-kitchen-mobile.webp'],
   ['/assets/sintez-matte.svg','assets/sintez-matte.svg'],

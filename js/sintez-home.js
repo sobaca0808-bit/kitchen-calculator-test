@@ -15,11 +15,11 @@
     packaging:['Упаковка и фасовка','Справочник упаковки и её стоимости','packaging']
   };
   const modes={
-    home:{name:'Для дома',description:'Продукты, рецепты и простые расчёты',primary:['products','recipes','calculator']},
+    home:{name:'Для дома',description:'Продукты, рецепты и простые расчёты',primary:['recipes','prep','products']},
     chef:{name:'Для повара',description:'Рецепты, техкарты и профессиональная работа',primary:['recipes','cards','prep','products','calculator','photos']},
     business:{name:'Для бизнеса',description:'Себестоимость, расходы и управление затратами',primary:['recipes','calculator','expenses','products','prep','packaging']}
   };
-  const status=document.getElementById('sintez-status');let visited=false,currentMode=null,pwaError='';
+  const status=document.getElementById('sintez-status');let visited=false,currentMode=null,pwaError='',homeSection='dish';
   document.title='СИНТЕЗ МЕРЫ — кухонный калькулятор';
   function meta(){document.querySelector('meta[name="theme-color"]').content=KitchenAppearance.THEMES[KitchenAppearance.current()].color;}
   function route(section,mode=currentMode,clearHash=false){const u=new URL(location.href);if(section)u.searchParams.set('section',section);else u.searchParams.delete('section');if(mode)u.searchParams.set('mode',mode);else u.searchParams.delete('mode');if(clearHash)u.hash='';history.replaceState(history.state,'',u);}
@@ -29,7 +29,9 @@
   function showHome(){if(!park())return;currentMode=null;status.textContent='';route('home',null,true);surface('home',home.querySelector('h1'));}
   function toolMarkup(id){const t=tools[id];return '<button type="button" class="sintez-tool" data-sintez-route="'+id+'"><span><strong>'+t[0]+'</strong><small>'+t[1]+'</small></span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></button>';}
   function showMode(id,focus=true){
-    if(!Object.hasOwn(modes,id)||!park())return;currentMode=id;const mode=modes[id];
+    if(!Object.hasOwn(modes,id)||!park()||!navigation.setMode(id))return;currentMode=id;
+    if(id==='home'){if(!navigation.open(homeSection))return;status.textContent='';work(focus);route(homeSection,id,true);return;}
+    const mode=modes[id];
     document.getElementById('sintez-mode-title').textContent=mode.name;document.getElementById('sintez-mode-description').textContent=mode.description;
     document.getElementById('sintez-mode-primary').innerHTML=mode.primary.map(toolMarkup).join('');
     document.getElementById('sintez-mode-extra').innerHTML=Object.keys(tools).filter(key=>!mode.primary.includes(key)).map(toolMarkup).join('');
@@ -42,7 +44,8 @@
     if(openPwa&&document.getElementById('pwa-panel')?.hidden)document.getElementById('pwa-toggle')?.click();
   }
   function open(id){
-    if(id==='settings'){showSettings();return;}if(!Object.hasOwn(tools,id))return;const tool=tools[id];
+    if(id==='settings'){showSettings();return;}if(!Object.hasOwn(tools,id))return;
+    if(currentMode==='home'&&!KitchenHomeWorkspace.TOOLS.includes(id))return;const tool=tools[id];
     if(!navigation.open(tool[2],id==='calculator')){
       if(currentMode)showMode(currentMode);else surface('home');status.textContent='Переход отменён. Открытая запись остаётся на месте — можно продолжить работу.';return;
     }
@@ -63,18 +66,25 @@
     else if(button.hasAttribute('data-sintez-home'))showHome();
     else if(button.hasAttribute('data-sintez-mode-back'))showMode(currentMode);
     else if(button.hasAttribute('data-sintez-route'))open(button.dataset.sintezRoute);
-    else if(button.hasAttribute('data-sintez-resume')){work(false);route(navigation.current().section);}
+    else if(button.hasAttribute('data-sintez-resume')){if(!currentMode&&root.dataset.sintezWorkspaceMode==='home')currentMode='home';work(false);route(navigation.current().section);}
     else if(button.hasAttribute('data-sintez-diagnostics'))diagnostics();
     else if(['export','import'].includes(button.dataset.sintezAction)){work(false);route(navigation.current().section);document.getElementById(button.dataset.sintezAction).click();}
+  });
+  document.addEventListener('click',event=>{
+    if(currentMode!=='home'||root.dataset.sintezScreen!=='workspace')return;
+    if(event.target.closest('.tabs [data-tab]'))document.querySelector('.tabs').scrollIntoView({block:'start'});
+    else if(event.target.closest('#library-list [data-open]'))requestAnimationFrame(()=>document.getElementById('editor').scrollIntoView({block:'start'}));
   });
   settings.querySelectorAll('[name=sintez-theme]').forEach(input=>input.addEventListener('change',()=>{if(!input.checked)return;const result=KitchenAppearance.select(input.value);document.getElementById('sintez-theme-status').textContent=result.ok?'Тема приложения сохранена.':result.error;meta();}));
   document.addEventListener('keydown',event=>{if(event.key==='Escape'&&root.dataset.sintezScreen==='settings'&&!document.querySelector('#sintez-presentation[open]')&&document.getElementById('pwa-panel')?.hidden!==false){event.preventDefault();currentMode?showMode(currentMode):showHome();}});
   root.addEventListener('sintez-pwa-status',event=>{pwaError=event.detail.error||'';critical();});
   new MutationObserver(critical).observe(document.getElementById('message'),{attributes:true,childList:true,subtree:true});critical();
-  new MutationObserver(()=>{if(root.dataset.sintezScreen==='workspace')route(navigation.current().section);}).observe(document.querySelector('.workspace'),{attributes:true,attributeFilter:['data-section']});
+  new MutationObserver(()=>{if(root.dataset.sintezScreen==='workspace'){if(currentMode==='home')homeSection=navigation.current().section;route(navigation.current().section);}}).observe(document.querySelector('.workspace'),{attributes:true,attributeFilter:['data-section']});
   const initialURL=new URL(location.href),initial=initialURL.searchParams.get('section');currentMode=Object.hasOwn(modes,initialURL.searchParams.get('mode'))?initialURL.searchParams.get('mode'):null;
+  navigation.setMode(currentMode);
+  if(currentMode==='home'&&KitchenHomeWorkspace.allowed(initial))homeSection=initial;
   if(initial==='settings')showSettings();
-  else if(['dish','prep','products','packaging','expenses'].includes(initial)){navigation.open(initial);work(false);}
+  else if(['dish','prep','products','packaging','expenses'].includes(initial)){const next=currentMode==='home'&&!KitchenHomeWorkspace.allowed(initial)?'dish':initial;navigation.open(next);work(false);if(next!==initial)route(next,currentMode);}
   else if(location.hash==='#storage-diagnostics')work(false);
   else if(initial==='mode'&&currentMode)showMode(currentMode,false);
   else {

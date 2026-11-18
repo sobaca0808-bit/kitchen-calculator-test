@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ru" data-sintez-screen="home" data-sintez-glass data-sintez-showcase data-default-kitchen-theme="graphite">
+<html lang="ru" data-sintez-screen="home" data-sintez-glass data-sintez-showcase data-sintez-domestic data-default-kitchen-theme="graphite">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -28,6 +28,7 @@
   <script defer src="js/establishment-expenses.js?v=expenses-1"></script>
   <script defer src="js/establishment-expenses-ui.js?v=recipe-expenses-1"></script>
   <script defer src="js/recipe-showcase.js"></script>
+  <script defer src="js/home-workspace.js"></script>
   <script defer src="js/recipe-card-templates.js?v=recipe-expenses-1"></script>
   <script defer src="js/drafts.js?v=issue21-storage-1"></script>
   <script defer src="js/photo-viewer.js"></script>
@@ -52,6 +53,7 @@
   <link rel="stylesheet" href="assets/sintez-glass.css">
   <!-- /SINTEZ:GLASS -->
   <link rel="stylesheet" href="assets/recipe-showcase.css">
+  <link rel="stylesheet" href="assets/home-workspace.css">
 </head>
 <body>
   <!-- SINTEZ:HOME -->
@@ -114,6 +116,7 @@
     </div>
   </header>
   <div id="message" role="status" aria-live="polite" hidden></div>
+  <section class="home-workspace-heading" aria-labelledby="home-workspace-title"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="m9 29 23-19 23 19M16 25v29h32V25M26 54V36h12v18"/></svg><div><h1 id="home-workspace-title">Для дома</h1><p>Любимые рецепты, заготовки и понятные расчёты</p></div></section>
   <nav class="tabs" aria-label="Разделы"><button data-tab="dish">Мои рецепты <span id="count-dish"></span></button><button data-tab="prep">Полуфабрикаты <span id="count-prep"></span></button><button data-tab="products">Продукты <span id="count-products"></span></button><button data-tab="packaging">Упаковка и фасовка <span id="count-packaging"></span></button><button data-tab="expenses">Расходы заведения</button></nav>
   <section id="import-panel" class="import-panel" aria-label="Предварительный просмотр импорта" aria-busy="false" hidden>
     <h2>Проверка перед импортом</h2><p id="import-file-name" class="import-file-name"></p>

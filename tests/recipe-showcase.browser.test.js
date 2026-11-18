@@ -43,7 +43,7 @@ async function screenshot(page,name){await page.screenshot({path:path.join(outpu
 function raster(file){const prefix=file.replace(/\.pdf$/,'');execFileSync('pdftoppm',['-r','72','-png',file,prefix]);return prefix;}
 (async()=>{
   await fs.mkdir(output,{recursive:true});
-  if(process.env.SINTEZ_CARD_URL){url=process.env.SINTEZ_CARD_URL;assert.equal(url,'https://sobaca0808-bit.github.io/kitchen-calculator-test/sintez-card/');baselineURL='https://sobaca0808-bit.github.io/kitchen-calculator-test/sintez-glass/';}
+  if(process.env.SINTEZ_CARD_URL){url=process.env.SINTEZ_CARD_URL;assert(['https://sobaca0808-bit.github.io/kitchen-calculator-test/sintez-card/','https://sobaca0808-bit.github.io/kitchen-calculator-test/sintez-home-work/'].includes(url));baselineURL='https://sobaca0808-bit.github.io/kitchen-calculator-test/sintez-glass/';}
   else{server=await start(process.env.KITCHEN_SINTEZ_RUNTIME_ROOT||path.resolve(__dirname,'..'),{home:true});url=server.url;assert(process.env.SINTEZ_CARD_BASE_ROOT,'An exact PR35 baseline is required for print comparison');baselineServer=await start(process.env.SINTEZ_CARD_BASE_ROOT,{home:true});baselineURL=baselineServer.url;}
   browser=await chromium.launch({executablePath:process.env.CHROMIUM_PATH||'/usr/bin/chromium',headless:true,args:['--no-sandbox']});
   for(const theme of ['graphite','berry','sage'])for(const width of [1366,390])await test(theme+' photo, green cost and distinct totals at '+width,async page=>{
