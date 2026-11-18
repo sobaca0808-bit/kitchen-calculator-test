@@ -5,12 +5,13 @@
 const installed=new WeakSet(),preparing=new WeakSet();let patched=false;
 function install(context){
   if(installed.has(context))return context;installed.add(context);
+  function dialogs(p){if(p.listenerCount('dialog')===0)p.on('dialog',d=>{if(p.listenerCount('dialog')!==1)return;if(/^Есть несохранённые изменения\./.test(d.message()))d.accept();else d.dismiss();});}
   function page(p){
-    p.on('dialog',d=>{if(p.listenerCount('dialog')!==1)return;if(/^Есть несохранённые изменения\./.test(d.message()))d.accept();else d.dismiss();});
+    dialogs(p);
     if(patched)return;patched=true;
     const prototype=Object.getPrototypeOf(p.locator('html')),click=prototype.click;
     async function ensure(locator){
-      const p=locator.page();if(preparing.has(p)||await locator.count()!==1||await locator.isVisible())return;
+      const p=locator.page();dialogs(p);if(preparing.has(p)||await locator.count()!==1||await locator.isVisible())return;
       if(!await p.locator('html[data-sintez-unified]').count())return;
       preparing.add(p);
       try{

@@ -65,7 +65,9 @@ try {
   const results=await Promise.allSettled(themes.map(async theme=>{
     const folder=resolve(artifacts,theme),temporary=resolve(folder,'tmp');await mkdir(temporary,{recursive:true});
     const env={...process.env,KITCHEN_TEST_URL:testURL,KITCHEN_TEST_THEME:theme,KITCHEN_TEST_ARTIFACT_DIR:folder,TMPDIR:temporary};
-    for(const suite of suites)await run(['tests/'+suite+'.test.js'],env);
+    const suiteFailures=[];
+    for(const suite of suites){try{await run(['tests/'+suite+'.test.js'],env);}catch(error){suiteFailures.push(error);console.error('SUITE_FAILURE',theme,suite,error.message);}}
+    if(suiteFailures.length)throw Error(suiteFailures.map(error=>error.message).join('\n'));
     console.log('THEME_MATRIX_PASS',theme);
   }));
   const failures=results.filter(result=>result.status==='rejected');if(failures.length)throw Error(failures.map(result=>result.reason.message).join('\n'));

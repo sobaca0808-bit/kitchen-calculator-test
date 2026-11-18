@@ -80,11 +80,11 @@ async function photoInfo(page,id){return page.evaluate(async id=>{const p=await 
  try{
   browser=await chromium.launch({executablePath:process.env.CHROMIUM_PATH||'/usr/bin/chromium',headless:true,args:['--no-sandbox']});
   await fs.mkdir(output,{recursive:true});
-  await test('both photo slots stay under the title, empty slots never create photos',async page=>{
+  await test('photo slots retain their data and approved card placement; empty slots never create photos',async page=>{
    const before=await stored(page);assert.equal(await page.locator('#card-photos [data-photo-slot]').count(),2);assert.equal(await page.locator('#card-photos img').count(),0);
    const frames=await page.locator('#card-photos [data-photo-slot]').evaluateAll(nodes=>nodes.map(el=>{const r=el.getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height};}));
    if(await page.locator('html[data-sintez-showcase]').count()){assert(frames[0].width>100&&frames[1].width===0,'One compact empty showcase; both slots remain in the saved format');}else{assert(Math.abs(frames[0].width-frames[1].width)<1&&Math.abs(frames[0].height-frames[1].height)<1);assert(Math.abs(frames[0].y-frames[1].y)<1&&frames[1].x>frames[0].x);}
-   assert(await page.locator('#recipe-card h1').evaluate(el=>el.getBoundingClientRect().bottom)<=frames[0].y);
+   if(await page.locator('html[data-sintez-unified]').count())assert(await page.locator('#recipe-card h1').evaluate(el=>el.getBoundingClientRect().left)>frames[0].x,'The approved wide layout places the photo to the left of the title');else assert(await page.locator('#recipe-card h1').evaluate(el=>el.getBoundingClientRect().bottom)<=frames[0].y);
    await edit(page);assert.equal(await page.locator('.photo-editor [data-photo-slot]').count(),2);
    const placement=await page.evaluate(()=>({name:document.querySelector('#item-name').getBoundingClientRect().bottom,photos:document.querySelector('.photo-editor').getBoundingClientRect().top,ingredients:document.querySelector('#ingredients').getBoundingClientRect().top}));
    assert(placement.photos>placement.name&&placement.photos<placement.ingredients,'Photo controls are near the name above ingredient forms');assert.deepEqual(await stored(page),before);
