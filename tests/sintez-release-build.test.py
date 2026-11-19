@@ -46,7 +46,7 @@ class UnifiedBuild(unittest.TestCase):
         for asset in config['assets']:self.assertEqual(hashlib.sha256((a/asset['url']).read_bytes()).hexdigest(),asset['sha256'])
         self.assertTrue(all('assets/sintez-intro/'+n+'.jpg' in first['files'] for n in ['01_intro','02_home','03_chef','04_business']))
     def test_namespace_binding_is_the_only_change_in_data_modules(self):
-        for target in ['pwa','preview','web','modes','glass','showcase','workspace']:
+        for target in ['pwa','preview','web','modes','glass','showcase','workspace','homebook']:
             root,version=self.build(target,target)
             for kind,(file,old) in module.FILES.items():self.assertEqual((root/file).read_text().replace(version['storage_names'][kind],old),(ROOT/file).read_text())
             for file in ['js/app.js','js/calculations.js','js/photos.js','js/recipe-card-templates.js']:
@@ -87,5 +87,11 @@ class UnifiedBuild(unittest.TestCase):
         self.assertEqual(version['storage_names'],module.SINTEZ_NAMES)
         self.assertEqual(version['presentation_key'],'kitchen-calculator-sintez-presentation-seen-v1')
         self.assertIn('js/workspace-policy.js',version['files']);self.assertIn('assets/unified-workspace.css',version['files'])
+
+    def test_home_book_stand_preserves_all_names_and_has_separate_install_identity(self):
+        root,version=self.build('homebook');manifest=json.loads((root/'manifest.webmanifest').read_text())
+        self.assertEqual(manifest['id'],'/kitchen-calculator-test/sintez-home-book/')
+        self.assertEqual(version['storage_names'],module.SINTEZ_NAMES)
+        self.assertEqual(version['offline_assets'],72)
 
 if __name__=='__main__':unittest.main()

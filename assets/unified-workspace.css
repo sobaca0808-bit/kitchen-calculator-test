@@ -166,3 +166,18 @@
   .unified-recipe-hero,.unified-recipe-name,.unified-recipe-photo {display:contents;}
   .unified-recipe-chips,.unified-recipe-metrics,.unified-photo-edit,.favorite-recipe,.unified-incomplete {display:none!important;}
 }
+
+/* Home is a cookbook; mounted professional inputs retain their draft values. */
+html[data-sintez-unified]:not([data-sintez-workspace-mode=home]) [data-home-only],
+html[data-sintez-unified][data-sintez-workspace-mode=home] [data-professional-only] {display:none!important;}
+@media screen {
+  html[data-sintez-unified][data-sintez-workspace-mode=home] .ingredient-head,
+  html[data-sintez-unified][data-sintez-workspace-mode=home] .ingredient-row {grid-template-columns:minmax(0,1fr) 110px 85px 44px;}
+  @media(max-width:760px) {
+    html[data-sintez-unified][data-sintez-workspace-mode=home] .ingredient-head {display:none;}
+    html[data-sintez-unified][data-sintez-workspace-mode=home] .ingredient-row {grid-template-columns:minmax(0,1fr) 85px 44px;}
+  }
+}
+
+html[data-sintez-unified][data-sintez-workspace-mode=home] :is(#packaging-editor,.selling-price-editor,#profitability-preview,#expenses-preview) {display:none!important;}
+@media screen {html[data-sintez-unified][data-sintez-workspace-mode=home] .unified-recipe-metrics {grid-template-columns:minmax(0,1fr);max-width:250px;}}
