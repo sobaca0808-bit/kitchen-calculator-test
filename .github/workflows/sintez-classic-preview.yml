@@ -1,0 +1,100 @@
+name: Publish only the Classic Dark Glass review
+on:
+  push:
+    branches: [preview/browser]
+    paths: ['preview-hosting/sintez-classic/**', '.github/workflows/sintez-classic-preview.yml']
+permissions:
+  contents: read
+  actions: read
+  pages: write
+  id-token: write
+concurrency:
+  group: github-pages
+  cancel-in-progress: false
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    environment:
+      name: github-pages
+      url: https://sobaca0808-bit.github.io/kitchen-calculator-test/sintez-classic/
+    env:
+      APPROVED_MAIN: 9f45d0206022d5cfb66352b5a1518b3ff9a50abc
+      PARENT_SOURCE: 471c60944ffe9988f8c9e0a4a4ad2f50a907a9a8
+      CLASSIC_SOURCE: ce6ba48e5a239e46bce57592ba7b5b47753fc5b1
+      CHECK_RUN: '44628572359'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Require unchanged main and exact source on every CI wait
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          test '${{ github.repository }}' = sobaca0808-bit/kitchen-calculator-test
+          for ATTEMPT in $(seq 1 120); do
+            test "$(gh api repos/${{ github.repository }}/git/ref/heads/main --jq .object.sha)" = "$APPROVED_MAIN"
+            test "$(gh api repos/${{ github.repository }}/git/ref/heads/feature/home-cookbook-no-finance --jq .object.sha)" = "$PARENT_SOURCE"
+            test "$(gh api repos/${{ github.repository }}/git/ref/heads/feature/classic-dark-glass --jq .object.sha)" = "$CLASSIC_SOURCE"
+            test "$(gh api repos/${{ github.repository }}/actions/runs/$CHECK_RUN --jq .head_sha)" = "$CLASSIC_SOURCE"
+            test "$(gh api repos/${{ github.repository }}/actions/runs/$CHECK_RUN --jq .path)" = .github/workflows/classic-glass.yml
+            STATUS="$(gh api repos/${{ github.repository }}/actions/runs/$CHECK_RUN --jq .status)"
+            if [ "$STATUS" = completed ]; then break; fi
+            echo "Waiting for all candidate checks ($ATTEMPT/120)."
+            sleep 12
+          done
+          test "$(gh api repos/${{ github.repository }}/actions/runs/$CHECK_RUN --jq .conclusion)" = success
+      - name: Rebuild the exact old publication and append only the new unified route
+        run: python3 preview-hosting/sintez-classic/build.py --pages "$RUNNER_TEMP/modes-site" --proof "$RUNNER_TEMP/modes-publication.json" --source "$CLASSIC_SOURCE"
+      - name: Verify all 742 existing HTTPS resources before publication
+        run: python3 preview-hosting/sintez-classic/verify.py "$RUNNER_TEMP/modes-publication.json" --phase before
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: ${{ runner.temp }}/modes-site
+      - name: Recheck main, parent and source immediately before deployment
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          test "$(gh api repos/${{ github.repository }}/git/ref/heads/main --jq .object.sha)" = "$APPROVED_MAIN"
+          test "$(gh api repos/${{ github.repository }}/git/ref/heads/feature/home-cookbook-no-finance --jq .object.sha)" = "$PARENT_SOURCE"
+          test "$(gh api repos/${{ github.repository }}/git/ref/heads/feature/classic-dark-glass --jq .object.sha)" = "$CLASSIC_SOURCE"
+      - uses: actions/deploy-pages@v4
+      - name: Verify all 742 preserved and 75 new HTTPS resources
+        run: python3 preview-hosting/sintez-classic/verify.py "$RUNNER_TEMP/modes-publication.json" --phase after
+      - name: Install disposable public-browser checks
+        run: |
+          npm install --prefix "$RUNNER_TEMP/modes-tools" --ignore-scripts --no-audit --no-fund playwright@1.62.1
+          sudo apt-get update -qq
+          sudo apt-get install -y poppler-utils
+      - name: Verify actual HTTPS modes, all palettes, phone layouts, saved data, JSON and A4
+        env:
+          NODE_PATH: ${{ runner.temp }}/modes-tools/node_modules
+          CHROMIUM_PATH: /usr/bin/google-chrome
+          SINTEZ_UNIFIED_ARTIFACTS: ${{ runner.temp }}/workspace-live-proof
+          HOME_COOKBOOK_ARTIFACTS: ${{ runner.temp }}/home-live-proof
+          CLASSIC_GLASS_ARTIFACTS: ${{ runner.temp }}/classic-live-proof
+        run: node preview-hosting/sintez-classic/check.cjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: sintez-classic-publication-proof
+          path: |
+            ${{ runner.temp }}/modes-publication.json
+            ${{ runner.temp }}/modes-live-proof
+            ${{ runner.temp }}/glass-live-proof
+            ${{ runner.temp }}/workspace-live-proof
+            ${{ runner.temp }}/home-live-proof
+            ${{ runner.temp }}/classic-live-proof
+      - name: Report the verified separate card preview
+        run: |
+          cat >> "$GITHUB_STEP_SUMMARY" <<'REPORT'
+          https://sobaca0808-bit.github.io/kitchen-calculator-test/sintez-classic/
+
+          Only the additional /sintez-classic/ stand was published.
+          All earlier files and 742 existing HTTP resources are preserved.
+          The dedicated unified HTTPS Chrome scenarios cover desktop/phone, three modes, CRUD, JSON, photos, drafts and A4.
+          The five existing SINTEZ test storage names remain shared; no new database or migration.
+          Main, all previous stands, existing PWA installations and Pages settings are unchanged.
+          Physical Android and owner approval are still required before any main release.
+          REPORT
