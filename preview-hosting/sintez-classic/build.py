@@ -46,7 +46,7 @@ def build(output,proof,source):
         assert version['storage_names']==old['storage_names']==prior['storage_names']
         assert manifest['id']=='/kitchen-calculator-test/sintez-classic/' and manifest['scope']=='./' and manifest['start_url']=='./?source=pwa'
         for name,expected in protected.items():assert sha(output/name)==expected,name
-        current={'sintez-classic/'+name:expected for name,expected in version['files'].items()};current['sintez-classic/pwa-version.json']=sha(output/'sintez-classic/pwa-version.json');assert len(current)==75
+        current={'sintez-classic/'+name:expected for name,expected in version['files'].items()};current['sintez-classic/pwa-version.json']=sha(output/'sintez-classic/pwa-version.json');assert len(current)==76
         result={'source_commit':source,'parent_commit':PARENT,'main_commit':MAIN,'previous_hosting':HOST,'url':URL,'preview_url':URL+'sintez-classic/','before_https':before,'preserved_https':before,'release_https':current,'protected_files':protected,'storage_names':version['storage_names'],'manifest_id':manifest['id'],'all_existing_sites_and_pwa_preserved':True,'no_new_calculator_database':True}
         proof.write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n');print(json.dumps({'unchanged_files':len(protected),'before_https':len(before),'new_https':len(current),'after_https':len(before)+len(current),'preview_url':result['preview_url']}))
 if __name__=='__main__':
