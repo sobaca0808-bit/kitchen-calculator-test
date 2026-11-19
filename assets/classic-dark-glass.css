@@ -58,7 +58,7 @@
   html[data-classic-glass] button:is(.danger,.remove-row,[id^=remove-photo],.packaging-remove):not(#sintez-presentation *):hover:not(:disabled) {
     --cdg-button-fill:rgba(105,47,65,.92);--cdg-button-edge:#edabb5;
   }
-  html[data-classic-glass] button:is([aria-pressed=true],[aria-current=page],.active,.saved):not(.sintez-mode-card):not(#sintez-presentation *) {
+  html[data-classic-glass] button:is([aria-pressed=true],[aria-current=page],[aria-selected=true],.active,.saved):not(.sintez-mode-card):not(#sintez-presentation *) {
     --cdg-button-fill:var(--cdg-active);--cdg-button-edge:var(--cdg-accent);--cdg-button-base:var(--g-selected);
     box-shadow:var(--cdg-rim),inset 0 0 14px #20bdbd16,0 0 12px var(--cdg-glow)!important;
   }
