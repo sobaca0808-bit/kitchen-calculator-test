@@ -45,7 +45,7 @@ async function noFinance(p){
 async function options(p){if(!await p.locator('#print-photos').isVisible())await p.locator('.unified-card-options>summary').click();}
 (async()=>{
  await fs.mkdir(output,{recursive:true});
- if(process.env.HOME_COOKBOOK_URL){url=process.env.HOME_COOKBOOK_URL;assert.equal(url,'https://sobaca0808-bit.github.io/kitchen-calculator-test/sintez-home-book/');}
+ if(process.env.HOME_COOKBOOK_URL){url=process.env.HOME_COOKBOOK_URL;assert(['https://sobaca0808-bit.github.io/kitchen-calculator-test/sintez-home-book/','https://sobaca0808-bit.github.io/kitchen-calculator-test/sintez-classic/'].includes(url));}
  else {server=await start(process.env.KITCHEN_SINTEZ_RUNTIME_ROOT||path.resolve(__dirname,'..'),{home:true});url=server.url;}
  browser=await chromium.launch(launch);
  for(const width of [1440,390,320])await test('Home areas, product/prep editors, suggestions and settings contain no financial UI '+width,async p=>{

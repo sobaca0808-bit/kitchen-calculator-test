@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ru" data-sintez-screen="workspace" data-sintez-glass data-sintez-showcase data-sintez-unified data-default-kitchen-theme="graphite">
+<html lang="ru" data-sintez-screen="workspace" data-sintez-glass data-sintez-showcase data-sintez-unified data-classic-glass data-default-kitchen-theme="graphite">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -57,6 +57,7 @@
   <!-- /SINTEZ:GLASS -->
   <link rel="stylesheet" href="assets/recipe-showcase.css">
   <link rel="stylesheet" href="assets/unified-workspace.css">
+  <link rel="stylesheet" href="assets/classic-dark-glass.css" media="screen">
 </head>
 <body>
   <!-- SINTEZ:HOME -->
@@ -86,6 +87,7 @@
     <section id="sintez-settings" aria-labelledby="sintez-settings-title" hidden>
       <button class="sintez-back" data-sintez-home type="button">← На главную</button><h1 id="sintez-settings-title" tabindex="-1">Настройки</h1><p class="sintez-lead">Оформление, резервные копии и приложение.</p>
       <div class="sintez-settings-grid">
+        <p class="classic-theme-label">Оформление: Classic Dark Glass</p>
         <fieldset class="sintez-setting"><legend>Оформление приложения</legend><p>Одна стеклянная система — три настроения кухни.</p><div class="sintez-theme-options"><label><input type="radio" name="sintez-theme" value="graphite"> Тёмная кухня</label><label><input type="radio" name="sintez-theme" value="berry"> Ягодная кухня</label><label><input type="radio" name="sintez-theme" value="sage"> Шалфей</label></div><p id="sintez-theme-status" role="status"></p></fieldset>
         <section class="sintez-setting"><h2>Резервная копия</h2><p>Сохраните библиотеку вместе с фотографиями в JSON. Перед импортом откроется проверка изменений.</p><div class="sintez-setting-actions"><button data-sintez-action="export" type="button">↓ Экспорт JSON</button><button data-sintez-action="import" type="button">↑ Импорт JSON</button></div></section>
         <section class="sintez-setting"><h2>Знакомство с приложением</h2><p>Утверждённая презентация «СИНТЕЗ МЕРЫ».</p><button id="sintez-presentation-replay" type="button">Посмотреть презентацию снова</button><p id="sintez-presentation-status" role="status"></p></section>
