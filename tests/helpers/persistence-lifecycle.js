@@ -76,7 +76,7 @@ async function runCycle({chromium,url,rootURL,keys,width,cycles,output,launch,th
     const before=await page.evaluate(()=>window.__beforeCalculator),after=await snapshot(page);report.initialRecordPresent=before!==null;report.wroteInitialDatabase=before===null&&after.raw!==null;report.initialProducts=after.data?.products.length||0;report.initialRecipes=after.data?.recipes.length||0;
     if(expectInitialEmpty){assert.equal(after.raw,null);assert.equal(report.initialProducts,0);assert.equal(report.initialRecipes,0);}
     ids=await createThroughUI(page);
-    if(theme&&(theme!=='berry'||process.env.KITCHEN_GLASS_TEST==='1')){await page.locator('#appearance-toggle').click();await page.locator(`input[name=kitchen-appearance][value=${theme}]`).check();await page.keyboard.press('Escape');}
+    if(theme&&await page.locator('html[data-classic-glass]').count()){assert(await page.locator('#appearance-toggle').isHidden());await page.evaluate(theme=>KitchenAppearance.select(theme),theme);}else if(theme&&(theme!=='berry'||process.env.KITCHEN_GLASS_TEST==='1')){await page.locator('#appearance-toggle').click();await page.locator(`input[name=kitchen-appearance][value=${theme}]`).check();await page.keyboard.press('Escape');}
    }else{
     const reopened=await snapshot(page);assert.deepEqual(reopened,expected,'All saved values/photo bytes and drafts survive a real browser restart, without re-seeding or import');
     await checkContents(page,ids,price);price+=1;

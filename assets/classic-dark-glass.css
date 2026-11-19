@@ -31,6 +31,7 @@
      photo frames is retained, and the four intro slides are outside this scope. */
   html[data-classic-glass] button:not(#sintez-presentation *):not(.sintez-mode-card):not(.unified-brand):not(.photo-open):not(.photo-frame-button) {
     background:var(--cdg-button-fill,var(--cdg-button))!important;
+    background-color:var(--cdg-button-base,transparent)!important;
     color:var(--cdg-button-ink,var(--cdg-text))!important;
     border:1px solid var(--cdg-button-edge,var(--cdg-edge))!important;
     border-radius:14px;box-shadow:var(--cdg-rim),0 3px 10px #00131b40!important;
@@ -58,7 +59,7 @@
     --cdg-button-fill:rgba(105,47,65,.92);--cdg-button-edge:#edabb5;
   }
   html[data-classic-glass] button:is([aria-pressed=true],[aria-current=page],.active,.saved):not(.sintez-mode-card):not(#sintez-presentation *) {
-    --cdg-button-fill:var(--cdg-active);--cdg-button-edge:var(--cdg-accent);
+    --cdg-button-fill:var(--cdg-active);--cdg-button-edge:var(--cdg-accent);--cdg-button-base:var(--g-selected);
     box-shadow:var(--cdg-rim),inset 0 0 14px #20bdbd16,0 0 12px var(--cdg-glow)!important;
   }
   html[data-classic-glass] button:is(.primary,.saved,.active,[aria-current],[aria-pressed],:disabled):disabled:not(#sintez-presentation *) {
