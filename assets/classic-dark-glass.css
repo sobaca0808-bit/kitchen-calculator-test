@@ -44,11 +44,11 @@
   html[data-classic-glass] button:not(#sintez-presentation *):active:not(:disabled) {
     --cdg-button-fill:var(--cdg-active);transform:translateY(1px);
   }
-  html[data-classic-glass] button:is(.primary,#create,#save-item,#import-apply):not(#sintez-presentation *) {
+  html[data-classic-glass] button:where(.primary,#create,#save-item,#import-apply):not(#sintez-presentation *) {
     --cdg-button-fill:var(--cdg-primary);--cdg-button-edge:#4fc4c9;
     border-radius:24px;box-shadow:var(--cdg-rim),0 0 14px var(--cdg-glow)!important;
   }
-  html[data-classic-glass] button:is(.primary,#create,#save-item,#import-apply):hover:not(:disabled) {
+  html[data-classic-glass] button:where(.primary,#create,#save-item,#import-apply):hover:not(:disabled) {
     --cdg-button-fill:var(--cdg-hover);--cdg-button-edge:#9df4ed;
   }
   html[data-classic-glass] button:is(.danger,.remove-row,[id^=remove-photo],.packaging-remove):not(#sintez-presentation *) {
@@ -61,7 +61,7 @@
     --cdg-button-fill:var(--cdg-active);--cdg-button-edge:var(--cdg-accent);
     box-shadow:var(--cdg-rim),inset 0 0 14px #20bdbd16,0 0 12px var(--cdg-glow)!important;
   }
-  html[data-classic-glass] button:not(#sintez-presentation *):disabled {
+  html[data-classic-glass] button:is(.primary,.saved,.active,[aria-current],[aria-pressed],:disabled):disabled:not(#sintez-presentation *) {
     --cdg-button-fill:rgba(41,66,78,.85);--cdg-button-ink:#a7b9c1;--cdg-button-edge:#4a6370;
     box-shadow:none!important;opacity:.7;cursor:not-allowed;transform:none;filter:none;
   }
