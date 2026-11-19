@@ -5,7 +5,7 @@ const output=process.env.SINTEZ_MODES_PWA_ARTIFACTS||path.join(os.tmpdir(),'sint
 const keys={book:'kitchen-calculator-sintez-preview-v1',drafts:'kitchen-calculator-sintez-drafts-v1',photos:'kitchen-calculator-sintez-photos-v1',backups:'kitchen-calculator-sintez-import-backups-v1',appearance:'kitchen-calculator-sintez-appearance-v1'};
 const launch={executablePath:process.env.CHROMIUM_PATH||'/usr/bin/chromium',headless:!headful,args:['--no-sandbox','--disable-features=Translate']};
 const mount=process.env.SINTEZ_MODES_PWA_MOUNT||'/kitchen-calculator-test/sintez-modes/';
-assert(['/kitchen-calculator-test/sintez-modes/','/kitchen-calculator-test/sintez-glass/','/kitchen-calculator-test/sintez-card/','/kitchen-calculator-test/sintez-workspace/'].includes(mount));
+assert(['/kitchen-calculator-test/sintez-modes/','/kitchen-calculator-test/sintez-glass/','/kitchen-calculator-test/sintez-card/','/kitchen-calculator-test/sintez-workspace/','/kitchen-calculator-test/sintez-home-book/'].includes(mount));
 let server,browser,context,profile;const results=[],errors=[];
 function watch(ctx){ctx.on('page',p=>{p.on('pageerror',e=>errors.push(e.message));p.on('dialog',d=>d.accept());});}
 async function poll(probe,label){const end=Date.now()+45000;while(Date.now()<end){if(await probe())return;await new Promise(r=>setTimeout(r,100));}throw Error('Timed out: '+label);}

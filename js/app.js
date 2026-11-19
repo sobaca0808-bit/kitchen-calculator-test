@@ -26,7 +26,7 @@
   if(unified)document.documentElement.dataset.sintezWorkspaceMode=workspaceMode;
   let folderFilter = 'all', folderFormId = null,favoritesOnly=false;
   const selectedFolderId = () => folderFilter.startsWith('folder:') ? folderFilter.slice(7) : null;
-  const printPhotoChoices = {chef:'both',calculation:'both'};
+  const printPhotoChoices = {chef:'both',calculation:'both',home:'both'};
   let draft = null, dirty = false, isNew = false, errors = new Map(), invalidValues = new Map(), storageBlocked = !!loaded.error;
   const editor = $('#editor');
   KitchenEditorActions.mount(editor);
@@ -237,6 +237,7 @@
   function numericInput(id, value, placeholder = 'Не задано') {
     return `<input id="${id}" type="text" inputmode="decimal" autocomplete="off" value="${esc(invalidValues.has(id) ? invalidValues.get(id) : num(value,8))}" placeholder="${placeholder}">`;
   }
+  const homeCopy=(home,professional)=>unified?`<span data-home-only>${home}</span><span data-professional-only>${professional}</span>`:professional;
   function renderLibrary() {
     const labels = {dish:['Мои рецепты','Новое блюдо'],prep:['Полуфабрикаты','Новый полуфабрикат'],products:['Продукты','Новый продукт'],packaging:['Упаковка и фасовка','Новая позиция']};
     $('.workspace').dataset.section = section;
@@ -261,7 +262,9 @@
     const folderNames = new Map((state.folders || []).map(folder=>[folder.id,folder.name]));
     $('#library-list').innerHTML = list.length ? list.map(item => {
       let caption;
-      if (isCatalog()) {
+      if (isHomeMode()) {
+        caption=section==='products'?(C.units[item.unit]?.label||'Продукт'):section==='prep'?(item.actualYield==null?'Выход не задан':'Выход: '+num(item.actualYield)+' г'):(query&&folderNames.size?folderNames.get(item.folderId)||'Без папки':'Рецепт');
+      } else if (isCatalog()) {
         const base = section === 'packaging' ? P.basePrice(item) : C.productBasePrice(item);
         const units = section === 'packaging' ? P.units : C.units;
         caption = base.value == null ? 'Нет цены' : money(base.value) + ' / ' + units[base.unit].label;
@@ -303,9 +306,9 @@
     else if (section === 'products') renderProduct(); else if (section === 'packaging') renderPackaging(); else renderRecipe();
   }
   function renderCard() {
-    editor.innerHTML = `<div class="card-controls"><button id="back-list">← К списку</button><button id="edit-recipe">Изменить</button><button id="print-recipe">Печать</button><label>Форма карты<select id="card-mode"><option value="calculation" ${cardMode==='calculation'?'selected':''}>Калькуляционная карта</option><option value="chef" ${cardMode==='chef'?'selected':''}>Карта повара</option></select></label><label>Количество порций<input id="view-portions" type="text" inputmode="decimal" value="${esc(num(viewPortions,8))}"></label><label>Фотографии при печати<select id="print-photos"><option value="none">Без фотографий</option><option value="first">Только первая</option><option value="second">Только вторая</option><option value="both">Обе фотографии</option></select></label><p id="view-error" role="status"></p></div><article id="recipe-card" class="recipe-card"></article>`;
+    editor.innerHTML = `<div class="card-controls"><button id="back-list">← К списку</button><button id="edit-recipe">Изменить</button><button id="print-recipe">Печать</button><label data-professional-only>Форма карты<select id="card-mode"><option value="calculation" ${cardMode==='calculation'?'selected':''}>Калькуляционная карта</option><option value="chef" ${cardMode==='chef'?'selected':''}>Карта повара</option></select></label><label>Количество порций<input id="view-portions" type="text" inputmode="decimal" value="${esc(num(viewPortions,8))}"></label><label>Фотографии при печати<select id="print-photos"><option value="none">Без фотографий</option><option value="first">Только первая</option><option value="second">Только вторая</option><option value="both">Обе фотографии</option></select></label><p id="view-error" role="status"></p></div><article id="recipe-card" class="recipe-card"></article>`;
     const card=$('#recipe-card');
-    const expensePrintControl=document.createElement('label');expensePrintControl.className='expense-print-control';
+    const expensePrintControl=document.createElement('label');expensePrintControl.className='expense-print-control';expensePrintControl.setAttribute('data-professional-only','');
     expensePrintControl.innerHTML=`Статьи расходов при печати<select id="print-expense-detail"><option value="summary">Только итоги</option><option value="full">С детализацией</option></select><small>Без цен — форма «Карта повара».</small>`;
     $('.card-controls',editor).append(expensePrintControl);
     $('#print-expense-detail').value=expensePrintDetail;
@@ -330,7 +333,7 @@
     }
     let cardValid=false, readinessVersion=0;
     function updatePrintReadiness() {
-            const version=++readinessVersion, selection=printPhotoChoices[cardMode];
+      const version=++readinessVersion, selection=printPhotoChoices[isHomeMode()?'home':cardMode];
       const selected=Photos.printSlots(selection), photoIds=Photos.ids(draft);
       card.dataset.printPhotos=selection;
       card.dataset.printHasPhotos=selected.some(index=>photoIds[index])?'yes':'no';
@@ -351,12 +354,12 @@
       readinessVersion++;cardValid=false;$('#print-recipe').disabled=true;
       try {
         viewPortions=C.parseNumber($('#view-portions').value);
-        const model=KitchenRecipeCardModel.create(state,draft.id,viewPortions,unified&&isHomeMode()?'calculation':cardMode);
+        const model=KitchenRecipeCardModel.create(state,draft.id,viewPortions,isHomeMode()?'chef':cardMode);
         // Both forms share the saved recipe and the same gallery. Presentation changes
         // neither recreate photo records nor alter their order or bytes.
         const galleryElement=$('#card-photos',card);
         const includeExpenses=isBusinessMode()&&ExpensePreferences.enabled(draft),expenseResult=cardMode==='calculation'&&includeExpenses?KitchenExpenses.calculate(state,draft.id,viewPortions):undefined;
-        card.innerHTML=KitchenRecipeCardTemplates.render(state,model,{expenseResult,includeExpenses,showcase:!unified&&document.documentElement.hasAttribute('data-sintez-showcase'),unified,showBusiness:isBusinessMode()});
+        card.innerHTML=KitchenRecipeCardTemplates.render(state,model,{expenseResult,includeExpenses,showcase:!unified&&document.documentElement.hasAttribute('data-sintez-showcase'),unified,home:isHomeMode(),showBusiness:isBusinessMode()});
         card.querySelector('[data-showcase-edit]')?.addEventListener('click',()=>$('#edit-recipe').click());
         card.querySelector('.unified-photo-edit')?.addEventListener('click',()=>{$('#edit-recipe').click();$('#photo-editor')?.scrollIntoView({block:'center'});});
         card.querySelector('.favorite-recipe')?.addEventListener('click',()=>{const candidate=clone(state),recipe=candidate.recipes.find(r=>r.id===draft.id);if(Home.favorite(recipe))delete recipe.favorite;else recipe.favorite=true;if(persist(candidate,'Избранное сохранено.',false,false)){draft=clone(state.recipes.find(r=>r.id===draft.id));renderLibrary();draw();}});
@@ -378,7 +381,7 @@
           (financial||card).insertAdjacentHTML(financial?'afterend':'beforeend',KitchenExpensesUI.renderCard(state,draft.id,viewPortions,{result:expenseResult,showBreakdown:false}));
         }
         card.querySelectorAll('.expenses-open').forEach(button=>button.onclick=()=>switchSection('expenses'));
-        card.dataset.mode=cardMode;
+        card.dataset.mode=model.mode;
         if(galleryElement && photoPreview) $('#card-photos',card).replaceWith(galleryElement);
         else {
           photoPreview=Photos.mountGallery($('#card-photos',card),model.view.recipe);
@@ -389,7 +392,7 @@
     }
     $('#view-portions').addEventListener('input',draw);
     $('#card-mode').addEventListener('change',event=>{cardMode=event.target.value;draw();});
-    $('#print-photos').addEventListener('change',event=>{printPhotoChoices[cardMode]=event.target.value;updatePrintReadiness();});
+    $('#print-photos').addEventListener('change',event=>{printPhotoChoices[isHomeMode()?'home':cardMode]=event.target.value;updatePrintReadiness();});
     $('#edit-recipe').addEventListener('click',()=>{viewing=false;renderEditor();});
     $('#back-list').addEventListener('click',()=>{selectedId=null;openSelected();$('#library-search').focus();});
     $('#print-recipe').addEventListener('click',()=>window.print());
@@ -408,12 +411,12 @@
     $('#view-recipe')?.addEventListener('click', () => {if (!canLeave()) return; if(isNew) {selectedId = null;openSelected();return;} openSelected();});
   }
   function renderProduct() {
-    editor.innerHTML = head('Справочник продуктов','Закупочная цена относится ко всей упаковке. Пустая цена означает «Нет цены».') + `<div class="editor-content"><div class="product-grid">
+    editor.innerHTML = head('Справочник продуктов',homeCopy('Название, единица измерения и заметки для ваших рецептов.','Закупочная цена относится ко всей упаковке. Пустая цена означает «Нет цены».')) + `<div class="editor-content"><div class="product-grid">
       <label class="full">Другие слова для поиска<input id="aliases" value="${esc(draft.aliases)}" placeholder="Например, картошка, картошечка"></label>
-      <label>Закупочная цена, ₽${numericInput('price',draft.price,'Нет цены')}</label>
-      <label>Количество в упаковке${numericInput('packQuantity',draft.packQuantity)}</label>
-      <label>Единица упаковки<select id="product-unit">${unitOptions(draft.unit)}</select></label>
-      </div><div id="base-price" class="base-price"></div>
+      <label data-professional-only>Закупочная цена, ₽${numericInput('price',draft.price,'Нет цены')}</label>
+      <label data-professional-only>Количество в упаковке${numericInput('packQuantity',draft.packQuantity)}</label>
+      <label>${homeCopy("Единица продукта","Единица упаковки")}<select id="product-unit">${unitOptions(draft.unit)}</select></label>
+      </div><div id="base-price" class="base-price" data-professional-only></div>
       <details class="recipe-note"><summary>Масса штуки, коэффициент объёма и заметка</summary><div class="product-grid" style="margin-top:14px">
       <label>Масса одной штуки, г${numericInput('massPerPiece',draft.massPerPiece)}</label>
       <label>Коэффициент массы, г на 1 мл${numericInput('gramsPerMl',draft.gramsPerMl)}</label>
@@ -431,6 +434,7 @@
     updateProductSummary();
   }
   function updateProductSummary() {
+    if(isHomeMode()){$('#base-price').replaceChildren();$('#form-error').textContent=errors.size?'Проверьте заполнение записи. Незавершённые профессиональные настройки доступны в профессиональном режиме.':'';return;}
     const price = C.productBasePrice(draft);
     const label = price.value == null ? 'Нет цены или количества упаковки' : `${money(price.value)} / ${C.units[price.unit].label}`;
     $('#base-price').innerHTML = `Цена за базовую единицу<strong>${esc(label)}</strong>${price.value !== null && price.unit === 'g' ? `<small>${money(price.value*1000)} / кг</small>` : ''}`;
@@ -458,8 +462,8 @@
     summary();
   }
   function renderRecipe() {
-    editor.innerHTML = head(section === 'prep' ? 'Полуфабрикат · партия' : 'Блюдо · рецептура',section === 'prep' ? 'Сырьё считается по закупочной стоимости. Себестоимость готового продукта зависит от фактического выхода партии.' : 'Выбирайте продукты и готовые полуфабрикаты. Их производственные потери уже учтены.') + (section === 'dish' ? `<div class="recipe-folder-editor"><label>Папка блюда<select id="recipe-folder">${folderOptions(draft.folderId)}</select></label></div>` : '') + `<div id="photo-editor" class="recipe-photo-editor"></div><div class="editor-content"><div class="section-heading"><h3>Ингредиенты</h3><small id="row-count"></small></div><div class="ingredient-head" aria-hidden="true"><span>Продукт / полуфабрикат</span><span>Количество</span><span>Ед.</span><span>Стоимость</span><span></span></div><div id="ingredients"></div>${section === 'dish' ? '<div id="packaging-editor"></div>' : ''}
-      ${section === 'prep' ? `<div class="yield-panel"><div><h3>Фактический выход партии</h3><p>Взвесьте всю готовую партию. По этому значению рассчитывается себестоимость грамма и килограмма.</p></div><label>Выход готовой партии, г${numericInput('actualYield',draft.actualYield,'Обязательно')}</label></div>` : ''}
+    editor.innerHTML = head(section === 'prep' ? 'Полуфабрикат · партия' : 'Блюдо · рецептура',homeCopy('Добавьте продукты или готовые полуфабрикаты, укажите количество и способ приготовления.',section === 'prep' ? 'Сырьё считается по закупочной стоимости. Себестоимость готового продукта зависит от фактического выхода партии.' : 'Выбирайте продукты и готовые полуфабрикаты. Их производственные потери уже учтены.')) + (section === 'dish' ? `<div class="recipe-folder-editor"><label>Папка блюда<select id="recipe-folder">${folderOptions(draft.folderId)}</select></label></div>` : '') + `<div id="photo-editor" class="recipe-photo-editor"></div><div class="editor-content"><div class="section-heading"><h3>Ингредиенты</h3><small id="row-count"></small></div><div class="ingredient-head" aria-hidden="true"><span>Продукт / полуфабрикат</span><span>Количество</span><span>Ед.</span><span data-professional-only>Стоимость</span><span></span></div><div id="ingredients"></div>${section === 'dish' ? '<div id="packaging-editor"></div>' : ''}
+      ${section === 'prep' ? `<div class="yield-panel"><div><h3>Фактический выход партии</h3><p>${homeCopy("Взвесьте всю готовую партию и укажите её выход.","Взвесьте всю готовую партию. По этому значению рассчитывается себестоимость грамма и килограмма.")}</p></div><label>Выход готовой партии, г${numericInput('actualYield',draft.actualYield,'Обязательно')}</label></div>` : ''}
       ${section === 'dish' ? `<div class="product-grid recipe-note"><label>Количество порций в рецепте${numericInput('recipe-portions',draft.portions || 1)}</label><label>Фактический выход блюда, г (необязательно)${numericInput('dish-yield',draft.actualYield)}</label></div>` : ''}
       <label class="recipe-note">Способ приготовления<textarea id="technology" maxlength="10000">${esc(draft.technology)}</textarea></label>
       <details class="recipe-note" ${draft.note ? 'open' : ''}><summary>Заметка к рецепту</summary><textarea id="recipe-note" placeholder="Что нужно уточнить или учесть">${esc(draft.note)}</textarea></details><div id="summary" class="summary" aria-live="polite"></div>${section === 'dish' ? `<div class="selling-price-editor recipe-note"><label>Цена продажи блюда, ₽${numericInput('selling-price',draft.sellingPrice,'Не задана')}</label><p class="field-help">Цена за одну порцию. Показатели ниже рассчитаны только по продуктовой себестоимости, без упаковки.</p></div><div id="profitability-preview" aria-live="polite"></div>` : ''}<p id="form-error" class="inline-error" role="status"></p></div>` + actions(true);
@@ -524,7 +528,7 @@
       return `<div class="ingredient-row" data-row="${esc(row.id)}"><div class="autocomplete"><label><span class="sr-only">Продукт или полуфабрикат</span><input class="ingredient-search" id="search-${row.id}" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="options-${row.id}" autocomplete="off" placeholder="Начните вводить название…" value="${esc(ref?.name || '')}"></label><div id="options-${row.id}" class="suggestions" role="listbox" hidden></div>${ref ? `<span class="ingredient-tag">${prep ? 'Полуфабрикат · готовая масса' : 'Продукт'}${ref.massPerPiece ? ' · '+esc(num(ref.massPerPiece))+' г/шт.' : ''}</span>` : ''}</div>
       <label><span>${prep ? 'Готовая масса' : 'Исходное кол-во'}</span>${numericInput('qty-'+row.id,row.quantity)}</label>
       <label><span>Ед.</span><select id="unit-${row.id}">${prep ? ['g','kg'].map(u => `<option value="${u}" ${row.unit === u ? 'selected' : ''}>${C.units[u].label}</option>`).join('') : unitOptions(row.unit)}</select></label>
-      <div class="item-cost" id="cost-${row.id}"><span>Стоимость</span>—</div><button class="remove-row" aria-label="Удалить строку ${esc(ref?.name || 'ингредиента')}" title="Удалить строку">×</button>
+      <div class="item-cost" data-professional-only id="cost-${row.id}"><span>Стоимость</span>—</div><button class="remove-row" aria-label="Удалить строку ${esc(ref?.name || 'ингредиента')}" title="Удалить строку">×</button>
       <details class="row-extra" ${row.note ? 'open' : ''}><summary>${prep||isHomeMode() ? 'Заметка' : 'Обработка и заметка'}${!isHomeMode()&&row.lossPercent != null ? ' · потери '+esc(num(row.lossPercent))+'%' : ''}</summary><div class="extra-grid">${processable ? `<label class="processing-option">Исходный вес, г<input id="raw-${row.id}" value="${esc(num(rawMass(row)))}" readonly tabindex="-1" placeholder="Масса неизвестна"></label><label class="processing-option">Потери, %${numericInput('loss-'+row.id,row.lossPercent,'Без потерь')}</label><label class="processing-option">Расчётный выход, г${numericInput('output-'+row.id,row.outputGrams,'По исходному весу')}</label>` : ''}<label class="note-field">Заметка<input id="note-${row.id}" value="${esc(row.note)}" placeholder="Например, уточнить количество"></label></div></details></div>`;
     }).join('');
     for(const row of draft.ingredients) {
@@ -621,6 +625,14 @@
   }
   function updateRecipeSummary() {
     const result = C.calcRecipe(currentState(),draft.id);
+    if(isHomeMode()){
+      const value=section==='prep'?draft.actualYield:(draft.actualYield??result.massGrams);
+      const output=value==null?'не задан — уточните массу компонентов':num(value)+' г';
+      $('#mobile-summary').innerHTML='<span>Выход</span><strong>'+esc(output)+'</strong>';
+      $('#summary').className='summary';$('#summary').innerHTML='<div class="summary-meta">Выход готового '+(section==='prep'?'полуфабриката':'блюда')+': <strong>'+esc(output)+'</strong></div>';
+      $('#form-error').textContent=errors.size?'Проверьте заполнение рецепта. Незавершённые профессиональные настройки доступны в профессиональном режиме.':'';
+      return;
+    }
     result.rows.forEach((r,i) => {
       const el = $('#cost-'+draft.ingredients[i].id);
       el.innerHTML = `<span>Стоимость</span>${r.complete ? esc(money(r.knownCost)) : r.knownCost > 0 ? esc(money(r.knownCost))+'*' : '—'}${!r.complete ? '<small>Неполно</small>' : ''}`;
@@ -659,7 +671,7 @@
     if (errors.size) {message('Исправьте ошибки в числовых полях перед сохранением.',true);editor.querySelector('[aria-invalid="true"]')?.focus();return false;}
     draft.name = draft.name.trim();
     const candidate = currentState();
-    if(!persist(candidate,'Сохранено ✓. Связанные калькуляции пересчитаны.')) {
+    if(!persist(candidate,isHomeMode()?'Сохранено ✓.':'Сохранено ✓. Связанные калькуляции пересчитаны.')) {
       $('#save-state').textContent='В памяти · скачайте JSON';$('#save-item').textContent='Повторить сохранение';$('#save-item').classList.remove('saved');
       if(editingRecipe()){dirty=true;flushDraft();}return false;
     }
@@ -815,10 +827,12 @@
       if(backupBusy||photoEditor?.busy){message('Дождитесь обработки фотографии или резервной копии.',true);return false;}
       if(!Home.allowed(section,mode)&&!switchSection('dish'))return false;
       const changed=workspaceMode!==mode;workspaceMode=mode;
+      if(changed&&isHomeMode()&&!$('#message').classList.contains('error')){$('#message').textContent='';$('#message').hidden=true;}
       if(mode)document.documentElement.dataset.sintezWorkspaceMode=mode;else delete document.documentElement.dataset.sintezWorkspaceMode;
       if(changed&&draft){
         if(section==='dish'&&viewing)renderEditor();
         else if(!isCatalog()){renderRows();updateRecipeSummary();}
+        else if(section==='products')updateProductSummary();
       }
       renderLibrary();return true;
     },

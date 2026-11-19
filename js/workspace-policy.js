@@ -10,5 +10,14 @@
   const favorite=recipe=>recipe?.favorite===true;
   const minutes=recipe=>typeof recipe?.cookingMinutes==='number'&&Number.isSafeInteger(recipe.cookingMinutes)&&recipe.cookingMinutes>=0?recipe.cookingMinutes:null;
   const timing=value=>{if(value===null)return null;if(!Number.isSafeInteger(value)||value<0||value>525600)throw Error('Время приготовления: целое число минут от 0 до 525600.');return value;};
-  return {MODES,menus,valid,business,professional,allowed,initial,favorite,minutes,timing};
+  // Read-only backup comparison for Home. Full records still reach the existing
+  // importer/exporter; this projection never becomes application state.
+  const financialFields=new Set(['price','packQuantity','sellingPrice','packaging','includeEstablishmentExpenses','establishmentExpenses']);
+  const backupExtra=entry=>entry?.kind==='packaging'||(entry?.kind==='extension'&&entry.id==='establishmentExpenses');
+  function backupPreview(value){
+    if(Array.isArray(value))return value.map(backupPreview);
+    if(value&&typeof value==='object')return Object.fromEntries(Object.entries(value).filter(([key])=>!financialFields.has(key)).map(([key,item])=>[key,backupPreview(item)]));
+    return value;
+  }
+  return {MODES,menus,valid,business,professional,allowed,initial,favorite,minutes,timing,backupExtra,backupPreview};
 });

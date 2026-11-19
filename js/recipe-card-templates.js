@@ -29,7 +29,7 @@
   function chef(state, model, options={}) {
     const {recipe} = model.view, count = recipe.portions, batch = count !== 1;
     const perPortionYield = model.perPortionView?.yieldGrams;
-    return header(model,'КАРТА ПОВАРА',options)+
+    return header(model,options.home?'РЕЦЕПТ':'КАРТА ПОВАРА',options)+
       `<table class="food-ingredients chef-ingredients"><thead><tr><th>Ингредиент</th><th>На 1 порцию</th>${batch ? `<th>Всего на ${esc(num(count,8))} порций</th>` : ''}</tr></thead><tbody>${model.rows.map(row => `<tr ${attributes(row)}><td>${ingredient(row)}</td><td class="chef-per-portion">${serving(row.perPortion)}</td>${batch ? `<td class="chef-total">${serving(row.total)}</td>` : ''}</tr>`).join('')}</tbody></table>`+
       (options.showBusiness===false?'':root.KitchenPackagingUI.renderCard(state,recipe,count,false))+
       (perPortionYield == null ? '' : `<p class="chef-yield">Выход на 1 порцию: <strong>${esc(num(perPortionYield))} г</strong></p>`)+
@@ -61,6 +61,7 @@
   }
   const renderers = Object.freeze({chef,calculation});
   function render(state, model, options={}) {
+    if(options.home)return chef(state,{...model,mode:'chef'},options);
     const renderer = Object.hasOwn(renderers,model?.mode) ? renderers[model.mode] : null;
     if (typeof renderer !== 'function') throw Error('Неизвестная форма технологической карты.');
     return renderer(state,model,options);

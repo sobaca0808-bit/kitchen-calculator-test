@@ -3,7 +3,7 @@ import argparse,importlib.util,json,re,shutil,subprocess,hashlib
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 if __name__=='__main__':
-    p=argparse.ArgumentParser();p.add_argument('--output',type=Path,required=True);p.add_argument('--target',choices=['modes','glass','showcase','workspace'],default='modes');a=p.parse_args();assert not a.output.exists();a.output.mkdir(parents=True)
+    p=argparse.ArgumentParser();p.add_argument('--output',type=Path,required=True);p.add_argument('--target',choices=['modes','glass','showcase','workspace','homebook'],default='modes');a=p.parse_args();assert not a.output.exists();a.output.mkdir(parents=True)
     spec=importlib.util.spec_from_file_location('modes_package',ROOT/'scripts/sintez-package.py');m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m)
     source=subprocess.check_output(['git','-C',str(ROOT),'rev-parse','HEAD'],text=True).strip()
     m.package(a.output/'one',source,a.target);m.package(a.output/'two','0'*40,a.target)
