@@ -37,7 +37,7 @@ class UnifiedBuild(unittest.TestCase):
         self.assertEqual((a/'sw.js').read_bytes(),(b/'sw.js').read_bytes())
         config=json.loads(re.search(r'const BUILD = (.*); // PWA_BUILD',(a/'sw.js').read_text())[1])
         self.assertEqual(config['revision'],first['revision'])
-        self.assertEqual(len(config['assets']),73)
+        self.assertEqual(len(config['assets']),74)
         self.assertIn('assets/sintez-matte.svg',first['files'])
         self.assertIn('presentation.html',first['files'])
         self.assertIn('js/sintez-entry-v2.js',first['files']);self.assertIn('assets/sintez-entry-v2.css',first['files'])
@@ -92,13 +92,13 @@ class UnifiedBuild(unittest.TestCase):
         root,version=self.build('homebook');manifest=json.loads((root/'manifest.webmanifest').read_text())
         self.assertEqual(manifest['id'],'/kitchen-calculator-test/sintez-home-book/')
         self.assertEqual(version['storage_names'],module.SINTEZ_NAMES)
-        self.assertEqual(version['offline_assets'],73)
+        self.assertEqual(version['offline_assets'],74)
 
     def test_classic_stand_keeps_existing_names_and_caches_single_shared_style(self):
         root,version=self.build('classic');manifest=json.loads((root/'manifest.webmanifest').read_text())
         self.assertEqual(manifest['id'],'/kitchen-calculator-test/sintez-classic/')
         self.assertEqual(version['storage_names'],module.SINTEZ_NAMES)
-        self.assertEqual(version['offline_assets'],73)
+        self.assertEqual(version['offline_assets'],74)
         self.assertIn('assets/classic-dark-glass.css',version['files'])
 
 if __name__=='__main__':unittest.main()

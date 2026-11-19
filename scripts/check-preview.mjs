@@ -26,6 +26,7 @@ function run(args,env=process.env) {
   });
 }
 const runtimeFiles=new Map([
+  ['/js/classic-glass-layout.js','js/classic-glass-layout.js'],
   ['/assets/classic-dark-glass.css','assets/classic-dark-glass.css'],
   ['/assets/unified-workspace.css','assets/unified-workspace.css'],['/assets/mode-chef.svg','assets/mode-chef.svg'],['/icons/sintez/icon-192.png','icons/sintez/icon-192.png'],['/assets/unified-kitchen.webp','assets/unified-kitchen.webp'],['/assets/unified-kitchen-mobile.webp','assets/unified-kitchen-mobile.webp'],...['workspace-policy','unified-card','build-info','unified-workspace'].map(name=>['/js/'+name+'.js','js/'+name+'.js']),
   ['/assets/recipe-showcase.css','assets/recipe-showcase.css'],['/js/recipe-showcase.js','js/recipe-showcase.js'],

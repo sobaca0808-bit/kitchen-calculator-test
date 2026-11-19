@@ -30,10 +30,10 @@ jobs:
           "$RUNNER_TEMP/modes-python/bin/python" tests/sintez-release-build.test.py
           python3 tests/sintez-release-verifier.test.py
           python3 scripts/build-sintez-release-candidate.py --output "$RUNNER_TEMP/modes-site" --target classic --source '${{ github.sha }}'
-      - name: Build the exact PR38 A4 reference without changing any branch
+      - name: Build the previous PR40 design and A4 reference without changing any branch
         run: |
-          git worktree add --detach "$RUNNER_TEMP/pr35" 471c60944ffe9988f8c9e0a4a4ad2f50a907a9a8
-          python3 "$RUNNER_TEMP/pr35/scripts/build-sintez-release-candidate.py" --output "$RUNNER_TEMP/pr35-site" --target homebook
+          git worktree add --detach "$RUNNER_TEMP/pr35" 95671cc3846e926a1b9b25bd74ae2e90c091dc83
+          python3 "$RUNNER_TEMP/pr35/scripts/build-sintez-release-candidate.py" --output "$RUNNER_TEMP/pr35-site" --target classic
           git worktree remove "$RUNNER_TEMP/pr35"
       - name: Test all modes, mobile and keyboard navigation, JSON, photos, drafts and A4
         env:
@@ -45,10 +45,13 @@ jobs:
           SINTEZ_UNIFIED_ARTIFACTS: ${{ runner.temp }}/card-proof
           HOME_COOKBOOK_ARTIFACTS: ${{ runner.temp }}/home-proof
           CLASSIC_GLASS_ARTIFACTS: ${{ runner.temp }}/classic-proof
+          CLASSIC_POLISH_ARTIFACTS: ${{ runner.temp }}/polish-proof
+          CLASSIC_POLISH_BASE_ROOT: ${{ runner.temp }}/pr35-site
           CLASSIC_GLASS_BASE_ROOT: ${{ runner.temp }}/pr35-site
           SINTEZ_UNIFIED_BASE_ROOT: ${{ runner.temp }}/pr35-site
         run: |
           node tests/classic-glass.browser.test.js
+          node tests/classic-polish.browser.test.js
           node tests/home-cookbook.browser.test.js
           node tests/unified-workspace.browser.test.js
       - uses: actions/upload-artifact@v4
@@ -62,6 +65,7 @@ jobs:
             ${{ runner.temp }}/card-proof
             ${{ runner.temp }}/home-proof
             ${{ runner.temp }}/classic-proof
+            ${{ runner.temp }}/polish-proof
             ${{ runner.temp }}/modes-site/pwa-version.json
             ${{ runner.temp }}/modes-site/manifest.webmanifest
   regressions:
