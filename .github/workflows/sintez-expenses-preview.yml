@@ -67,6 +67,7 @@ jobs:
           test "$(gh api repos/${{ github.repository }}/actions/runs/$CHECK_RUN --jq .conclusion)" = success
       - uses: actions/upload-pages-artifact@v3
         with:
+          name: github-pages-expenses-${{ github.run_attempt }}
           path: ${{ runner.temp }}/modes-site
       - name: Recheck main, parent and source immediately before deployment
         env:
@@ -78,6 +79,8 @@ jobs:
           test "$(gh api repos/${{ github.repository }}/git/ref/heads/feature/financial-journal --jq .object.sha)" = "$FINANCE_SOURCE"
           test "$(gh api repos/${{ github.repository }}/git/ref/heads/feature/unified-establishment-expenses --jq .object.sha)" = "$EXPENSES_SOURCE"
       - uses: actions/deploy-pages@v4
+        with:
+          artifact_name: github-pages-expenses-${{ github.run_attempt }}
       - name: Verify all 897 preserved and 80 expenses HTTPS resources
         run: python3 preview-hosting/sintez-expenses/verify.py "$RUNNER_TEMP/modes-publication.json" --phase after
       - name: Install disposable public-browser checks
@@ -94,7 +97,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: sintez-expenses-publication-proof
+          name: sintez-expenses-publication-proof-${{ github.run_attempt }}
           path: |
             ${{ runner.temp }}/modes-publication.json
             ${{ runner.temp }}/expenses-live-proof
