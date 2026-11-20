@@ -23,14 +23,30 @@ jobs:
       PARENT_SOURCE: 471c60944ffe9988f8c9e0a4a4ad2f50a907a9a8
       CLASSIC_SOURCE: 16fb5b490eb57b13254ebefe49f15808793e89f0
       FINANCE_SOURCE: 4cc596363f37b99b8341a822e959fe9a4b28e950
-      EXPENSES_SOURCE: c37999f8ec1c852b8df6d5fc1e4505eef89b65ff
-      CHECK_RUN: '44732274349'
+      EXPENSES_SOURCE: fc912ba3877714017428fd96e5713153a39ef395
+      CHECK_RUN: '44732770390'
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
           persist-credentials: false
-      - name: Require unchanged main and exact source on every CI wait
+      - name: Require unchanged references before read-only preparation
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          test '${{ github.repository }}' = sobaca0808-bit/kitchen-calculator-test
+          test "$(gh api repos/${{ github.repository }}/git/ref/heads/main --jq .object.sha)" = "$APPROVED_MAIN"
+          test "$(gh api repos/${{ github.repository }}/git/ref/heads/feature/home-cookbook-no-finance --jq .object.sha)" = "$PARENT_SOURCE"
+          test "$(gh api repos/${{ github.repository }}/git/ref/heads/feature/classic-dark-glass --jq .object.sha)" = "$CLASSIC_SOURCE"
+          test "$(gh api repos/${{ github.repository }}/git/ref/heads/feature/financial-journal --jq .object.sha)" = "$FINANCE_SOURCE"
+          test "$(gh api repos/${{ github.repository }}/git/ref/heads/feature/unified-establishment-expenses --jq .object.sha)" = "$EXPENSES_SOURCE"
+      - name: Rebuild the exact old publication and append only the isolated expenses review route
+        run: |
+          python3 preview-hosting/sintez-expenses/test_retry.py
+          python3 preview-hosting/sintez-expenses/build.py --pages "$RUNNER_TEMP/modes-site" --proof "$RUNNER_TEMP/modes-publication.json" --source "$EXPENSES_SOURCE"
+      - name: Verify all 897 existing HTTPS resources before publication
+        run: python3 preview-hosting/sintez-expenses/verify.py "$RUNNER_TEMP/modes-publication.json" --phase before
+      - name: Require all source checks before any upload or deployment
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -49,12 +65,6 @@ jobs:
             sleep 12
           done
           test "$(gh api repos/${{ github.repository }}/actions/runs/$CHECK_RUN --jq .conclusion)" = success
-      - name: Rebuild the exact old publication and append only the isolated expenses review route
-        run: |
-          python3 preview-hosting/sintez-expenses/test_retry.py
-          python3 preview-hosting/sintez-expenses/build.py --pages "$RUNNER_TEMP/modes-site" --proof "$RUNNER_TEMP/modes-publication.json" --source "$EXPENSES_SOURCE"
-      - name: Verify all 897 existing HTTPS resources before publication
-        run: python3 preview-hosting/sintez-expenses/verify.py "$RUNNER_TEMP/modes-publication.json" --phase before
       - uses: actions/upload-pages-artifact@v3
         with:
           path: ${{ runner.temp }}/modes-site
