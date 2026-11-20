@@ -21,7 +21,7 @@ function install(context){
         if((info.work||info.menu)&&await p.locator('html').getAttribute('data-sintez-screen')==='settings')await click.call(p.locator('#sintez-settings [data-sintez-home]'));
         if(info.palette&&await p.locator('#appearance-panel').isHidden())await click.call(p.locator('#appearance-toggle'));
         if(info.menu&&await p.locator('#unified-sidebar').isHidden())await click.call(p.locator('#unified-menu-toggle'));
-        const details=locator.locator('xpath=ancestor::details[contains(@class,"unified-card-options")][not(@open)][1]');
+        const details=locator.locator('xpath=ancestor::details[contains(@class,"unified-card-options") or contains(@class,"classic-drafts-disclosure")][not(@open)][1]');
         if(await details.count())await click.call(details.locator(':scope > summary'));
       }finally{preparing.delete(p);}
     }

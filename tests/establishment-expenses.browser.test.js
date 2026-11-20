@@ -28,7 +28,7 @@ async function open({width=390,theme='berry',data=fixture(),context}={}){
  await bootstrap(context,data);await guard(context);
  const errors=[],page=await context.newPage();page.setDefaultTimeout(20000);page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});
  page.on('dialog',dialog=>dialog.accept());await page.goto(url);await page.waitForFunction(()=>window.KitchenExpensesUI&&window.KitchenStorage);
- if(theme!=='berry'){await page.locator('#appearance-toggle').click();await page.locator(`input[name=kitchen-appearance][value=${theme}]`).check();await page.keyboard.press('Escape');}
+ if(theme!=='berry'&&await page.locator('html[data-classic-glass]').count()){assert(await page.locator('#appearance-toggle').isHidden());await page.evaluate(theme=>KitchenAppearance.select(theme),theme);}else if(theme!=='berry'){await page.locator('#appearance-toggle').click();await page.locator(`input[name=kitchen-appearance][value=${theme}]`).check();await page.keyboard.press('Escape');}
  if(await page.locator('html[data-sintez-unified]').count()){if(await page.locator('html').getAttribute('data-sintez-screen')==='settings')await page.locator('#sintez-settings [data-sintez-home]').click();if(await page.locator('#unified-sidebar').isHidden())await page.locator('#unified-menu-toggle').click();}
  return {page,context,errors};
 }
