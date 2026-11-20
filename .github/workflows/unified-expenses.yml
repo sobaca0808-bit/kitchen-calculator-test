@@ -26,7 +26,7 @@ jobs:
       - name: Protect existing formulas, storage, photos, presentation, print and PWA
         run: |
           python3 scripts/check-unified-expenses-core.py > "$RUNNER_TEMP/glass-core.json"
-          node --test tests/unified-establishment-expenses.test.js tests/financial-journal.test.js tests/sintez-glass.test.js tests/recipe-showcase.test.js tests/workspace-policy.test.js tests/home-cookbook.test.js
+          node --test tests/tax-regimes.test.js tests/unified-establishment-expenses.test.js tests/financial-journal.test.js tests/sintez-glass.test.js tests/recipe-showcase.test.js tests/workspace-policy.test.js tests/home-cookbook.test.js
           "$RUNNER_TEMP/modes-python/bin/python" tests/sintez-release-build.test.py
           python3 tests/sintez-release-verifier.test.py
           python3 scripts/build-sintez-release-candidate.py --output "$RUNNER_TEMP/modes-site" --target classic --source '${{ github.sha }}'
