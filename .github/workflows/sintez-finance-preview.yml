@@ -1,0 +1,97 @@
+name: Publish only the isolated financial journal review
+on:
+  push:
+    branches: [preview/browser]
+    paths: ['preview-hosting/sintez-finance/**', '.github/workflows/sintez-finance-preview.yml']
+permissions:
+  contents: read
+  actions: read
+  pages: write
+  id-token: write
+concurrency:
+  group: github-pages
+  cancel-in-progress: false
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    environment:
+      name: github-pages
+      url: https://sobaca0808-bit.github.io/kitchen-calculator-test/sintez-finance/
+    env:
+      APPROVED_MAIN: 9f45d0206022d5cfb66352b5a1518b3ff9a50abc
+      PARENT_SOURCE: 471c60944ffe9988f8c9e0a4a4ad2f50a907a9a8
+      CLASSIC_SOURCE: 16fb5b490eb57b13254ebefe49f15808793e89f0
+      FINANCE_SOURCE: 4cc596363f37b99b8341a822e959fe9a4b28e950
+      CHECK_RUN: '44708951213'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Require unchanged main and exact source on every CI wait
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          test '${{ github.repository }}' = sobaca0808-bit/kitchen-calculator-test
+          for ATTEMPT in $(seq 1 120); do
+            test "$(gh api repos/${{ github.repository }}/git/ref/heads/main --jq .object.sha)" = "$APPROVED_MAIN"
+            test "$(gh api repos/${{ github.repository }}/git/ref/heads/feature/home-cookbook-no-finance --jq .object.sha)" = "$PARENT_SOURCE"
+            test "$(gh api repos/${{ github.repository }}/git/ref/heads/feature/classic-dark-glass --jq .object.sha)" = "$CLASSIC_SOURCE"
+            test "$(gh api repos/${{ github.repository }}/git/ref/heads/feature/financial-journal --jq .object.sha)" = "$FINANCE_SOURCE"
+            test "$(gh api repos/${{ github.repository }}/actions/runs/$CHECK_RUN --jq .head_sha)" = "$FINANCE_SOURCE"
+            test "$(gh api repos/${{ github.repository }}/actions/runs/$CHECK_RUN --jq .path)" = .github/workflows/financial-journal.yml
+            STATUS="$(gh api repos/${{ github.repository }}/actions/runs/$CHECK_RUN --jq .status)"
+            if [ "$STATUS" = completed ]; then break; fi
+            echo "Waiting for all candidate checks ($ATTEMPT/120)."
+            sleep 12
+          done
+          test "$(gh api repos/${{ github.repository }}/actions/runs/$CHECK_RUN --jq .conclusion)" = success
+      - name: Rebuild the exact old publication and append only the isolated finance review route
+        run: python3 preview-hosting/sintez-finance/build.py --pages "$RUNNER_TEMP/modes-site" --proof "$RUNNER_TEMP/modes-publication.json" --source "$FINANCE_SOURCE"
+      - name: Verify all 818 existing HTTPS resources before publication
+        run: python3 preview-hosting/sintez-finance/verify.py "$RUNNER_TEMP/modes-publication.json" --phase before
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: ${{ runner.temp }}/modes-site
+      - name: Recheck main, parent and source immediately before deployment
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          test "$(gh api repos/${{ github.repository }}/git/ref/heads/main --jq .object.sha)" = "$APPROVED_MAIN"
+          test "$(gh api repos/${{ github.repository }}/git/ref/heads/feature/home-cookbook-no-finance --jq .object.sha)" = "$PARENT_SOURCE"
+          test "$(gh api repos/${{ github.repository }}/git/ref/heads/feature/classic-dark-glass --jq .object.sha)" = "$CLASSIC_SOURCE"
+          test "$(gh api repos/${{ github.repository }}/git/ref/heads/feature/financial-journal --jq .object.sha)" = "$FINANCE_SOURCE"
+      - uses: actions/deploy-pages@v4
+      - name: Verify all 818 preserved and 79 finance HTTPS resources
+        run: python3 preview-hosting/sintez-finance/verify.py "$RUNNER_TEMP/modes-publication.json" --phase after
+      - name: Install disposable public-browser checks
+        run: |
+          npm install --prefix "$RUNNER_TEMP/modes-tools" --ignore-scripts --no-audit --no-fund playwright@1.62.1
+          sudo apt-get update -qq
+          sudo apt-get install -y poppler-utils
+      - name: Verify actual HTTPS modes, all palettes, phone layouts, saved data, JSON and A4
+        env:
+          NODE_PATH: ${{ runner.temp }}/modes-tools/node_modules
+          CHROMIUM_PATH: /usr/bin/google-chrome
+          FINANCE_JOURNAL_ARTIFACTS: ${{ runner.temp }}/finance-live-proof
+        run: node preview-hosting/sintez-finance/check.cjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: sintez-finance-publication-proof
+          path: |
+            ${{ runner.temp }}/modes-publication.json
+            ${{ runner.temp }}/finance-live-proof
+      - name: Report the verified separate card preview
+        run: |
+          cat >> "$GITHUB_STEP_SUMMARY" <<'REPORT'
+          https://sobaca0808-bit.github.io/kitchen-calculator-test/sintez-finance/
+
+          Only the additional /sintez-finance/ draft Pro review was published.
+          All 1071 files and 818 HTTP resources of the other existing stands are preserved, including PR40.
+          The dedicated HTTPS Chrome checks cover journal CRUD, month methods, recurrences, taxes, JSON, quota, old data, offline and full browser restarts.
+          The finance review uses isolated test names in the existing storage engine; no automatic data copy.
+          Main, PR38, PR40, all other stands and Pages settings are unchanged. No PR was merged.
+          Physical Android and owner approval are still required before any main release.
+          REPORT
