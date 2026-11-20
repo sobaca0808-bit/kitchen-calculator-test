@@ -1,7 +1,8 @@
 """Append one isolated finance stand; preserve every previously published byte."""
-import argparse,hashlib,json,subprocess,tempfile,concurrent.futures
+import argparse,hashlib,json,subprocess,tempfile,concurrent.futures,sys
 from pathlib import Path
-from urllib.request import urlopen,Request
+from urllib.request import Request
+from retry_network import open_retry
 ROOT=Path(__file__).resolve().parents[2]
 HOST='a99fe49763667df075c24683f64e7a6c1d0dace1'
 CLASSIC='16fb5b490eb57b13254ebefe49f15808793e89f0'
@@ -12,14 +13,14 @@ def digest(data):return hashlib.sha256(data).hexdigest()
 def sha(p):return digest(p.read_bytes())
 def get(name):
     assert not name.startswith('/') and '..' not in Path(name).parts
-    with urlopen(Request(URL+name,headers={'User-Agent':'Kitchen-financial-review-verifier'}),timeout=45) as response:
+    with open_retry(Request(URL+name,headers={'User-Agent':'Kitchen-financial-review-verifier'}),timeout=45) as response:
         assert response.status==200
         return response.read()
 def build(output,proof,source):
     with tempfile.TemporaryDirectory(prefix='sintez-financial-publication-') as folder:
         temp=Path(folder);host=temp/'previous';candidate=temp/'candidate'
         run('git','-C',str(ROOT),'worktree','add','--detach',str(host),HOST)
-        try:run('python3',str(host/'preview-hosting/sintez-classic/build.py'),'--pages',str(output),'--proof',str(temp/'prior.json'),'--source',CLASSIC)
+        try:run(sys.executable,str(Path(__file__).with_name('retry_network.py')),str(host/'preview-hosting/sintez-classic/build.py'),'--pages',str(output),'--proof',str(temp/'prior.json'),'--source',CLASSIC)
         finally:run('git','-C',str(ROOT),'worktree','remove','--force',str(host))
         old=json.loads((temp/'prior.json').read_text());before=dict(old['preserved_https']);assert len(before)==742
         # Classic build time is truthful metadata: keep its published bytes,
