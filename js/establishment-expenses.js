@@ -1,8 +1,8 @@
 (function(root,factory){
   const node=typeof module==='object'&&module.exports;
-  const api=factory(node?require('./storage.js'):root.KitchenStorage,node?require('./calculations.js'):root.KitchenCalc,node?require('./packaging.js'):root.KitchenPackaging);
+  const api=factory(node?require('./storage.js'):root.KitchenStorage,node?require('./calculations.js'):root.KitchenCalc,node?require('./packaging.js'):root.KitchenPackaging,node?require('./expense-allocation.js'):root.KitchenExpenseAllocation);
   if(node)module.exports=api;else root.KitchenExpenses=api;
-})(typeof globalThis!=='undefined'?globalThis:this,function(S,C,P){
+})(typeof globalThis!=='undefined'?globalThis:this,function(S,C,P,A){
   'use strict';
   const categories=Object.freeze([{key:'rent',label:'Аренда'},{key:'utilities',label:'Коммунальные платежи'},{key:'payroll',label:'Зарплаты'},{key:'other',label:'Прочие расходы'}].map(Object.freeze));
   const valid=value=>typeof value==='number'&&Number.isFinite(value)&&value>=0;
@@ -27,9 +27,9 @@
     Object.assign(result,{status:'ready',monthlyTotal,perPortion});return result;
   }
   function calculate(state,id,portions){
-    const distribution=allocation(state?.establishmentExpenses);
-    const result={...distribution,foodPerPortion:null,packagingPerPortion:null,fullCostPerPortion:null,totalCost:null,expenseTotal:null,sellingPrice:null,profitPerPortion:null,marginPercent:null,portions:null};
     const recipe=state?.recipes?.find(r=>r.id===id);
+    const distribution=state?.financialJournal?.allocationPeriod?A.resolve(state.financialJournal,recipe?.sellingPrice):allocation(state?.establishmentExpenses);
+    const result={...distribution,foodPerPortion:null,packagingPerPortion:null,fullCostPerPortion:null,totalCost:null,expenseTotal:null,sellingPrice:null,profitPerPortion:null,marginPercent:null,portions:null};
     if(!recipe||recipe.type!=='dish'){result.status='invalid-recipe';result.issues=['Расходы распределяются только на готовое блюдо, без начисления на полуфабрикаты.'];return result;}
     const base=recipe.portions===undefined?1:recipe.portions,count=portions===undefined?base:portions;
     if(!positive(base)||!positive(count)){result.status='invalid-portions';result.issues=['Укажите количество порций больше нуля.'];return result;}

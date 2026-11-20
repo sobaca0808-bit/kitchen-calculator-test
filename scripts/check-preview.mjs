@@ -9,6 +9,7 @@ import {resolve} from 'node:path';
 const root=fileURLToPath(new URL('../',import.meta.url));
 // The new glass matrix replaces only obsolete exact-color visual suites.
 // Existing functional suites still run on the actual redesigned application.
+const unifiedExpenses=process.argv.includes('--unified-expenses');
 const glass=process.argv.includes('--glass');
 if(glass)process.env.KITCHEN_GLASS_TEST='1';
 if(process.argv.includes('--unified'))process.env.KITCHEN_UNIFIED_TEST='1';
@@ -26,6 +27,7 @@ function run(args,env=process.env) {
   });
 }
 const runtimeFiles=new Map([
+  ['/js/expense-allocation.js','js/expense-allocation.js'],
   ['/js/financial-journal.js','js/financial-journal.js'],['/js/financial-journal-ui.js','js/financial-journal-ui.js'],['/assets/financial-journal.css','assets/financial-journal.css'],
   ['/js/classic-glass-layout.js','js/classic-glass-layout.js'],
   ['/assets/classic-dark-glass.css','assets/classic-dark-glass.css'],
@@ -76,7 +78,7 @@ try {
   const failures=results.filter(result=>result.status==='rejected').map(result=>result.reason);
   async function common(args,env){try{await run(args,env);}catch(error){failures.push(error);}}
   if(!glass)await common(['tests/appearance.browser.test.js'],{...process.env,KITCHEN_TEST_URL:testURL,KITCHEN_TEST_THEME:'',KITCHEN_TEST_ARTIFACT_DIR:resolve(artifacts,'appearance')});
-  await common(['tests/establishment-expenses.browser.test.js'],{...process.env,KITCHEN_TEST_URL:testURL,KITCHEN_TEST_THEME:'',KITCHEN_TEST_ARTIFACT_DIR:resolve(artifacts,'expenses')});
+  if(!unifiedExpenses)await common(['tests/establishment-expenses.browser.test.js'],{...process.env,KITCHEN_TEST_URL:testURL,KITCHEN_TEST_THEME:'',KITCHEN_TEST_ARTIFACT_DIR:resolve(artifacts,'expenses')});
   await common(['tests/preview-persistence.browser.test.js'],{...process.env,KITCHEN_TEST_THEME:'',KITCHEN_TEST_ARTIFACT_DIR:resolve(artifacts,'persistence')});
   if(failures.length)throw Error(failures.map(error=>error.message).join('\n'));
 } catch(error){console.error(error.message);process.exitCode=1;}

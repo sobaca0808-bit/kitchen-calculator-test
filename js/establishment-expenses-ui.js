@@ -24,41 +24,16 @@
     const batch=r.portions!=null&&r.portions!==1;
     const table=breakdown(r,showBreakdown?'expense-breakdown':'expense-print-table');
     const detail=table?(showBreakdown?`<details class="expense-breakdown-details"><summary>Расходы по статьям</summary>${table}</details>`:`<div class="expense-print-breakdown">${table}</div>`):'';
-    return `<section class="profitability-card establishment-costs" data-expense-status="${esc(r.status)}"><h2>С учётом расходов заведения</h2><p class="profitability-basis">${r.period?`Месяц: ${esc(r.period)} · План: ${esc(num(r.plannedPortions))} продаваемых порций. `:''}Упаковка учитывается один раз. Продуктовая маржа выше показана отдельно.</p>${detail}<dl class="profitability-grid">${metric('additional-per-portion','Дополнительные расходы на порцию',r.perPortion)}${batch?metric('additional-total','Дополнительные расходы на выбранные порции',r.expenseTotal):''}${metric('food','Продуктовая себестоимость порции',r.foodPerPortion)}${metric('packaging','Упаковка на порцию',r.packagingPerPortion)}${metric('full-per-portion','Расчётная себестоимость порции',r.fullCostPerPortion)}${batch?metric('full-total','Расчётная себестоимость выбранных порций',r.totalCost):''}${metric('result','Результат с порции после указанных затрат',r.profitPerPortion)}${metric('margin','Маржа с учётом расходов',r.marginPercent,percent)}</dl>${r.issues.length?`<div class="profitability-status" role="status">${r.issues.map(issue=>`<p>${esc(issue)}</p>`).join('')}</div>`:''}<p class="profitability-note">${esc(E.NOTE)}</p>${showBreakdown?'<button type="button" class="expenses-open">Открыть расходы заведения</button>':''}</section>`;
-  }
-  function mountAllocation(host,{config,onChange,onSave}){
-    const initial=config||{method:'planned-portions',period:'',plannedPortions:null,rent:null,utilities:null,payroll:null,other:null};
-    const input=(key,label)=>`<label>${esc(label)}<input id="expense-${key}" data-expense-field="${key}" type="text" inputmode="${key==='plannedPortions'?'numeric':'decimal'}" autocomplete="off" value="${esc(inputNumber(initial[key]))}" placeholder="Не задано"></label>`;
-    host.innerHTML=`<div class="editor-head"><div class="editor-topline"><span class="badge">План на месяц</span><span id="save-state" class="save-state">${config?'Сохранено в браузере':'Не задано'}</span></div><h1>Расходы заведения</h1><p class="intro">Месячные расходы делятся поровну на плановое количество продаваемых порций всех блюд. Это средняя плановая оценка.</p></div><div class="editor-content expense-form"><div class="product-grid"><label>Расчётный месяц<input id="expense-period" type="month" value="${esc(initial.period)}"></label>${input('plannedPortions','План продаж за месяц, порций')}${E.categories.map(c=>input(c.key,c.label+' за месяц, ₽')).join('')}</div><p class="field-help">Если по статье расходов нет, введите 0. Пустое поле означает «Не задано». Закупочные продукты и упаковку сюда не включайте: они уже есть в калькуляции. Расходы не начисляются на полуфабрикаты повторно.</p><div id="expense-allocation" aria-live="polite"></div><p id="expense-form-error" class="inline-error" role="status"></p><p class="field-help">Итоги пересчитываются при вводе. Для применения к блюдам нажмите «Сохранить расходы». Рецепты и закупочные цены не меняются.</p></div><div class="form-actions"><button id="save-item" class="primary">Сохранить расходы</button></div>`;
-    const $=selector=>host.querySelector(selector);
-    function value(){
-      const result={...initial,method:'planned-portions',period:$('#expense-period').value};
-      for(const field of host.querySelectorAll('[data-expense-field]'))result[field.dataset.expenseField]=C.parseNumber(field.value);
-      return S.expenseConfig(result);
-    }
-    function refresh(){
-      let data,error;try{data=value();}catch(e){error=e.message;}
-      for(const field of host.querySelectorAll('[data-expense-field]')){
-        try{const n=C.parseNumber(field.value);if(field.dataset.expenseField==='plannedPortions'&&n!==null&&(!Number.isSafeInteger(n)||n<=0))throw Error('План продаж: целое число больше нуля.');field.removeAttribute('aria-invalid');field.setCustomValidity('');}
-        catch(e){field.setAttribute('aria-invalid','true');field.setCustomValidity(e.message);}
-      }
-      $('#expense-form-error').textContent=error||'';
-      const r=data?E.allocation(data):{issues:[error],status:'invalid'};
-      $('#expense-allocation').innerHTML=r.status==='ready'?`<div class="base-price">Расходы за месяц<strong>${esc(money(r.monthlyTotal))}</strong><small>Дополнительные расходы на 1 продаваемую порцию: <strong data-expense="allocation">${esc(money(r.perPortion))}</strong></small></div>`:`<p class="field-help">${r.issues.map(esc).join(' ')}</p>`;
-    }
-    for(const field of host.querySelectorAll('input'))field.addEventListener('input',()=>{onChange();refresh();});
-    $('#save-item').onclick=onSave;refresh();return {value,refresh};
+    return `<section class="profitability-card establishment-costs" data-expense-status="${esc(r.status)}"><h2>С учётом расходов заведения</h2><p class="profitability-basis">${r.period?`Месяц: ${esc(r.period)} · ${r.method==='by-revenue'?`По выручке: ${esc(money(r.revenue))}; доля накладных ${esc(percent(r.ratePercent))}.`:`План: ${esc(num(r.plannedPortions))} продаваемых порций.`} `:''}Упаковка учитывается один раз. Продуктовая маржа выше показана отдельно.</p>${detail}<dl class="profitability-grid">${metric('additional-per-portion','Дополнительные расходы на порцию',r.perPortion)}${batch?metric('additional-total','Дополнительные расходы на выбранные порции',r.expenseTotal):''}${metric('food','Продуктовая себестоимость порции',r.foodPerPortion)}${metric('packaging','Упаковка на порцию',r.packagingPerPortion)}${metric('full-per-portion','Расчётная себестоимость порции',r.fullCostPerPortion)}${batch?metric('full-total','Расчётная себестоимость выбранных порций',r.totalCost):''}${metric('result','Результат с порции после указанных затрат',r.profitPerPortion)}${metric('margin','Маржа с учётом расходов',r.marginPercent,percent)}</dl>${r.issues.length?`<div class="profitability-status" role="status">${r.issues.map(issue=>`<p>${esc(issue)}</p>`).join('')}</div>`:''}<p class="profitability-note">${esc(r.note||E.NOTE)}</p>${showBreakdown?'<button type="button" class="expenses-open">Открыть расходы заведения</button>':''}</section>`;
   }
   function mount(host,options){
-    let journalActive=false,active;
-    host.innerHTML='<nav class="expense-workspace-tabs" aria-label="Инструменты расходов"><button type="button" id="expense-allocation-tab" aria-pressed="true">Распределение на блюда</button><button type="button" id="financial-journal-tab" aria-pressed="false">Финансовый журнал</button></nav><div class="expense-workspace-pane"></div>';
+    let view='entry',active,period;
+    host.innerHTML='<nav class="expense-workspace-tabs" aria-label="Расходы и история"><button type="button" id="expense-entry-tab" aria-pressed="true">Расходы заведения</button><button type="button" id="financial-journal-tab" aria-pressed="false">Журнал и календарь</button></nav><div class="expense-workspace-pane"></div>';
     const pane=host.querySelector('.expense-workspace-pane');
-    function render(){
-      active=journalActive?root.KitchenFinancialJournalUI.mount(pane,{journal:options.getJournal?.(),onChange:options.onChange,onSave:options.onSave,onReset:options.onReset||(()=>{})}):mountAllocation(pane,{...options,config:options.getConfig?options.getConfig():options.config});
-      host.querySelector('#expense-allocation-tab').setAttribute('aria-pressed',String(!journalActive));host.querySelector('#financial-journal-tab').setAttribute('aria-pressed',String(journalActive));
-    }
-    for(const [id,mode]of [['expense-allocation-tab',false],['financial-journal-tab',true]])host.querySelector('#'+id).onclick=()=>{if(mode===journalActive||options.onSwitch&& !options.onSwitch())return;journalActive=mode;render();};
-    render();return {value:()=>active.value(),candidate:state=>journalActive?{...state,financialJournal:active.value()}:{...state,establishmentExpenses:active.value()},committed:state=>{if(journalActive)active.committed(state.financialJournal);},get journalActive(){return journalActive;}};
+    function render(edit){active=KitchenFinancialJournalUI.mount(pane,{journal:options.getJournal?.(),legacy:options.getConfig?.(),onChange:options.onChange,onSave:options.onSave,onReset:options.onReset||(()=>{}),view,period,edit,onEdit:target=>{period=active.period;view='entry';render(target);}});host.querySelector('#expense-entry-tab').setAttribute('aria-pressed',String(view==='entry'));host.querySelector('#financial-journal-tab').setAttribute('aria-pressed',String(view==='journal'));}
+    function switchView(next){if(next===view)return;if(active.dirty&&(!confirm('Сохранить изменения перед открытием другого представления? Отмена оставит форму на экране.')||!options.onSave()))return;period=active.period;view=next;render();}
+    host.querySelector('#expense-entry-tab').onclick=()=>switchView('entry');host.querySelector('#financial-journal-tab').onclick=()=>switchView('journal');render();
+    return {value:()=>active.value(),candidate:state=>({...state,financialJournal:active.value()}),committed:state=>active.committed(state.financialJournal),get journalActive(){return true;}};
   }
   root.KitchenExpensesUI={renderCard,renderControl,mount};
 })(typeof globalThis!=='undefined'?globalThis:this);

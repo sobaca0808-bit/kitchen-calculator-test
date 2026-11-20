@@ -37,7 +37,7 @@ class UnifiedBuild(unittest.TestCase):
         self.assertEqual((a/'sw.js').read_bytes(),(b/'sw.js').read_bytes())
         config=json.loads(re.search(r'const BUILD = (.*); // PWA_BUILD',(a/'sw.js').read_text())[1])
         self.assertEqual(config['revision'],first['revision'])
-        self.assertEqual(len(config['assets']),77)
+        self.assertEqual(len(config['assets']),78)
         self.assertIn('assets/sintez-matte.svg',first['files'])
         self.assertIn('presentation.html',first['files'])
         self.assertIn('js/sintez-entry-v2.js',first['files']);self.assertIn('assets/sintez-entry-v2.css',first['files'])
@@ -46,7 +46,7 @@ class UnifiedBuild(unittest.TestCase):
         for asset in config['assets']:self.assertEqual(hashlib.sha256((a/asset['url']).read_bytes()).hexdigest(),asset['sha256'])
         self.assertTrue(all('assets/sintez-intro/'+n+'.jpg' in first['files'] for n in ['01_intro','02_home','03_chef','04_business']))
     def test_namespace_binding_is_the_only_change_in_data_modules(self):
-        for target in ['pwa','preview','web','modes','glass','showcase','workspace','homebook','classic','finance']:
+        for target in ['pwa','preview','web','modes','glass','showcase','workspace','homebook','classic','finance','expenses']:
             root,version=self.build(target,target)
             for kind,(file,old) in module.FILES.items():self.assertEqual((root/file).read_text().replace(version['storage_names'][kind],old),(ROOT/file).read_text())
             for file in ['js/app.js','js/calculations.js','js/photos.js','js/recipe-card-templates.js']:
@@ -58,9 +58,19 @@ class UnifiedBuild(unittest.TestCase):
         self.assertTrue(set(v['storage_names'].values()).isdisjoint(module.SINTEZ_NAMES.values()))
         self.assertTrue(set(v['storage_names'].values()).isdisjoint(module.PWA_NAMES.values()))
         self.assertEqual(v['presentation_key'],'kitchen-calculator-finance-presentation-seen-v1')
-        self.assertEqual(v['offline_assets'],77)
+        self.assertEqual(v['offline_assets'],78)
         for name in ['js/financial-journal.js','js/financial-journal-ui.js','assets/financial-journal.css']:self.assertIn(name,v['files'])
         self.assertIn('Отдельная тестовая база',(root/'index.html').read_text())
+
+    def test_unified_expenses_review_has_separate_identity_and_keeps_one_storage_engine(self):
+        root,v=self.build('expenses')
+        self.assertEqual(v['manifest_id'],'/kitchen-calculator-test/sintez-expenses/')
+        self.assertEqual(v['storage_names'],module.EXPENSES_NAMES)
+        self.assertTrue(set(v['storage_names'].values()).isdisjoint(module.FINANCE_NAMES.values()))
+        self.assertTrue(set(v['storage_names'].values()).isdisjoint(module.SINTEZ_NAMES.values()))
+        self.assertEqual(v['presentation_key'],'kitchen-calculator-expenses-presentation-seen-v1')
+        self.assertEqual(v['offline_assets'],78)
+        self.assertIn('js/expense-allocation.js',v['files'])
 
     def test_unsafe_external_and_parent_asset_paths_are_rejected(self):
         for path in ['../secret','/js/app.js','https://evil.invalid/x','//evil.invalid/x']:
@@ -103,13 +113,13 @@ class UnifiedBuild(unittest.TestCase):
         root,version=self.build('homebook');manifest=json.loads((root/'manifest.webmanifest').read_text())
         self.assertEqual(manifest['id'],'/kitchen-calculator-test/sintez-home-book/')
         self.assertEqual(version['storage_names'],module.SINTEZ_NAMES)
-        self.assertEqual(version['offline_assets'],77)
+        self.assertEqual(version['offline_assets'],78)
 
     def test_classic_stand_keeps_existing_names_and_caches_single_shared_style(self):
         root,version=self.build('classic');manifest=json.loads((root/'manifest.webmanifest').read_text())
         self.assertEqual(manifest['id'],'/kitchen-calculator-test/sintez-classic/')
         self.assertEqual(version['storage_names'],module.SINTEZ_NAMES)
-        self.assertEqual(version['offline_assets'],77)
+        self.assertEqual(version['offline_assets'],78)
         self.assertIn('assets/classic-dark-glass.css',version['files'])
 
 if __name__=='__main__':unittest.main()
