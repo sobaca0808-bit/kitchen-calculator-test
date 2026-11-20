@@ -279,6 +279,12 @@
     for (const material of incoming.packaging || []) await mergeOne('packaging', material);
     for (const recipe of orderedRecipes(incoming)) await mergeOne(kindOf(recipe), recipe);
     for (const [key, value] of Object.entries(incoming)) if (!ROOT_FIELDS.has(key)) {
+      if(key==='financialJournal'&&has(base,key)){
+        const Journal=typeof module==='object'&&module.exports?require('./financial-journal.js'):globalThis.KitchenFinancialJournal;
+        data[key]=Journal.merge(base[key],value,(id,name,local,incoming)=>conflict('extension',{id:'financialJournal:'+id,name,value:incoming},{value:local},'Запись финансового журнала различается. Выберите версию; остальные даты и месяцы сохраняются.',['local','incoming']),
+          (id,name,action)=>record('extension',{id:'financialJournal:'+id,name},action,action==='added'?'Новая запись журнала.':action==='updated'?'Выбрана версия записи из файла.':'Текущая запись журнала сохранена.'));
+        continue;
+      }
       if (!has(base, key)) {data[key] = value;record('extension', {id: key, name: key}, 'added', 'Дополнительное поле из файла сохранено.');}
       else if (canonical(base[key]) === canonical(value)) record('extension', {id: key, name: key}, 'skipped', 'Дополнительное поле уже сохранено.');
       else {

@@ -6,7 +6,7 @@
   const home=()=>root.document.documentElement.hasAttribute('data-sintez-unified')&&root.document.documentElement.dataset.sintezWorkspaceMode==='home';
   const entryLabel=entry=>home()&&root.KitchenWorkspacePolicy.backupExtra(entry)?'Дополнительные данные':labels[entry.kind]||entry.kind;
   const visibleName=entry=>home()&&root.KitchenWorkspacePolicy.backupExtra(entry)?'Профессиональная запись':entryName(entry);
-  const entryName=entry=>entry.kind==='extension'&&entry.id==='establishmentExpenses'?'Расходы заведения':entry.name||entry.id||entry.key;
+  const entryName=entry=>entry.kind==='extension'&&entry.id?.startsWith('financialJournal')?(entry.id==='financialJournal'?'Финансовый журнал':'Журнал: '+(entry.name||entry.id)):entry.kind==='extension'&&entry.id==='establishmentExpenses'?'Расходы заведения':entry.name||entry.id||entry.key;
   function mount({getState,canStart,setBusy,onApplied,message,getDraftSource=()=>null,onWriteUncertain=()=>{}}) {
     const $=selector=>document.querySelector(selector), service=root.KitchenImportTransaction.create();
     const panel=$('#import-panel');let preview=null,version=0,applying=false,planning=false;

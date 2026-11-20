@@ -1,8 +1,8 @@
 (function (root, factory) {
-  const api = factory();
+  const api = factory(typeof module === 'object' && module.exports ? require('./financial-journal.js') : root.KitchenFinancialJournal);
   if (typeof module === 'object' && module.exports) module.exports = api;
   else root.KitchenStorage = api;
-})(typeof globalThis !== 'undefined' ? globalThis : this, function () {
+})(typeof globalThis !== 'undefined' ? globalThis : this, function (FinancialJournal) {
   'use strict';
   // Separate preview namespace: never read or write the live calculator key.
   const KEY = 'kitchen-calculator-pr2-browser-test-v1';
@@ -148,6 +148,7 @@
   function validate(input) {
     input = copyJSON(input,true);
     object(input, 'Данные');
+    if(input.financialJournal!==undefined)input.financialJournal=FinancialJournal.validate(input.financialJournal);
     if (input.version !== 1) fail('Неподдерживаемая версия данных. Ожидается версия 1.');
     if (!Array.isArray(input.products) || !Array.isArray(input.recipes)) fail('В файле должны быть списки products и recipes.');
     const ids = new Set();

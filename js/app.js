@@ -116,7 +116,7 @@
   }
   function currentState() {
     const next = clone(state);
-    if(section==='expenses'&&expenseEditor)next.establishmentExpenses=expenseEditor.value();
+    if(section==='expenses'&&expenseEditor)Object.assign(next,expenseEditor.candidate(next));
     if (draft) {
       const key = isCatalog() ? section : 'recipes';
       if (!next[key]) next[key] = [];
@@ -299,7 +299,7 @@
     packagingEditor = null;
     expenseEditor=null;
     if(section==='expenses'){
-      expenseEditor=KitchenExpensesUI.mount(editor,{config:state.establishmentExpenses,onChange:markDirty,onSave:saveDraft});return;
+      expenseEditor=KitchenExpensesUI.mount(editor,{config:state.establishmentExpenses,getConfig:()=>state.establishmentExpenses,getJournal:()=>state.financialJournal,onChange:markDirty,onSave:saveDraft,onReset:()=>{dirty=false;},onSwitch:()=>{if(!canLeave())return false;dirty=false;return true;}});return;
     }
     if (!draft) { editor.innerHTML = `<div class="empty-state"><h2>${section === 'dish' && collection().length ? 'Выберите рецепт из списка' : 'Начните с новой записи'}</h2><p>Откройте сохранённую запись или создайте новую<br>кнопкой в справочнике.</p></div>`; return; }
     if (section === 'dish' && viewing) renderCard();
@@ -661,10 +661,10 @@
     if(backupBusy) {message('Дождитесь завершения работы с резервной копией.',true);return false;}
     if(section==='expenses'){
       let candidate;try{candidate=currentState();}catch(error){message(error.message,true);editor.querySelector('[aria-invalid=true]')?.focus();return false;}
-      if(!persist(candidate,'Расходы сохранены ✓. Калькуляции блюд пересчитываются автоматически.')){
+      if(!persist(candidate,expenseEditor.journalActive?'Финансовый журнал сохранён ✓.':'Расходы сохранены ✓. Калькуляции блюд пересчитываются автоматически.')){
         $('#save-state').textContent='В памяти · скачайте JSON';$('#save-item').textContent='Повторить сохранение';return false;
       }
-      dirty=false;$('#save-state').textContent='Сохранено в браузере';$('#save-item').textContent='Сохранено ✓';$('#save-item').classList.add('saved');return true;
+      dirty=false;expenseEditor.committed(state);$('#save-state').textContent='Сохранено в браузере';$('#save-item').textContent='Сохранено ✓';$('#save-item').classList.add('saved');return true;
     }
     if(photoEditor?.busy) {message('Дождитесь обработки фотографии перед сохранением.',true);return false;}
     if (!draft.name.trim()) {message('Введите название.',true);$('#item-name').focus();return false;}
