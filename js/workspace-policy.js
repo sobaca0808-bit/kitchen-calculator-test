@@ -12,8 +12,8 @@
   const timing=value=>{if(value===null)return null;if(!Number.isSafeInteger(value)||value<0||value>525600)throw Error('Время приготовления: целое число минут от 0 до 525600.');return value;};
   // Read-only backup comparison for Home. Full records still reach the existing
   // importer/exporter; this projection never becomes application state.
-  const financialFields=new Set(['price','packQuantity','sellingPrice','packaging','includeEstablishmentExpenses','establishmentExpenses']);
-  const backupExtra=entry=>entry?.kind==='packaging'||(entry?.kind==='extension'&&entry.id==='establishmentExpenses');
+  const financialFields=new Set(['price','packQuantity','sellingPrice','packaging','includeEstablishmentExpenses','establishmentExpenses','financialJournal']);
+  const backupExtra=entry=>entry?.kind==='packaging'||(entry?.kind==='extension'&&(entry.id==='establishmentExpenses'||entry.id?.startsWith('financialJournal')));
   function backupPreview(value){
     if(Array.isArray(value))return value.map(backupPreview);
     if(value&&typeof value==='object')return Object.fromEntries(Object.entries(value).filter(([key])=>!financialFields.has(key)).map(([key,item])=>[key,backupPreview(item)]));
