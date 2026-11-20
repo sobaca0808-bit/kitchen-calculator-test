@@ -37,7 +37,9 @@
   .ue-panel>summary {display:flex;gap:12px;justify-content:space-between;align-items:center;font-weight:600;}
   .ue-panel>summary small {font-size:12px;font-weight:400;color:var(--g-muted);text-align:right;}
   .ue-panel {margin:10px 0!important;}
-  .ue-panel>summary span {min-width:0;}
+  .ue-panel>summary::before {content:'▸';flex:0 0 12px;color:var(--g-muted);}
+  .ue-panel[open]>summary::before {content:'▾';}
+  .ue-panel>summary span {min-width:0;flex:1;}
   .ue-expense-editor {padding:14px;margin:14px 0;border:1px solid var(--g-control);border-radius:14px;background:var(--g-sub);}
   .ue-panel details[data-folder] {padding:8px;border:1px solid var(--g-line);border-radius:12px;margin-top:10px;}
   .ue-panel .fj-table td button {display:block;margin:4px 0;}
