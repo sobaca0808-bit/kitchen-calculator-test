@@ -587,10 +587,14 @@
     function close() {list.hidden = true;input.setAttribute('aria-expanded','false');input.removeAttribute('aria-activedescendant');}
     function draw() {
       const term = input.value.trim().toLocaleLowerCase('ru');
-      const combined = currentState();
-      options = [...state.products,...state.recipes.filter(r => r.type === 'prep')].filter(item =>
-        item.id !== draft.id && !C.wouldCreateCycle(combined,draft.id,item.id) &&
-        (item.name+' '+(item.aliases || '')).toLocaleLowerCase('ru').includes(term));
+      const matches = item => item.id !== draft.id &&
+        (item.name+' '+(item.aliases || '')).toLocaleLowerCase('ru').includes(term);
+      // Products cannot form recipe cycles. Check the graph only for matching
+      // preparations, retaining the original product-first suggestion order.
+      const products = state.products.filter(matches);
+      const preparations = state.recipes.filter(r => r.type === 'prep' && matches(r));
+      const combined = preparations.length ? currentState() : null;
+      options = [...products,...preparations.filter(item => !C.wouldCreateCycle(combined,draft.id,item.id))];
       active = -1;
       list.innerHTML = options.length ? options.map((item,i) => `<button type="button" role="option" aria-selected="false" id="option-${row.id}-${i}" class="suggestion" data-index="${i}">${esc(item.name)}<small>${item.type === 'prep' ? 'Полуфабрикат · готовая масса' : 'Продукт'}</small></button>`).join('') : '<div class="no-results">Ничего не найдено. Создайте запись в справочнике. Циклические ссылки исключены.</div>';
       list.hidden = false;input.setAttribute('aria-expanded','true');
