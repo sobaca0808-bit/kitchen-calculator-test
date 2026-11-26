@@ -29,7 +29,6 @@ jobs:
       APPROVED_MAIN: 9f45d0206022d5cfb66352b5a1518b3ff9a50abc
       BASE_PUBLICATION: '44750396142'
       GH_TOKEN: ${{ github.token }}
-      NODE_PATH: ${{ runner.temp }}/tz44-tools/node_modules
       CHROMIUM_PATH: /usr/bin/google-chrome
     steps:
       - uses: actions/checkout@v4
@@ -45,6 +44,7 @@ jobs:
           done
           git worktree add --detach "$RUNNER_TEMP/pr43" "$SOURCE"
           mkdir -p "$RUNNER_TEMP/proof"
+          echo "NODE_PATH=$RUNNER_TEMP/tz44-tools/node_modules" >> "$GITHUB_ENV"
           python3 "$RUNNER_TEMP/pr43/scripts/check-unified-expenses-core.py" > "$RUNNER_TEMP/proof/core.json"
           test "$(gh api repos/$GITHUB_REPOSITORY/actions/runs/$BASE_PUBLICATION --jq .conclusion)" = success
           gh run download "$BASE_PUBLICATION" --repo "$GITHUB_REPOSITORY" -n sintez-expenses-publication-proof-1 -D "$RUNNER_TEMP/previous"
