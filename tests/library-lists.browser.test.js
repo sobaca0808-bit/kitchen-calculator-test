@@ -100,13 +100,19 @@ async function scenario(type,count,width) {
       left:el.querySelector('strong').getBoundingClientRect().right,right:el.querySelector('small').getBoundingClientRect().left,
       caption:el.querySelector('small').textContent}));
     assert(normal.height>=44 && normal.font>=14,'Compact rows retain readable text and touch targets');
-    assert(normal.left<=normal.right,'Name and caption share horizontal columns');
-    if(type==='prep')assert.match(normal.caption,/₽.*партия/,'Prep batch cost is retained');
-    else assert.match(normal.caption,/Техкарта/,'Dish action caption stays compact');
     const long=await row(page,type,2).locator('strong').evaluate(el=>({text:el.textContent,height:el.clientHeight,scrollHeight:el.scrollHeight,
-      overflow:getComputedStyle(el).textOverflow,whiteSpace:getComputedStyle(el).whiteSpace}));
-    assert.equal(long.text,LONG_NAME);assert.notEqual(long.overflow,'ellipsis');assert.notEqual(long.whiteSpace,'nowrap');
-    assert(long.scrollHeight<=long.height+1,'The complete long name stays visible');
+      overflow:getComputedStyle(el).textOverflow,whiteSpace:getComputedStyle(el).whiteSpace,clamp:getComputedStyle(el).webkitLineClamp}));
+    assert.equal(long.text,LONG_NAME);
+    assert.notEqual(long.whiteSpace,'nowrap');
+    if(type==='prep'){
+      assert(normal.left<=normal.right,'Name and caption share horizontal columns');
+      assert.match(normal.caption,/₽.*партия/,'Prep batch cost is retained');
+      assert(long.scrollHeight<=long.height+1,'The complete preparation title remains visible');
+    }else{
+      assert.equal(long.clamp,'2');
+      assert.equal(await row(page,type,2).getAttribute('title'),LONG_NAME);
+      assert.equal((await row(page,type,2).boundingBox()).height,normal.height);
+    }
 
     const contours=await page.evaluate(()=>({
       list:parseFloat(getComputedStyle(document.querySelector('#library-list')).borderTopWidth),

@@ -1,7 +1,7 @@
 (function(root,factory){const api=factory();if(typeof module==='object'&&module.exports)module.exports=api;else root.KitchenWorkspacePolicy=api;})(typeof globalThis!=='undefined'?globalThis:this,function(){
   'use strict';
   const MODES=Object.freeze(['home','chef','business']);
-  const menus=Object.freeze({home:Object.freeze(['dashboard','calculator','recipes','products','prep','favorites']),chef:Object.freeze(['dashboard','calculator','recipes','products','prep','cards','processing','scaling','analysis','favorites']),business:Object.freeze(['dashboard','calculator','recipes','products','prep','cards','processing','scaling','analysis','packaging','expenses','financials','favorites'])});
+  const menus=Object.freeze({home:Object.freeze(['dashboard','calculator','recipes','products','prep','favorites']),chef:Object.freeze(['dashboard','calculator','recipes','products','prep','cards','processing','scaling','favorites']),business:Object.freeze(['dashboard','calculator','recipes','products','prep','cards','processing','scaling','analysis','packaging','expenses','financials','favorites'])});
   const valid=mode=>MODES.includes(mode);
   const business=mode=>mode==='business';
   const professional=mode=>mode==='chef'||business(mode);

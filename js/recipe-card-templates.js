@@ -4,8 +4,11 @@
   // These templates are views of the existing recipe model, not saved records.
   // A later presentation can add a renderer without changing kitchen data.
   const esc = value => String(value ?? '').replace(/[&<>"']/g, character => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[character]));
-  const num = (value, digits = 3) => value == null ? '' : new Intl.NumberFormat('ru-RU',{maximumFractionDigits:digits,useGrouping:false}).format(value);
-  const money = value => !Number.isFinite(value) ? 'Значение слишком велико' : new Intl.NumberFormat('ru-RU',{style:'currency',currency:'RUB',minimumFractionDigits:2,maximumFractionDigits:2}).format(value);
+  const grams = new Intl.NumberFormat('ru-RU',{maximumFractionDigits:3,useGrouping:false});
+  const quantities = new Intl.NumberFormat('ru-RU',{maximumFractionDigits:8,useGrouping:false});
+  const rubles = new Intl.NumberFormat('ru-RU',{style:'currency',currency:'RUB',minimumFractionDigits:2,maximumFractionDigits:2});
+  const num = (value, digits = 3) => value == null ? '' : (digits===8?quantities:grams).format(value);
+  const money = value => !Number.isFinite(value) ? 'Значение слишком велико' : rubles.format(value);
 
   function ingredient(row) {
     return `${esc(row.name)}${row.isPrep ? '<span class="prep-label">Полуфабрикат</span>' : ''}${row.note ? `<div class="card-text ingredient-note">${esc(row.note)}</div>` : ''}`;

@@ -42,7 +42,7 @@ async function noFinance(p){
  assert.equal(await p.locator('.card-cost:visible,.portion-cost:visible,.profitability-card:visible,.packaging-card:visible,#include-establishment-expenses:visible').count(),0);
  await noOverflow(p);
 }
-async function options(p){if(!await p.locator('#print-photos').isVisible())await p.locator('.unified-card-options>summary').click();}
+async function options(p){if(!await p.locator('#print-photos').isVisible())await p.locator('#portions-recipe, .unified-card-options>summary:visible').first().click();}
 (async()=>{
  await fs.mkdir(output,{recursive:true});
  if(process.env.HOME_COOKBOOK_URL){url=process.env.HOME_COOKBOOK_URL;assert(['https://sobaca0808-bit.github.io/kitchen-calculator-test/sintez-home-book/','https://sobaca0808-bit.github.io/kitchen-calculator-test/sintez-classic/'].includes(url));}

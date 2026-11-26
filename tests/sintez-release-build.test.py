@@ -37,8 +37,9 @@ class UnifiedBuild(unittest.TestCase):
         self.assertEqual((a/'sw.js').read_bytes(),(b/'sw.js').read_bytes())
         config=json.loads(re.search(r'const BUILD = (.*); // PWA_BUILD',(a/'sw.js').read_text())[1])
         self.assertEqual(config['revision'],first['revision'])
-        self.assertEqual(len(config['assets']),78)
+        self.assertEqual(len(config['assets']),79)
         self.assertIn('assets/sintez-matte.svg',first['files'])
+        self.assertIn('assets/workspace-review.css',first['files'])
         self.assertIn('presentation.html',first['files'])
         self.assertIn('js/sintez-entry-v2.js',first['files']);self.assertIn('assets/sintez-entry-v2.css',first['files'])
         self.assertEqual((a/'presentation.html').read_bytes(),(a/'index.html').read_bytes())
@@ -58,7 +59,7 @@ class UnifiedBuild(unittest.TestCase):
         self.assertTrue(set(v['storage_names'].values()).isdisjoint(module.SINTEZ_NAMES.values()))
         self.assertTrue(set(v['storage_names'].values()).isdisjoint(module.PWA_NAMES.values()))
         self.assertEqual(v['presentation_key'],'kitchen-calculator-finance-presentation-seen-v1')
-        self.assertEqual(v['offline_assets'],78)
+        self.assertEqual(v['offline_assets'],79)
         for name in ['js/financial-journal.js','js/financial-journal-ui.js','assets/financial-journal.css']:self.assertIn(name,v['files'])
         self.assertIn('Отдельная тестовая база',(root/'index.html').read_text())
 
@@ -69,7 +70,7 @@ class UnifiedBuild(unittest.TestCase):
         self.assertTrue(set(v['storage_names'].values()).isdisjoint(module.FINANCE_NAMES.values()))
         self.assertTrue(set(v['storage_names'].values()).isdisjoint(module.SINTEZ_NAMES.values()))
         self.assertEqual(v['presentation_key'],'kitchen-calculator-expenses-presentation-seen-v1')
-        self.assertEqual(v['offline_assets'],78)
+        self.assertEqual(v['offline_assets'],79)
         self.assertIn('js/expense-allocation.js',v['files'])
 
     def test_unsafe_external_and_parent_asset_paths_are_rejected(self):
@@ -113,13 +114,13 @@ class UnifiedBuild(unittest.TestCase):
         root,version=self.build('homebook');manifest=json.loads((root/'manifest.webmanifest').read_text())
         self.assertEqual(manifest['id'],'/kitchen-calculator-test/sintez-home-book/')
         self.assertEqual(version['storage_names'],module.SINTEZ_NAMES)
-        self.assertEqual(version['offline_assets'],78)
+        self.assertEqual(version['offline_assets'],79)
 
     def test_classic_stand_keeps_existing_names_and_caches_single_shared_style(self):
         root,version=self.build('classic');manifest=json.loads((root/'manifest.webmanifest').read_text())
         self.assertEqual(manifest['id'],'/kitchen-calculator-test/sintez-classic/')
         self.assertEqual(version['storage_names'],module.SINTEZ_NAMES)
-        self.assertEqual(version['offline_assets'],78)
+        self.assertEqual(version['offline_assets'],79)
         self.assertIn('assets/classic-dark-glass.css',version['files'])
 
 if __name__=='__main__':unittest.main()

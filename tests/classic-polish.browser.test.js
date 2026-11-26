@@ -38,7 +38,7 @@ async function upload(p,index){await p.locator(index?'#photo-file-2':'#photo-fil
 
 const longName='Гиро в булке куриное большое с овощами, домашним соусом и хрустящими листьями салата';
 const fixture=()=>{const d=baseFixture(),prep=structuredClone(d.recipes[0]);prep.id='stock-long';prep.name='Нежная грибная заготовка с очень длинным названием';prep.ingredients.forEach(r=>r.id='long-'+r.id);d.recipes.push(prep);const r=d.recipes.find(r=>r.id==='bowl');r.name=longName;r.photoIds=['one','two'];r.ingredients.push({id:'b-long',refId:'stock-long',quantity:35,unit:'g',lossPercent:null,outputGrams:null,note:'Подать тёплым.'});return d;};
-async function openOptions(p){if(!await p.locator('#print-photos').isVisible())await p.locator('.unified-card-options>summary').click();}
+async function openOptions(p){if(!await p.locator('#print-photos').isVisible())await p.locator('#portions-recipe, .unified-card-options>summary:visible').first().click();}
 async function openDrafts(p){const d=p.locator('.classic-drafts-disclosure');if(await d.count()&&!await d.evaluate(el=>el.open))await d.locator(':scope>summary').click();}
 (async()=>{
  await fs.mkdir(output,{recursive:true});
