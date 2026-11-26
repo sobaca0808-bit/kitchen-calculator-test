@@ -5,6 +5,10 @@
 async function replaceJSONFromFile(page, data, {
   name = 'fictional-backup.json', accept = true, waitForCompletion = true
 } = {}) {
+  const settings = page.locator('#sintez-settings [data-settings-back]');
+  const openedSettings = await settings.count() > 0 && !await settings.isVisible();
+  if (openedSettings) await page.locator('.sintez-settings-access').click();
+  const goBack = async () => { if(openedSettings && await settings.isVisible()) await settings.click(); };
   await page.locator('#message').evaluate(element => { element.textContent = ''; });
   await page.locator('#import-file').setInputFiles({
     name, mimeType: 'application/json',
@@ -15,7 +19,7 @@ async function replaceJSONFromFile(page, data, {
     return /Импорт отменён/.test(document.querySelector('#message')?.textContent || '') ||
       (panel && !panel.hidden && panel.getAttribute('aria-busy') === 'false');
   });
-  if (/Импорт отменён/.test(await page.locator('#message').innerText())) return;
+  if (/Импорт отменён/.test(await page.locator('#message').innerText())) { await goBack(); return; }
   await page.locator('#import-mode').selectOption('replace');
   await page.waitForFunction(() => document.querySelector('#import-panel')?.getAttribute('aria-busy') === 'false');
 
@@ -38,6 +42,7 @@ async function replaceJSONFromFile(page, data, {
       for (const handler of handlers) page.on('dialog', handler);
     }
     if (await page.locator('#import-panel').isVisible()) await page.locator('#import-cancel').click();
+    await goBack();
     return;
   }
 
@@ -46,6 +51,7 @@ async function replaceJSONFromFile(page, data, {
   // locked workspace. They must regain control while the async apply is pending.
   if (waitForCompletion) {
     await page.waitForFunction(() => /Данные импортированы|База заменена|Объединение выполнено|Импорт отменён/.test(document.querySelector('#message')?.textContent || ''));
+    await goBack();
   }
 }
 

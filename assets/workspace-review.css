@@ -68,3 +68,4 @@ html[data-sintez-unified] #sintez-shell {font-family:system-ui,-apple-system,"Se
   html[data-sintez-unified] #sintez-shell .unified-brand > span {padding-inline-start:8px;}
   html[data-sintez-unified] #sintez-shell .sintez-settings-access {grid-column:3;}
 }
+html[data-sintez-unified] #recipe-options > summary[hidden] {display:none;}
