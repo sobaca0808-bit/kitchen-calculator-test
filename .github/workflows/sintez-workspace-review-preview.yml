@@ -7,6 +7,10 @@ on:
       - 'preview-hosting/sintez-workspace-review/**'
       - '.github/workflows/sintez-workspace-review-preview.yml'
 
+defaults:
+  run:
+    shell: bash
+
 permissions:
   contents: read
   actions: read
@@ -25,7 +29,7 @@ jobs:
       name: github-pages
       url: https://sobaca0808-bit.github.io/kitchen-calculator-test/sintez-workspace-review/
     env:
-      SOURCE: 132ea4aa6546f98db2ae72596ce322fc8a888802
+      SOURCE: 58c8a2b16e6a18d6945a4d639e06af1e800d485d
       BASE: c769f3e5f79d9385a6653de21bebd0a9cb7c0412
       APPROVED_MAIN: 9f45d0206022d5cfb66352b5a1518b3ff9a50abc
       GH_TOKEN: ${{ github.token }}
@@ -68,6 +72,7 @@ jobs:
           python3 "$RUNNER_TEMP/base/scripts/build-sintez-release-candidate.py" --output "$RUNNER_TEMP/before" --target expenses --source "$BASE"
           python3 scripts/build-sintez-release-candidate.py --output "$RUNNER_TEMP/after" --target expenses --source "$SOURCE"
           INGREDIENT_SEARCH_RUNTIME_ROOT="$RUNNER_TEMP/after" node tests/ingredient-search.browser.test.js
+          UNIFIED_EXPENSES_ARTIFACTS="$RUNNER_TEMP/proof/financial-folders" KITCHEN_SINTEZ_RUNTIME_ROOT="$RUNNER_TEMP/after" UNIFIED_EXPENSES_FILTER='folders rename' node tests/unified-establishment-expenses.browser.test.js
           PERF_REPORT="$RUNNER_TEMP/proof/performance-before.json" node tests/workspace-performance.cjs "$RUNNER_TEMP/before"
           PERF_REPORT="$RUNNER_TEMP/proof/performance-after.json" node tests/workspace-performance.cjs "$RUNNER_TEMP/after"
       - uses: actions/upload-pages-artifact@v3
