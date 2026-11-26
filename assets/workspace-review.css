@@ -69,3 +69,7 @@ html[data-sintez-unified] #sintez-shell {font-family:system-ui,-apple-system,"Se
   html[data-sintez-unified] #sintez-shell .sintez-settings-access {grid-column:3;}
 }
 html[data-sintez-unified] #recipe-options > summary[hidden] {display:none;}
+
+/* An inline journal submit button must remain the touch target while scrolling
+   the financial form. The journal's general save bar belongs below its fields. */
+html[data-sintez-unified] .fj-workspace > .form-actions {position:static;}
