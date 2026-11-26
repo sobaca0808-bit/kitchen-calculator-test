@@ -27,6 +27,7 @@ function run(args,env=process.env) {
   });
 }
 const runtimeFiles=new Map([
+  ['/assets/workspace-review.css','assets/workspace-review.css'],
   ['/js/expense-allocation.js','js/expense-allocation.js'],
   ['/js/financial-journal.js','js/financial-journal.js'],['/js/financial-journal-ui.js','js/financial-journal-ui.js'],['/assets/financial-journal.css','assets/financial-journal.css'],
   ['/js/classic-glass-layout.js','js/classic-glass-layout.js'],

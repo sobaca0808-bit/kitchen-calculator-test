@@ -1,0 +1,121 @@
+'use strict';
+const assert=require('node:assert/strict');
+const {chromium}=require('playwright');
+const {start}=require('./helpers/runtime-server');
+const fixture=require('./helpers/unified-fixture');
+const {readFile,mkdir}=require('node:fs/promises');
+const path=require('node:path');
+
+async function main(){
+  const local=process.env.WORKSPACE_REVIEW_URL?null:await start(process.env.KITCHEN_SINTEZ_RUNTIME_ROOT,{home:true});
+  const url=process.env.WORKSPACE_REVIEW_URL||local.url;
+  const reports=process.env.WORKSPACE_REVIEW_REPORTS;
+  if(reports)await mkdir(reports,{recursive:true});
+  const browser=await chromium.launch({executablePath:process.env.CHROMIUM_PATH||'/usr/bin/chromium',args:['--no-sandbox']});
+  try{
+    for(const width of [390,1440]){
+      const context=await browser.newContext({viewport:{width,height:900},isMobile:width===390,hasTouch:width===390,acceptDownloads:true,reducedMotion:'reduce'});
+      const page=await context.newPage();
+      const errors=[];page.on('pageerror',e=>errors.push(e.message));page.on('dialog',d=>d.accept());
+      await page.route('**/__workspace_fixture__',route=>route.fulfill({contentType:'text/html',body:'<title>Test data</title>'}));
+      const version=await (await page.request.get(new URL('pwa-version.json',url).href)).json();
+      if(process.env.WORKSPACE_REVIEW_SHA)assert.equal(version.source_commit,process.env.WORKSPACE_REVIEW_SHA);
+      const data=fixture();
+      for(let i=0;i<36;i++)data.recipes.push({...data.recipes.find(r=>r.id==='bowl'),id:'long'+i,
+        name:'Длинное название блюда №'+i+' с дополнительными подробностями',ingredients:[]});
+      await page.goto(new URL('__workspace_fixture__',url).href);
+      await page.evaluate(({data,version})=>{
+        localStorage.setItem(version.storage_names.book,JSON.stringify(data));
+        localStorage.setItem(version.presentation_key,'seen');
+        if(version.storage_names.book!=='kitchen-calculator-expenses-preview-v1')
+          localStorage.setItem('kitchen-calculator-expenses-preview-v1','previous-stand-sentinel');
+        localStorage.setItem('kitchen-calculator-v1','main-sentinel');
+      },{data,version});
+      await page.goto(url);
+      await page.waitForFunction(()=>!!window.KitchenUnifiedUI);
+      assert.equal(await page.locator('html').getAttribute('data-sintez-screen'),'home');
+      const click=selector=>page.locator(selector).click();
+      const shot=name=>reports&&page.screenshot({path:path.join(reports,width+'-'+name+'.png'),fullPage:true});
+      const selectMode=mode=>click('[data-sintez-mode='+mode+']');
+      const open=id=>page.evaluate(id=>KitchenUnifiedUI.open(id),id);
+      const money=async()=>/(₽|Себестоимость|Закупочная цена|Маржа|Цена продажи)/i.test(await page.locator('body').innerText());
+      const saved=()=>page.evaluate(()=>KitchenStorage.load().data);
+      await selectMode('chef');
+      assert.equal(await page.locator('#item-name').count(),0);
+      await click('[data-open=bowl]');
+      assert.equal(await money(),false);
+      const sizes=await page.locator('.review-card-actions button').evaluateAll(nodes=>nodes.map(x=>[x.offsetWidth,x.offsetHeight]));
+      assert.equal(new Set(sizes.map(String)).size,1);
+      await click('#portions-recipe');
+      await page.locator('#view-portions').fill('2');
+      await page.waitForFunction(()=>document.querySelector('.chef-ingredients th:last-child').textContent.includes('2'));
+      await click('.review-options-back');
+      await page.evaluate(()=>{window.print=()=>{window.printClicked=true;};});
+      await click('#print-recipe');
+      assert.equal(await page.evaluate(()=>window.printClicked),true);
+      const pdf=await page.pdf();
+      assert(pdf.length>1000);
+      await shot('chef-card');
+      await click('#edit-recipe');
+      assert.equal(await money(),false);
+      await page.locator('#technology').fill('Черновик теста '+width);
+      await selectMode('business');
+      assert.equal(await page.locator('#item-name').count(),0);
+      await click('#drafts-disclosure summary');
+      await click('[data-restore-draft=bowl]');
+      assert.equal(await page.locator('#technology').inputValue(),'Черновик теста '+width);
+      assert.equal(await money(),true);
+      await page.locator('#photo-editor input[type=file]').first().setInputFiles(path.join(__dirname,'fixtures/risotto.webp'));
+      await page.waitForFunction(()=>!!document.querySelector('#photo-editor img[src^="blob:"]'));
+      await click('#save-item');
+      await page.waitForFunction(()=>document.querySelector('#save-item').textContent.includes('Сохранено ✓'));
+      await click('#view-recipe');
+      assert.equal((await saved()).recipes.find(r=>r.id==='bowl').sellingPrice,300);
+      await click('#back-list');
+      await click('#create');
+      await page.locator('#item-name').fill('Новый рецепт');
+      await click('#view-recipe');
+      await click('#drafts-disclosure summary');
+      assert.equal(await page.locator('.draft-entry').filter({hasText:'Новый рецепт'}).count(),1);
+      await click('#back-drafts');
+      const metric=await page.evaluate(()=>{
+        const list=document.querySelector('#library-list'),drafts=document.querySelector('#drafts-disclosure');
+        const before=drafts.getBoundingClientRect().top;
+        const rowSizes=[...list.querySelectorAll('[data-open]')].map(r=>r.offsetHeight);
+        list.scrollTop=250;
+        return {moving:list.scrollTop>0,stationary:drafts.getBoundingClientRect().top===before,rows:new Set(rowSizes).size};
+      });
+      assert.deepEqual(metric,{moving:true,stationary:true,rows:1});
+      await shot('recipes');
+      await click('.sintez-settings-access');
+      assert.equal(await page.locator('#settings-backup #import').isVisible(),true);
+      const download=page.waitForEvent('download');
+      await click('#export');
+      const exported=JSON.parse(await readFile(await (await download).path(),'utf8'));
+      assert.equal(exported.recipes.find(r=>r.id==='bowl').sellingPrice,300);
+      exported.products.push({...exported.products[0],id:'extra-review',name:'Импорт до копии'});
+      await page.locator('#import-file').setInputFiles({name:'review.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(exported))});
+      await page.waitForFunction(()=>!document.querySelector('#import-apply').disabled);
+      await click('#import-apply');
+      await page.waitForFunction(()=>document.querySelector('#import-panel').hidden);
+      assert((await saved()).products.some(item=>item.id==='extra-review'));
+      assert((await page.evaluate(()=>KitchenImportTransaction.create().listBackups())).length>0);
+      await shot('settings');
+      await click('[data-settings-back]');
+      assert.equal(await page.locator('html').getAttribute('data-sintez-screen'),'workspace');
+      assert.equal(await page.locator('#export').isVisible(),false);
+      await selectMode('home');
+      assert.equal(await page.locator('#item-name').count(),0);
+      await click('#sintez-home-button');
+      assert.equal(await page.locator('html').getAttribute('data-sintez-screen'),'home');
+      await open('recipes');
+      const storage=await page.evaluate(()=>[localStorage.getItem('kitchen-calculator-v1'),localStorage.getItem('kitchen-calculator-expenses-preview-v1')]);
+      assert.equal(storage[0],'main-sentinel');
+      if(version.storage_names.book!=='kitchen-calculator-expenses-preview-v1')assert.equal(storage[1],'previous-stand-sentinel');
+      assert.deepEqual(errors,[]);
+      console.log('PASS workspace review at '+width+'px');
+      await context.close();
+    }
+  }finally{await browser.close();await local?.close();}
+}
+main().catch(error=>{console.error(error);process.exitCode=1;});

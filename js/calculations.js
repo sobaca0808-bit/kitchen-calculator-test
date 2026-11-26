@@ -77,9 +77,14 @@
     return false;
   }
 
-  function calcRecipe(state, recipeId) {
-    const products = new Map(state.products.map(product => [product.id, product]));
-    const recipes = new Map(state.recipes.map(recipe => [recipe.id, recipe]));
+  function createRecipeLookup(state) {
+    return {
+      products: new Map(state.products.map(product => [product.id, product])),
+      recipes: new Map(state.recipes.map(recipe => [recipe.id, recipe]))
+    };
+  }
+  function calcRecipe(state, recipeId, lookup = createRecipeLookup(state)) {
+    const {products, recipes} = lookup;
     const cache = new Map();
     function failure(issue) {
       return { knownCost: 0, complete: false, issues: [issue], massGrams: null, rows: [], costPerGram: null };
@@ -171,7 +176,7 @@
     return calculate(recipeId, new Set());
   }
 
-  const api = { units, parseNumber, syncLoss, lossFromOutput, productBasePrice, convertProductQuantity, wouldCreateCycle, calcRecipe };
+  const api = { units, parseNumber, syncLoss, lossFromOutput, productBasePrice, convertProductQuantity, wouldCreateCycle, createRecipeLookup, calcRecipe };
   root.KitchenCalc = api;
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
 }(typeof globalThis !== 'undefined' ? globalThis : this));

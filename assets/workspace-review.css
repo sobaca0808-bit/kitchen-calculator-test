@@ -1,0 +1,70 @@
+/* Workspace controls share one interaction token in every palette. */
+html[data-sintez-unified] {
+  --review-green: #b5e8cc;
+  --review-glow: 0 0 0 1px #b5e8cc4d, 0 0 12px #9cdab44d;
+  --review-glass: linear-gradient(145deg,#c6e6e921,#1126314a), var(--g-sub);
+}
+html[data-sintez-unified] body {
+  font: 400 1rem/1.5 system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+html[data-sintez-unified] :where(button,input,select,textarea) {font-family:inherit;}
+html[data-sintez-unified] :is(.field-help,.folder-search-status,.draft-status,.save-state,.recipe-card small) {font-size:.875rem;line-height:1.45;}
+html[data-sintez-unified] #sintez-shell #sintez-home[hidden] {display:none!important;}
+html[data-sintez-unified][data-sintez-screen=home] #sintez-shell .sintez-intro {display:block!important;text-align:center;}
+html[data-sintez-unified][data-sintez-screen=home] #sintez-home-button {display:none;}
+html[data-sintez-unified] #sintez-shell .sintez-header {display:flex;flex-wrap:wrap;}
+html[data-sintez-unified] #sintez-shell .unified-brand {margin-inline-end:auto;}
+html[data-sintez-unified] #sintez-home-button {display:inline-flex;align-items:center;gap:8px;font-size:1rem;}
+html[data-sintez-unified] #sintez-home-button svg {width:21px;height:21px;flex:none;}
+html[data-sintez-unified] [data-finance-only] {min-width:0;}
+html[data-sintez-unified]:not([data-sintez-workspace-mode=business]) [data-finance-only] {display:none!important;}
+html[data-sintez-unified][data-sintez-workspace-mode=chef] :is(.ingredient-head,.ingredient-row) {grid-template-columns:minmax(0,1fr) 110px 85px 44px;}
+
+html[data-sintez-unified] .workspace-library {min-width:0;}
+html[data-sintez-unified] .workspace[data-section=dish] #library-list {height:clamp(225px,48dvh,460px);contain:layout paint;}
+html[data-sintez-unified] .workspace[data-section=dish] #library-list .library-row {
+  height:64px;box-sizing:border-box;
+}
+html[data-sintez-unified] .workspace[data-section=dish] .library-row strong {
+  display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;
+  overflow-wrap:anywhere;word-break:normal;line-height:1.25;
+}
+html[data-sintez-unified] .workspace[data-section=dish] .library-row small {display:none;}
+html[data-sintez-unified] .workspace[data-section=dish] .library-row {grid-template-columns:minmax(0,1fr);}
+html[data-sintez-unified] #drafts-disclosure {margin-block:10px 14px;width:fit-content;max-width:100%;}
+html[data-sintez-unified] #drafts-disclosure:open {width:100%;}
+html[data-sintez-unified] #drafts-disclosure > summary {
+  box-sizing:border-box;width:fit-content;min-height:44px;padding:6px 10px;border:1px solid var(--g-control);
+  border-radius:14px;background:var(--review-glass);font-size:.875rem;
+}
+html[data-sintez-unified] #drafts-disclosure .draft-entry {flex-wrap:wrap;}
+html[data-sintez-unified] #drafts-disclosure .draft-entry>div {flex-basis:100%;}
+html[data-sintez-unified][data-unified-tool=calculator] .workspace-library {margin-block-end:14px;}
+html[data-sintez-unified] .review-card-actions {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;width:min(100%,340px);}
+html[data-sintez-unified] .review-card-actions button {font-size:.875rem;min-height:46px;white-space:nowrap;padding-inline:5px;}
+html[data-sintez-unified] .review-options-back {align-self:end;order:1;}
+html[data-sintez-unified] #settings-backup :is(.import-panel,.import-backups) {margin-inline:0;width:100%;box-sizing:border-box;}
+
+html[data-classic-glass] :is(button.green-action,#save-item,#folder-submit,[data-save-action],#unified-sidebar #unified-menu .tabs button[data-unified-tool=dashboard]):not(#sintez-presentation *) {
+  background:var(--review-glass)!important;border-color:var(--g-control)!important;
+  box-shadow:var(--cdg-rim)!important;transform:none!important;transition:box-shadow .16s,border-color .16s;
+}
+html[data-classic-glass] :is(button.green-action,#save-item,#folder-submit,[data-save-action],#unified-sidebar #unified-menu .tabs button[data-unified-tool=dashboard]):is(:hover,:active):not(:disabled):not(#sintez-presentation *) {
+  border-color:var(--review-green)!important;box-shadow:var(--review-glow)!important;
+}
+@media (max-width:760px) {
+  html[data-sintez-unified] #sintez-home-button {font-size:.875rem;padding-inline:8px;}
+  html[data-sintez-unified] .workspace-library .library {margin-bottom:0;}
+  html[data-sintez-unified][data-sintez-workspace-mode=chef] .ingredient-row {grid-template-columns:minmax(0,1fr) 85px 44px;}
+}
+@media (prefers-reduced-motion:reduce) {
+  html[data-classic-glass] :is(button.green-action,#save-item,#folder-submit,[data-save-action]) {transition:none;}
+}
+html[data-sintez-unified] #sintez-shell {font-family:system-ui,-apple-system,"Segoe UI",sans-serif;}
+@media (max-width:760px) {
+  html[data-sintez-unified] #sintez-shell .sintez-header {display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:6px;}
+  html[data-sintez-unified] #sintez-shell .unified-brand {min-width:0;gap:7px;font-size:clamp(.75rem,3.65vw,1rem);}
+  html[data-sintez-unified] #sintez-shell .unified-brand small {font-size:.69rem;letter-spacing:normal;}
+  html[data-sintez-unified] #sintez-shell .unified-brand > span {padding-inline-start:8px;}
+  html[data-sintez-unified] #sintez-shell .sintez-settings-access {grid-column:3;}
+}
