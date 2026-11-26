@@ -22,7 +22,11 @@ function install(context){
         if(info.palette&&await p.locator('#appearance-panel').isHidden())await click.call(p.locator('#appearance-toggle'));
         if(info.menu&&await p.locator('#unified-sidebar').isHidden())await click.call(p.locator('#unified-menu-toggle'));
         const details=locator.locator('xpath=ancestor::details[contains(@class,"unified-card-options") or contains(@class,"classic-drafts-disclosure")][not(@open)][1]');
-        if(await details.count())await click.call(details.locator(':scope > summary'));
+        if(await details.count()){
+          const controls=await details.getAttribute('id');
+          const trigger=controls?p.locator('[aria-controls="'+controls+'"]'):details.locator(':scope > summary');
+          await click.call(trigger);
+        }
       }finally{preparing.delete(p);}
     }
     for(const method of ['click','fill','check','selectOption','focus']){const original=prototype[method];prototype[method]=async function(...args){await ensure(this);return original.apply(this,args);};}
