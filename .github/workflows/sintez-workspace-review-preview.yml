@@ -1,0 +1,96 @@
+name: Publish separate SINTEZ workspace review
+
+on:
+  push:
+    branches: [preview/browser]
+    paths:
+      - 'preview-hosting/sintez-workspace-review/**'
+      - '.github/workflows/sintez-workspace-review-preview.yml'
+
+permissions:
+  contents: read
+  actions: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: false
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    environment:
+      name: github-pages
+      url: https://sobaca0808-bit.github.io/kitchen-calculator-test/sintez-workspace-review/
+    env:
+      SOURCE: 858248e34c689d4f8dad74822ea846a70139db14
+      BASE: c769f3e5f79d9385a6653de21bebd0a9cb7c0412
+      APPROVED_MAIN: 9f45d0206022d5cfb66352b5a1518b3ff9a50abc
+      GH_TOKEN: ${{ github.token }}
+      CHROMIUM_PATH: /usr/bin/google-chrome
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify source and download prior publication receipts
+        run: |
+          test "$(gh api repos/$GITHUB_REPOSITORY/git/ref/heads/main --jq .object.sha)" = "$APPROVED_MAIN"
+          test "$(gh api repos/$GITHUB_REPOSITORY/git/ref/heads/perf/sintez-workspace-review --jq .object.sha)" = "$SOURCE"
+          test "$(gh api repos/$GITHUB_REPOSITORY/git/ref/heads/perf/ingredient-search --jq .object.sha)" = "$BASE"
+          git merge-base --is-ancestor "$BASE" "$SOURCE"
+          git worktree add --detach "$RUNNER_TEMP/source" "$SOURCE"
+          git worktree add --detach "$RUNNER_TEMP/base" "$BASE"
+          git diff --exit-code "$BASE" "$SOURCE" -- js/storage.js js/drafts.js js/photos.js js/import-transaction.js js/expense-allocation.js js/establishment-expenses.js js/financial-journal.js
+          mkdir -p "$RUNNER_TEMP/proof"
+          echo "NODE_PATH=$RUNNER_TEMP/tools/node_modules" >> "$GITHUB_ENV"
+          gh run download 44750396142 --repo "$GITHUB_REPOSITORY" -n sintez-expenses-publication-proof-1 -D "$RUNNER_TEMP/pr42"
+          gh run download 45805668514 --repo "$GITHUB_REPOSITORY" -n sintez-pr43-publication-proof-1 -D "$RUNNER_TEMP/pr43"
+      - name: Assemble and verify every previous Pages resource
+        run: |
+          prior42="$(find "$RUNNER_TEMP/pr42" -name modes-publication.json -type f)"
+          prior43="$(find "$RUNNER_TEMP/pr43" -name publication.json -type f)"
+          python3 preview-hosting/sintez-workspace-review/build.py --source-tree "$RUNNER_TEMP/source" --source "$SOURCE" --output "$RUNNER_TEMP/site" --pr42 "$prior42" --pr43 "$prior43" --report "$RUNNER_TEMP/proof/publication.json" --zip "$RUNNER_TEMP/proof/sintez-mery-workspace.zip"
+      - name: Test the release bundle and measure old and new browser performance
+        run: |
+          npm install --prefix "$RUNNER_TEMP/tools" --ignore-scripts --no-audit --no-fund playwright@1.62.1
+          cd "$RUNNER_TEMP/source"
+          LOGIC_TESTS="$(find tests -name '*.test.js' ! -name '*browser.test.js')"
+          node --test $LOGIC_TESTS | tee "$RUNNER_TEMP/proof/logic.log"
+          WORKSPACE_REVIEW_SHA="$SOURCE" KITCHEN_SINTEZ_RUNTIME_ROOT="$RUNNER_TEMP/site/sintez-workspace-review" node tests/workspace-review.browser.test.js
+          python3 "$RUNNER_TEMP/base/scripts/build-sintez-release-candidate.py" --output "$RUNNER_TEMP/before" --target expenses --source "$BASE"
+          python3 scripts/build-sintez-release-candidate.py --output "$RUNNER_TEMP/after" --target expenses --source "$SOURCE"
+          INGREDIENT_SEARCH_RUNTIME_ROOT="$RUNNER_TEMP/after" node tests/ingredient-search.browser.test.js
+          PERF_REPORT="$RUNNER_TEMP/proof/performance-before.json" node tests/workspace-performance.cjs "$RUNNER_TEMP/before"
+          PERF_REPORT="$RUNNER_TEMP/proof/performance-after.json" node tests/workspace-performance.cjs "$RUNNER_TEMP/after"
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          name: github-pages-workspace-review-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/site
+      - name: Confirm source, main and visibility of the uploaded archive
+        run: |
+          test "$(gh api repos/$GITHUB_REPOSITORY/git/ref/heads/main --jq .object.sha)" = "$APPROVED_MAIN"
+          test "$(gh api repos/$GITHUB_REPOSITORY/git/ref/heads/perf/sintez-workspace-review --jq .object.sha)" = "$SOURCE"
+          name="github-pages-workspace-review-${GITHUB_RUN_ATTEMPT}"
+          for attempt in $(seq 1 24); do
+            matches="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID/artifacts?name=$name" --jq '.total_count')" || matches=0
+            if [ "$matches" = 1 ]; then exit 0; fi
+            sleep 5
+          done
+          exit 1
+      - uses: actions/deploy-pages@v4
+        with:
+          artifact_name: github-pages-workspace-review-${{ github.run_attempt }}
+      - name: Verify old and new HTTPS resources after deployment
+        run: |
+          python3 preview-hosting/sintez-expenses/retry_network.py "$RUNNER_TEMP/source/scripts/verify-sintez-release.py" "$RUNNER_TEMP/proof/publication.json" --phase after | tee "$RUNNER_TEMP/proof/verified.json"
+      - name: Verify the published interface on phone and desktop
+        run: |
+          WORKSPACE_REVIEW_URL=https://sobaca0808-bit.github.io/kitchen-calculator-test/sintez-workspace-review/ WORKSPACE_REVIEW_SHA="$SOURCE" WORKSPACE_REVIEW_REPORTS="$RUNNER_TEMP/proof/screenshots" node "$RUNNER_TEMP/source/tests/workspace-review.browser.test.js"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: sintez-workspace-review-proof-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/proof
