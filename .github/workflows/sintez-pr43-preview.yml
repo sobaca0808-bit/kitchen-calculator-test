@@ -1,0 +1,80 @@
+name: Publish separate SINTEZ PR43 review
+
+on:
+  push:
+    branches: [preview/browser]
+    paths:
+      - 'preview-hosting/sintez-pr43/**'
+      - '.github/workflows/sintez-pr43-preview.yml'
+
+permissions:
+  contents: read
+  actions: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: false
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    environment:
+      name: github-pages
+      url: https://sobaca0808-bit.github.io/kitchen-calculator-test/sintez-pr43/
+    env:
+      SOURCE: c769f3e5f79d9385a6653de21bebd0a9cb7c0412
+      APPROVED_MAIN: 9f45d0206022d5cfb66352b5a1518b3ff9a50abc
+      BASE_PUBLICATION: '44750396142'
+      GH_TOKEN: ${{ github.token }}
+      NODE_PATH: ${{ runner.temp }}/tz44-tools/node_modules
+      CHROMIUM_PATH: /usr/bin/google-chrome
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify exact source and ancestry of the previous PRs
+        run: |
+          test "$(gh api repos/$GITHUB_REPOSITORY/git/ref/heads/main --jq .object.sha)" = "$APPROVED_MAIN"
+          test "$(gh api repos/$GITHUB_REPOSITORY/git/ref/heads/perf/ingredient-search --jq .object.sha)" = "$SOURCE"
+          for ancestor in 471c60944ffe9988f8c9e0a4a4ad2f50a907a9a8 16fb5b490eb57b13254ebefe49f15808793e89f0 4cc596363f37b99b8341a822e959fe9a4b28e950 c24d201f6889a2362be09f138ae683e35b4e3626; do
+            git merge-base --is-ancestor "$ancestor" "$SOURCE"
+          done
+          git worktree add --detach "$RUNNER_TEMP/pr43" "$SOURCE"
+          mkdir -p "$RUNNER_TEMP/proof"
+          python3 "$RUNNER_TEMP/pr43/scripts/check-unified-expenses-core.py" > "$RUNNER_TEMP/proof/core.json"
+          test "$(gh api repos/$GITHUB_REPOSITORY/actions/runs/$BASE_PUBLICATION --jq .conclusion)" = success
+          gh run download "$BASE_PUBLICATION" --repo "$GITHUB_REPOSITORY" -n sintez-expenses-publication-proof-1 -D "$RUNNER_TEMP/previous"
+      - name: Verify prior HTTPS hashes and prepare Pages and ZIP
+        run: |
+          receipt="$(find "$RUNNER_TEMP/previous" -name modes-publication.json -type f)"
+          test -f "$receipt"
+          python3 preview-hosting/sintez-pr43/build.py --source-tree "$RUNNER_TEMP/pr43" --output "$RUNNER_TEMP/site" --receipt "$receipt" --report "$RUNNER_TEMP/proof/publication.json" --zip "$RUNNER_TEMP/proof/sintez-mery-c769f3e.zip"
+      - name: Check the exact bundle before publication
+        run: |
+          npm install --prefix "$RUNNER_TEMP/tz44-tools" --ignore-scripts --no-audit --no-fund playwright@1.62.1
+          python3 preview-hosting/sintez-pr43/check.py "$RUNNER_TEMP/pr43" --runtime "$RUNNER_TEMP/site/sintez-pr43" --report "$RUNNER_TEMP/proof/local-browser.json"
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          name: github-pages-pr43-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/site
+      - name: Recheck main and source immediately before deployment
+        run: |
+          test "$(gh api repos/$GITHUB_REPOSITORY/git/ref/heads/main --jq .object.sha)" = "$APPROVED_MAIN"
+          test "$(gh api repos/$GITHUB_REPOSITORY/git/ref/heads/perf/ingredient-search --jq .object.sha)" = "$SOURCE"
+      - uses: actions/deploy-pages@v4
+        with:
+          artifact_name: github-pages-pr43-${{ github.run_attempt }}
+      - name: Verify all previous and new HTTPS resources
+        run: |
+          python3 preview-hosting/sintez-expenses/retry_network.py "$RUNNER_TEMP/pr43/scripts/verify-sintez-release.py" "$RUNNER_TEMP/proof/publication.json" --phase after | tee "$RUNNER_TEMP/proof/verified.json"
+      - name: Verify live HTTPS on desktop and mobile
+        run: python3 preview-hosting/sintez-pr43/check.py "$RUNNER_TEMP/pr43" --runtime "$RUNNER_TEMP/site/sintez-pr43" --report "$RUNNER_TEMP/proof/live-browser.json" --live
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: sintez-pr43-publication-proof-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/proof
