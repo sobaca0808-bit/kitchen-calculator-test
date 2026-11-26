@@ -25,7 +25,7 @@ jobs:
       name: github-pages
       url: https://sobaca0808-bit.github.io/kitchen-calculator-test/sintez-workspace-review/
     env:
-      SOURCE: 858248e34c689d4f8dad74822ea846a70139db14
+      SOURCE: a6797fe779c772dfecbec6cab3bab0efaa4ca80e
       BASE: c769f3e5f79d9385a6653de21bebd0a9cb7c0412
       APPROVED_MAIN: 9f45d0206022d5cfb66352b5a1518b3ff9a50abc
       GH_TOKEN: ${{ github.token }}
