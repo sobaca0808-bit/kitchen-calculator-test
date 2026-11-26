@@ -24,7 +24,8 @@ function install(context){
         const details=locator.locator('xpath=ancestor::details[contains(@class,"unified-card-options") or contains(@class,"classic-drafts-disclosure")][not(@open)][1]');
         if(await details.count()){
           const controls=await details.getAttribute('id');
-          const trigger=controls?p.locator('[aria-controls="'+controls+'"]'):details.locator(':scope > summary');
+          const summary=details.locator(':scope > summary');
+          const trigger=await summary.isVisible()?summary:p.locator('[aria-controls="'+controls+'"]');
           await click.call(trigger);
         }
       }finally{preparing.delete(p);}
