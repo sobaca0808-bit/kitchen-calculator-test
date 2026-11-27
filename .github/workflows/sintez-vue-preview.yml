@@ -1,0 +1,106 @@
+name: Publish isolated SINTEZ Vue experiment
+on:
+  push:
+    branches: [preview/browser]
+    paths:
+      - 'preview-hosting/sintez-vue/**'
+      - '.github/workflows/sintez-vue-preview.yml'
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  actions: read
+  deployments: read
+  pages: write
+  id-token: write
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    environment:
+      name: github-pages
+      url: https://sobaca0808-bit.github.io/kitchen-calculator-test/sintez-vue/
+    env:
+      BASE: 5cac84953c47713cc8e1396be9fbf880ea933c71
+      GH_TOKEN: ${{ github.token }}
+      CHROMIUM_PATH: /usr/bin/google-chrome
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Resolve the pinned source and original Pages publication
+        run: |
+          source="$(cat preview-hosting/sintez-vue/source.txt)"
+          [[ "$source" =~ ^[0-9a-f]{40}$ ]]
+          git merge-base --is-ancestor "$BASE" "$source"
+          git worktree add --detach "$RUNNER_TEMP/source" "$source"
+          echo "SOURCE=$source" >> "$GITHUB_ENV"
+          echo "NODE_PATH=$RUNNER_TEMP/tools/node_modules" >> "$GITHUB_ENV"
+          mkdir "$RUNNER_TEMP/proof"
+          gh run download 45814815836 -R "$GITHUB_REPOSITORY" -n sintez-workspace-review-proof-1 -D "$RUNNER_TEMP/pr44-proof"
+          if [[ "$(gh api "repos/$GITHUB_REPOSITORY/actions/artifacts/15115431063" --jq .expired || true)" == false ]]; then
+            gh run download 45814815836 -R "$GITHUB_REPOSITORY" -n github-pages-workspace-review-1 -D "$RUNNER_TEMP/pr44-archive"
+          else
+            gh run download 44750396142 -R "$GITHUB_REPOSITORY" -n sintez-expenses-publication-proof-1 -D "$RUNNER_TEMP/pr42-proof"
+          fi
+      - name: Build the pinned experimental app
+        run: |
+          bash preview-hosting/sintez-vue/check-current.sh
+          cd "$RUNNER_TEMP/source"
+          npm ci --no-audit --no-fund
+          npm run build
+      - name: Preserve the previous deployment and append only the isolated route
+        run: |
+          if [[ -d "$RUNNER_TEMP/pr44-archive" ]]; then
+            args=(--archive "$RUNNER_TEMP/pr44-archive/artifact.tar")
+          else
+            args=(--pr42 "$(find "$RUNNER_TEMP/pr42-proof" -name modes-publication.json -type f)")
+          fi
+          python3 preview-hosting/sintez-vue/assemble.py "${args[@]}" --source "$SOURCE" \
+            --receipt "$RUNNER_TEMP/pr44-proof/publication.json" --candidate "$RUNNER_TEMP/source/dist" \
+            --site "$RUNNER_TEMP/site" --zip "$RUNNER_TEMP/proof/sintez-mery-vue.zip" --report "$RUNNER_TEMP/proof/publication.json"
+          python3 preview-hosting/sintez-expenses/retry_network.py "$RUNNER_TEMP/source/scripts/verify-sintez-release.py" "$RUNNER_TEMP/proof/publication.json" --phase before
+      - name: Check the runtime at mobile and desktop sizes before deployment
+        run: |
+          npm install --prefix "$RUNNER_TEMP/tools" --ignore-scripts --no-fund --no-audit playwright@1.62.1
+          cd "$RUNNER_TEMP/source"
+          WORKSPACE_REVIEW_SHA="$SOURCE" KITCHEN_SINTEZ_RUNTIME_ROOT="$RUNNER_TEMP/site/sintez-vue" node tests/workspace-review.browser.test.js
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          name: github-pages-sintez-vue-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/site
+          retention-days: 7
+      - name: Check active publication and wait for visibility of this upload
+        run: |
+          bash preview-hosting/sintez-vue/check-current.sh
+          for attempt in $(seq 1 24); do
+            found="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID/artifacts?name=github-pages-sintez-vue-$GITHUB_RUN_ATTEMPT" --jq .total_count)" || found=0
+            if [[ "$found" == 1 ]]; then exit 0; fi
+            sleep 5
+          done
+          exit 1
+      - uses: actions/deploy-pages@v4
+        with:
+          artifact_name: github-pages-sintez-vue-${{ github.run_attempt }}
+      - name: Verify published HTTPS files and run both browser viewports
+        run: |
+          python3 preview-hosting/sintez-expenses/retry_network.py "$RUNNER_TEMP/source/scripts/verify-sintez-release.py" "$RUNNER_TEMP/proof/publication.json" --phase after | tee "$RUNNER_TEMP/proof/verified.json"
+          cd "$RUNNER_TEMP/source"
+          WORKSPACE_REVIEW_URL=https://sobaca0808-bit.github.io/kitchen-calculator-test/sintez-vue/ WORKSPACE_REVIEW_SHA="$SOURCE" WORKSPACE_REVIEW_REPORTS="$RUNNER_TEMP/proof/screenshots" node tests/workspace-review.browser.test.js
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: sintez-vue-proof-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/proof
