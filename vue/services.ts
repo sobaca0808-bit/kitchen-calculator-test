@@ -1,4 +1,4 @@
-import { Fragment, h, render } from 'vue'
+import { Fragment, h, render, nextTick } from 'vue'
 import ExpenseTabs from './services/ExpenseTabs.vue'
 import FinancialWorkspace from './services/FinancialWorkspace.vue'
 import Conflict from './services/Conflict.vue'
@@ -12,6 +12,7 @@ function previewRoots(panel:Element) {
   return ['summary','conflicts','warnings','details'].map(key=>panel.querySelector('#import-'+key)!)
 }
 export const services = {
+  afterRender: nextTick,
   tabs(host:Element,view:string,switchView:Function) {render(h(ExpenseTabs,{view,switchView}),host)},
   finance(host:Element, props:Record<string,unknown>) {render(h(FinancialWorkspace,props),host)},
   unmount(host:Element) {render(null,host)},

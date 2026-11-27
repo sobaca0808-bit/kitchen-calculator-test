@@ -75,7 +75,7 @@
     }
     const vue=root.KitchenVueServices;
     const ui={journal:J,allocation:A,money,raw,percent,rub,accounts:ACCOUNTS,bases:BASES,methods:METHODS,taxInfo,catName};
-    let formRevision=0;
+    let formRevision=0, disposed=false;
     function paint(){
       if(vue){
         // The expense form moves into the active folder while editing. Return it
@@ -84,7 +84,14 @@
         if(form && parking && form.parentElement!==parking)parking.append(form);
         vue.finance(host,{saved,period,legacy,view,onEdit,ui,openState:{...openState},
           hasSaved:!!journal || Object.keys(saved.months).length>0,formRevision:++formRevision});
+        // Child tables and keyed forms finish their update in Vue's flush.
+        // Bind the committed nodes, including controls newly created by a save.
+        const revision=formRevision;
+        vue.afterRender(()=>{if(!disposed && revision===formRevision)bindControls();});
       }else legacyPaint();
+      bindControls();
+    }
+    function bindControls(){
       $('#fj-period').onchange=()=>{if(!navigate($('#fj-period').value))$('#fj-period').value=period;};$('#fj-history').onchange=()=>{const p=$('#fj-history').value;if(p&&!navigate(p))$('#fj-history').value='';};$('#fj-previous').onclick=()=>{try{navigate(J.move(period,-1));}catch(e){error(e);}};$('#fj-next').onclick=()=>{try{navigate(J.move(period,1));}catch(e){error(e);}};
       if(view==='journal'){
         if(vue)return; // The Vue history component owns the date filter and edit buttons.
@@ -124,7 +131,7 @@
     function reset(){changes.clear();pending=null;expenseId=categoryId=newExpenseId=newCategoryId=null;activate=false;}
     function committed(j){capture();saved=J.validate(j||J.empty());reset();paint();}
     paint();if(edit&&view==='entry'){if(edit.kind==='expense')openExpense(edit.id);else{host.querySelector('[data-panel=revenue]').open=true;if(edit.source==='daily')openDay(edit.date);else{$('#fj-method').focus();}}}
-    return {value,committed,dispose(){vue?.unmount(host);},get period(){return period;},get dirty(){return dirty();}};
+    return {value,committed,dispose(){disposed=true;vue?.unmount(host);},get period(){return period;},get dirty(){return dirty();}};
   }
   root.KitchenFinancialJournalUI={mount,money};
 })(typeof globalThis!=='undefined'?globalThis:this);

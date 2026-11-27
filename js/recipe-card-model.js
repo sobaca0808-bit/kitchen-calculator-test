@@ -37,14 +37,13 @@
     }
     return {quantity:quantity(row.quantity, unit.factor), unit:unit.base};
   }
-  function create(state, id, portions, mode = 'calculation') {
+  function create(state, id, portions, mode = 'calculation', lookup = C.createRecipeLookup(state)) {
     if (!MODES.includes(mode)) throw Error('Неизвестная форма технологической карты.');
-    const view = V.scale(state, id, portions);
+    const view = V.scale(state, id, portions, lookup);
     // Always derive a serving from the saved recipe, never from a previously
     // scaled or rounded view. This also supports old recipes without portions.
-    const single = V.scale(state, id, 1);
-    const products = new Map(state.products.map(item => [item.id,item]));
-    const recipes = new Map(state.recipes.map(item => [item.id,item]));
+    const single = portions === 1 ? view : V.scale(state, id, 1, lookup);
+    const {products,recipes} = lookup;
     const rows = view.recipe.ingredients.map((row,index) => {
       const product = products.get(row.refId), recipe = recipes.get(row.refId);
       const isPrep = !product && recipe?.type === 'prep';

@@ -1,3 +1,4 @@
+import Toolbar from './card-toolbar.vue'
 import { Fragment, defineComponent, h, render, type VNode, type VNodeChild } from 'vue'
 import { RecipeCard } from './editors-card'
 
@@ -150,6 +151,7 @@ const Form = defineComponent({name:'RecordEditor', props:['kind','context'],setu
 }})
 
 export const editors = {
+  toolbar(host:Element,props:Record<string,unknown>){render(h(Toolbar,props),host)},
   form(el:HTMLElement, kind:'product'|'packaging'|'recipe', context:EditorContext){render(h(Form,{kind,context}),el)},
   empty(el:HTMLElement,title:string) {render(h('div',{class:'empty-state'},[h('h2',title),h('p',['Откройте сохранённую запись или создайте новую',h('br'),'кнопкой в справочнике.'])]),el)},
   dispose(el:HTMLElement){render(null,el)},

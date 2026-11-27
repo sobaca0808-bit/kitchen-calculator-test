@@ -409,16 +409,21 @@
     else if (section === 'products') renderProduct(); else if (section === 'packaging') renderPackaging(); else renderRecipe();
   }
   function renderCard() {
-    editor.innerHTML = `<div class="card-controls"><button id="back-list">← Назад</button><div class="review-card-actions"><button id="edit-recipe" class="green-action">Изменить</button><button id="portions-recipe" class="green-action" aria-controls="recipe-options" aria-expanded="false">Порции</button><button id="print-recipe" class="green-action">Печать</button></div><label data-finance-only>Форма карты<select id="card-mode"><option value="calculation" ${cardMode==='calculation'?'selected':''}>Калькуляционная карта</option><option value="chef" ${cardMode==='chef'?'selected':''}>Карта повара</option></select></label><label>Количество порций<input id="view-portions" type="text" inputmode="decimal" value="${esc(num(viewPortions,8))}"></label><label>Фотографии при печати<select id="print-photos"><option value="none">Без фотографий</option><option value="first">Только первая</option><option value="second">Только вторая</option><option value="both">Обе фотографии</option></select></label><p id="view-error" role="status"></p></div><article id="recipe-card" class="recipe-card"></article>`;
+    const reactiveToolbar=vueEditors && unified;
+    if(reactiveToolbar)vueEditors.toolbar(editor,{mode:cardMode,portions:num(viewPortions,8),folder:draft.folderId||'',folders:state.folders||[],detail:expensePrintDetail});
+    else editor.innerHTML = `<div class="card-controls"><button id="back-list">← Назад</button><div class="review-card-actions"><button id="edit-recipe" class="green-action">Изменить</button><button id="portions-recipe" class="green-action" aria-controls="recipe-options" aria-expanded="false">Порции</button><button id="print-recipe" class="green-action">Печать</button></div><label data-finance-only>Форма карты<select id="card-mode"><option value="calculation" ${cardMode==='calculation'?'selected':''}>Калькуляционная карта</option><option value="chef" ${cardMode==='chef'?'selected':''}>Карта повара</option></select></label><label>Количество порций<input id="view-portions" type="text" inputmode="decimal" value="${esc(num(viewPortions,8))}"></label><label>Фотографии при печати<select id="print-photos"><option value="none">Без фотографий</option><option value="first">Только первая</option><option value="second">Только вторая</option><option value="both">Обе фотографии</option></select></label><p id="view-error" role="status"></p></div><article id="recipe-card" class="recipe-card"></article>`;
     const card=$('#recipe-card');
-    const expensePrintControl=document.createElement('label');expensePrintControl.className='expense-print-control';expensePrintControl.setAttribute('data-professional-only','');
+    const expensePrintControl=reactiveToolbar ? $('.expense-print-control',editor) : document.createElement('label');
+    if(!reactiveToolbar){expensePrintControl.className='expense-print-control';expensePrintControl.setAttribute('data-professional-only','');
     expensePrintControl.innerHTML=`Статьи расходов при печати<select id="print-expense-detail"><option value="summary">Только итоги</option><option value="full">С детализацией</option></select><small>Без цен — форма «Карта повара».</small>`;
     $('.card-controls',editor).append(expensePrintControl);
+    }
     $('#print-expense-detail').value=expensePrintDetail;
     $('#print-expense-detail').addEventListener('change',event=>{expensePrintDetail=event.target.value;card.dataset.printExpenseDetail=expensePrintDetail;});
-    const moveControls = document.createElement('div');moveControls.className = 'recipe-folder-move';
+    if(!reactiveToolbar){const moveControls = document.createElement('div');moveControls.className = 'recipe-folder-move';
     moveControls.innerHTML = `<label>Папка блюда<select id="move-folder">${folderOptions(draft.folderId)}</select></label><button id="move-recipe" disabled>Переместить</button>`;
-    $('.card-controls',editor).append(moveControls);$('#move-folder').value = draft.folderId || '';
+    $('.card-controls',editor).append(moveControls);}
+    $('#move-folder').value = draft.folderId || '';
     $('#move-folder').addEventListener('change',()=>{$('#move-recipe').disabled = $('#move-folder').value === (draft.folderId || '');});
     $('#move-recipe').addEventListener('click',()=>{
       try {
@@ -428,7 +433,7 @@
         refreshFolderFields();renderLibrary();
       } catch(error) {message(error.message,true);}
     });
-    if(unified){
+    if(unified&&!reactiveToolbar){
       const options=document.createElement('details');options.id='recipe-options';options.className='unified-card-options';options.innerHTML='<summary hidden>Порции и печать</summary><div class="unified-card-option-fields"><button class="review-options-back" type="button">← Назад</button></div>';
       const fields=options.lastElementChild;for(const label of [...$('.card-controls',editor).children])if(label.tagName==='LABEL'||label.classList.contains('recipe-folder-move'))fields.append(label);
       $('.card-controls',editor).append(options);
@@ -462,10 +467,11 @@
       });
     }
     function draw() {
+      if(preparedState!==state){preparedState=state;preparedLookup=null;preparedCosts.clear();}
       readinessVersion++;cardValid=false;$('#print-recipe').disabled=true;
       try {
         viewPortions=C.parseNumber($('#view-portions').value);
-        const model=KitchenRecipeCardModel.create(state,draft.id,viewPortions,hideMoney()?'chef':cardMode);
+        const model=KitchenRecipeCardModel.create(state,draft.id,viewPortions,hideMoney()?'chef':cardMode,vueLibrary ? (preparedLookup??=C.createRecipeLookup(state)) : undefined);
         // Both forms share the saved recipe and the same gallery. Presentation changes
         // neither recreate photo records nor alter their order or bytes.
         const galleryElement=$('#card-photos',card);
