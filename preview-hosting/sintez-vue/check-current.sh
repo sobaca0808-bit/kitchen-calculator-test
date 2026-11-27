@@ -9,8 +9,8 @@ gh api "$repo/deployments?environment=github-pages&per_page=50" --jq '.[] | [.id
 while read -r id sha; do
   states="$(gh api "$repo/deployments/$id/statuses?per_page=100" --jq '.[].state')"
   if grep -Fxq success <<<"$states"; then
-    # 25f1d9f is the Pages operations commit which deployed the PR44 artifact.
-    if [[ "$sha" == 25f1d9f457bbe230accc60bfbebc22c6d8d58017 || "$sha" == "$GITHUB_SHA" ]]; then
+    # Use the archived Pages tree from the successful first Vue publication.
+    if [[ "$sha" == c69337e66819d114d913822a6c244234c0400a50 || "$sha" == "$GITHUB_SHA" ]]; then
       exit 0
     fi
     echo "There is a newer Pages deployment ($sha). Take its complete archive as the baseline first." >&2

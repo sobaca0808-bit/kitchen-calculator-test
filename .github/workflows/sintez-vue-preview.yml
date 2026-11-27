@@ -50,11 +50,8 @@ jobs:
           echo "NODE_PATH=$RUNNER_TEMP/tools/node_modules" >> "$GITHUB_ENV"
           mkdir "$RUNNER_TEMP/proof"
           gh run download 45814815836 -R "$GITHUB_REPOSITORY" -n sintez-workspace-review-proof-1 -D "$RUNNER_TEMP/pr44-proof"
-          if [[ "$(gh api "repos/$GITHUB_REPOSITORY/actions/artifacts/15115431063" --jq .expired || true)" == false ]]; then
-            gh run download 45814815836 -R "$GITHUB_REPOSITORY" -n github-pages-workspace-review-1 -D "$RUNNER_TEMP/pr44-archive"
-          else
-            gh run download 44750396142 -R "$GITHUB_REPOSITORY" -n sintez-expenses-publication-proof-1 -D "$RUNNER_TEMP/pr42-proof"
-          fi
+          gh run download 46037479988 -R "$GITHUB_REPOSITORY" -n sintez-vue-proof-1 -D "$RUNNER_TEMP/previous-proof"
+          gh run download 46037479988 -R "$GITHUB_REPOSITORY" -n github-pages-sintez-vue-1 -D "$RUNNER_TEMP/previous-archive"
       - name: Build the pinned experimental app
         run: |
           bash preview-hosting/sintez-vue/check-current.sh
@@ -63,12 +60,7 @@ jobs:
           npm run build
       - name: Preserve the previous deployment and append only the isolated route
         run: |
-          if [[ -d "$RUNNER_TEMP/pr44-archive" ]]; then
-            args=(--archive "$RUNNER_TEMP/pr44-archive/artifact.tar")
-          else
-            args=(--pr42 "$(find "$RUNNER_TEMP/pr42-proof" -name modes-publication.json -type f)")
-          fi
-          python3 preview-hosting/sintez-vue/assemble.py "${args[@]}" --source "$SOURCE" \
+          python3 preview-hosting/sintez-vue/assemble.py --archive "$RUNNER_TEMP/previous-archive/artifact.tar" --previous "$RUNNER_TEMP/previous-proof/publication.json" --source "$SOURCE" \
             --receipt "$RUNNER_TEMP/pr44-proof/publication.json" --candidate "$RUNNER_TEMP/source/dist" \
             --site "$RUNNER_TEMP/site" --zip "$RUNNER_TEMP/proof/sintez-mery-vue.zip" --report "$RUNNER_TEMP/proof/publication.json"
           python3 preview-hosting/sintez-expenses/retry_network.py "$RUNNER_TEMP/source/scripts/verify-sintez-release.py" "$RUNNER_TEMP/proof/publication.json" --phase before

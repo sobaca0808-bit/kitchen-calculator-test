@@ -82,7 +82,17 @@ def assemble(args):
             raise ValueError('Previous Pages bytes differ: ' + name)
 
     release = args.site / ROUTE
-    if release.exists():
+    before = preserved.copy()
+    if args.previous:
+        previous = json.loads(args.previous.read_text())
+        previous_files = previous['release_https']
+        archived = {n: h for n, h in original.items() if n.startswith(ROUTE + '/')}
+        if (previous['url'] != URL or previous['preserved_https'] != preserved
+                or not archived or archived != previous_files):
+            raise ValueError('Current Vue preview differs from the previous verified publication')
+        before.update(archived)
+        shutil.rmtree(release)
+    elif release.exists():
         raise FileExistsError(release)
     version = json.loads((args.candidate / 'pwa-version.json').read_text())
     if (version['source_commit'] != args.source or version['target'] != 'vue'
@@ -105,10 +115,11 @@ def assemble(args):
     shutil.copyfile(args.zip, release / args.zip.name)
     all_files = tree(args.site)
     fresh = {n: h for n, h in all_files.items() if n.startswith(ROUTE + '/')}
-    if all_files != {**original, **fresh}:
+    protected = {n: h for n, h in original.items() if not n.startswith(ROUTE + '/')}
+    if all_files != {**protected, **fresh}:
         raise ValueError('An unrelated file changed during assembly')
     args.report.write_text(json.dumps({
-        'source_commit': args.source, 'url': URL, 'before_https': preserved,
+        'source_commit': args.source, 'url': URL, 'before_https': before,
         'preserved_https': preserved, 'release_https': fresh, 'archive_files': len(original),
         'zip_sha256': sha(args.zip),
     }, indent=2) + '\n')
@@ -122,4 +133,5 @@ if __name__ == '__main__':
     for arg in ['receipt', 'site', 'candidate', 'zip', 'report']:
         parser.add_argument('--' + arg, type=Path, required=True)
     parser.add_argument('--source', required=True)
+    parser.add_argument('--previous', type=Path)
     assemble(parser.parse_args())
