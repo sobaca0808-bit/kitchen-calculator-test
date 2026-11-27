@@ -237,6 +237,14 @@
       try {
         const record=await get(id);
         if(disposed)return;
+        if(globalThis.KitchenVueServices){
+          url=URL.createObjectURL(record.blob);
+          globalThis.KitchenVueServices.thumbnail(host,url,event=>{
+            if(!disposed)viewer=globalThis.KitchenPhotoViewer?.open({url,alt:'Фотография готового блюда',trigger:event.currentTarget});
+          });
+          await host.querySelector('img').decode();
+          return;
+        }
         const button=document.createElement('button');button.type='button';button.className='photo-open';button.setAttribute('aria-label','Открыть фотографию крупно');
         const image=document.createElement('img');image.alt='Фотография готового блюда';
         url=URL.createObjectURL(record.blob);image.src=url;button.append(image);host.append(button);
@@ -255,7 +263,11 @@
   function mountGallery(host,recipe) {
     host.classList.add('recipe-photos');host.replaceChildren();
     const previews=new Map();
-    ids(recipe).forEach((id,index)=>{
+    const vue=globalThis.KitchenVueServices;
+    if(vue){
+      vue.gallery(host,ids(recipe));
+      ids(recipe).forEach((id,index)=>{if(id)previews.set(index,mountPreview(host.children[index].firstElementChild,id));});
+    }else ids(recipe).forEach((id,index)=>{
       const slot=document.createElement('div');slot.className='photo-slot';slot.dataset.photoSlot=String(index);slot.dataset.empty=id?'false':'true';
       if(id) {const preview=document.createElement('div');slot.append(preview);previews.set(index,mountPreview(preview,id));}
       else {const empty=document.createElement('span');empty.className='photo-empty';empty.textContent='Фотография '+(index+1);slot.append(empty);}
@@ -277,18 +289,20 @@
   function mountEditor(host,{recipe,primarySelection=false,onChange=()=>{},onStatus=()=>{}}) {
     host.classList.add('photo-editor');
     const suffix=index=>index===0?'':'-2';
-    host.innerHTML='<h3>Фотографии блюда</h3><div class="photo-editor-grid">'+[0,1].map(index=>`<div class="photo-editor-slot" data-photo-slot="${index}" role="group" aria-label="Фотография ${index+1}"><strong>Фото ${index+1}</strong><button type="button" class="photo-frame-button" aria-label="Добавить или заменить фотографию ${index+1}"><span class="photo-empty">Нажмите, чтобы добавить</span></button><div class="photo-slot-actions"><button type="button" class="photo-pick">Галерея</button><button type="button" class="photo-camera-pick">Камера</button><button id="remove-photo${suffix(index)}" type="button" class="danger">Удалить фото</button></div><input id="photo-file${suffix(index)}" type="file" accept="image/jpeg,image/png,image/webp" hidden><input id="photo-camera${suffix(index)}" type="file" accept="image/jpeg,image/png,image/webp" capture="environment" hidden><p class="photo-status" role="status" aria-live="polite"></p></div>`).join('')+'</div><button id="swap-photos" type="button">Поменять фотографии местами</button><p class="field-help">До двух фотографий JPEG, PNG или WebP до 10 МБ каждая. Снимки уменьшаются до 1920 пикселей и 500 КБ и хранятся в этом браузере. Для переноса используйте экспорт JSON. Камера доступна, если её поддерживает устройство и браузер.</p>';
+    const vue=globalThis.KitchenVueServices;
+    if(vue)vue.photoSlots(host,primarySelection);
+    else host.innerHTML='<h3>Фотографии блюда</h3><div class="photo-editor-grid">'+[0,1].map(index=>`<div class="photo-editor-slot" data-photo-slot="${index}" role="group" aria-label="Фотография ${index+1}"><strong>Фото ${index+1}</strong><button type="button" class="photo-frame-button" aria-label="Добавить или заменить фотографию ${index+1}"><span class="photo-empty">Нажмите, чтобы добавить</span></button><div class="photo-slot-actions"><button type="button" class="photo-pick">Галерея</button><button type="button" class="photo-camera-pick">Камера</button><button id="remove-photo${suffix(index)}" type="button" class="danger">Удалить фото</button></div><input id="photo-file${suffix(index)}" type="file" accept="image/jpeg,image/png,image/webp" hidden><input id="photo-camera${suffix(index)}" type="file" accept="image/jpeg,image/png,image/webp" capture="environment" hidden><p class="photo-status" role="status" aria-live="polite"></p></div>`).join('')+'</div><button id="swap-photos" type="button">Поменять фотографии местами</button><p class="field-help">До двух фотографий JPEG, PNG или WebP до 10 МБ каждая. Снимки уменьшаются до 1920 пикселей и 500 КБ и хранятся в этом браузере. Для переноса используйте экспорт JSON. Камера доступна, если её поддерживает устройство и браузер.</p>';
     const slots=[...host.querySelectorAll('[data-photo-slot]')].map(node=>({node,frame:node.querySelector('.photo-frame-button'),file:node.querySelector('input:not([capture])'),camera:node.querySelector('input[capture]'),pick:node.querySelector('.photo-pick'),cameraPick:node.querySelector('.photo-camera-pick'),remove:node.querySelector('[id^="remove-photo"]'),status:node.querySelector('.photo-status'),busy:false,url:null,version:0}));
     const swap=host.querySelector('#swap-photos');let disposed=false;
     // The first occupied slot is the showcase photo. Selection reuses the
     // existing draft-only swap: no new data field, photo copy or implicit save.
     let makePrimary;
-    if(primarySelection){
+    if(primarySelection && !vue){
       host.querySelectorAll('.photo-editor-slot>strong').forEach((label,index)=>{label.textContent=index===0?'Фото 1 · Основное':'Фото 2 · Дополнительное';});
       makePrimary=document.createElement('button');makePrimary.type='button';makePrimary.id='make-primary-photo';makePrimary.textContent='Сделать основным';
       slots[1].node.querySelector('.photo-slot-actions').append(makePrimary);
-      makePrimary.addEventListener('click',()=>swap.click());
-    }
+    }else if(primarySelection){makePrimary=host.querySelector('#make-primary-photo');}
+    if(makePrimary)makePrimary.addEventListener('click',()=>swap.click());
     const anyBusy=()=>slots.some(slot=>slot.busy);
     function say(index,text,error=false) {if(disposed)return;const el=slots[index].status;el.textContent=text;el.classList.toggle('inline-error',error);if(error)onStatus(text,error);}
     function controls() {
@@ -304,11 +318,18 @@
     async function draw(index) {
       const slot=slots[index],version=++slot.version,id=ids(recipe)[index];
       if(slot.url){URL.revokeObjectURL(slot.url);slot.url=null;}
-      slot.frame.replaceChildren();controls();
+      controls();
+      if(vue){
+        vue.photoFrame(slot.frame,null,'');
+        if(!id)return;
+      }else slot.frame.replaceChildren();
       if(!id) {const empty=document.createElement('span');empty.className='photo-empty';empty.textContent='Нажмите, чтобы добавить';slot.frame.append(empty);return;}
       try {
         const record=await get(id);if(disposed || version!==slot.version)return;
-        const image=document.createElement('img');image.alt='Предварительный просмотр фотографии '+(index+1);slot.url=URL.createObjectURL(record.blob);image.src=slot.url;slot.frame.append(image);await image.decode();
+        const alt='Предварительный просмотр фотографии '+(index+1);
+        slot.url=URL.createObjectURL(record.blob);
+        if(vue){vue.photoFrame(slot.frame,slot.url,alt);await slot.frame.querySelector('img').decode();}
+        else{const image=document.createElement('img');image.alt=alt;image.src=slot.url;slot.frame.append(image);await image.decode();}
       } catch(error) {if(!disposed && version===slot.version)say(index,'Не удалось показать фотографию: '+error.message,true);}
     }
     function changed(previousPhotoIds) {onChange({previousPhotoIds:previousPhotoIds.filter(Boolean),previousPhotoId:previousPhotoIds.find(Boolean)});}

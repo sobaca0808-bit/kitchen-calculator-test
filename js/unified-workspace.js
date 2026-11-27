@@ -132,13 +132,20 @@
   new MutationObserver(()=>{if(root.dataset.sintezScreen==='workspace'){route();for(const b of coreTabs.querySelectorAll('[data-unified-tool]'))b.setAttribute('aria-current',b.dataset.unifiedTool===active?'page':'false');}}).observe($('.workspace'),{attributes:true,attributeFilter:['data-section']});
   function updateBuild(){const b=globalThis.KitchenBuildInfo||{};$('#unified-build').textContent=(b.version?'Версия '+b.version+(b.source?' · '+b.source.slice(0,7):''):'Исходный код')+(b.builtAt?' · Сборка '+new Intl.DateTimeFormat('ru-RU',{dateStyle:'short'}).format(new Date(b.builtAt)):' · дата сборки не задана');}
   const info=$('#unified-info');let infoTrigger;
-  function openInfo(kind){infoTrigger=document.activeElement;const h=$('#unified-info-title'),body=$('#unified-info-body');body.replaceChildren();
+  function openInfo(kind){infoTrigger=document.activeElement;const h=$('#unified-info-title'),body=$('#unified-info-body');
     h.textContent={about:'О программе',help:'Помощь',feedback:'Обратная связь'}[kind];
+    if(globalThis.KitchenVueServices){
+      const svc=globalThis.KitchenVueServices;
+      svc.info(body,{kind,mode,build:$('#unified-build').textContent,settings:()=>{info.close();settings();}});
+      if(!info.open)info.showModal();
+      return;
+    }
+    body.replaceChildren();
     const text=document.createElement('p');text.textContent=kind==='about'?'СИНТЕЗ МЕРЫ — кухонный калькулятор. Один справочник продуктов и рецептов для трёх режимов. Данные хранятся на вашем устройстве. '+$('#unified-build').textContent:kind==='help'?((mode!=='business'?'Добавьте продукты,':'Добавьте продукты с ценами,')+' затем создайте заготовку или рецепт. Сохраните карточку. Для переноса между устройствами используйте JSON в настройках. Режимы расширяют инструменты и используют одну базу.'):'Внешний сервис отправки пока не подключён. Опишите проблему и скопируйте текст обращения, чтобы передать его владельцу приложения. Данные базы автоматически не отправляются.';body.append(text);
     if(kind==='feedback'){const label=document.createElement('label');label.textContent='Ваше сообщение';const area=document.createElement('textarea');area.id='feedback-text';area.rows=5;area.maxLength=10000;label.append(area);body.append(label);const button=document.createElement('button');button.textContent='Скопировать обращение';button.onclick=async()=>{let timer;button.disabled=true;button.textContent='Копирование…';try{await Promise.race([navigator.clipboard.writeText(area.value+'\n'+$('#unified-build').textContent),new Promise((_,reject)=>{timer=setTimeout(()=>reject(Error('Clipboard unavailable')),1800);})]);button.textContent='Скопировано ✓';}catch(_){area.focus();area.select();button.textContent='Выделено — скопируйте текст';}finally{clearTimeout(timer);button.disabled=false;}};body.append(button);}
     else{const button=document.createElement('button');button.textContent='Резервная копия и настройки';button.onclick=()=>{info.close();settings();};body.append(button);}
     if(!info.open)info.showModal();}
-  $('#unified-info-close').onclick=()=>info.close();info.addEventListener('close',()=>infoTrigger?.focus());
+  $('#unified-info-close').onclick=()=>info.close();info.addEventListener('close',()=>{globalThis.KitchenVueServices?.unmount($('#unified-info-body'));infoTrigger?.focus();});
   nav.setMode(mode);const u=new URL(location.href),section=u.searchParams.get('section'),requested=u.searchParams.get('tool');
   if(P.menus[mode].includes(requested))show(requested,{focus:false});
   else if(section&&P.allowed(section,mode)){nav.open(section);active={dish:'recipes',products:'products',prep:'prep',packaging:'packaging',expenses:'expenses'}[section];paint();}

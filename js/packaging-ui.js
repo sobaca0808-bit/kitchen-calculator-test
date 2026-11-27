@@ -75,19 +75,21 @@
     }
     function notify() {refreshSummary();onChange();}
     function draw() {
-      host.innerHTML = `<section class="packaging-panel" aria-labelledby="packaging-editor-title"><div class="section-heading"><h3 id="packaging-editor-title">Упаковка и фасовка</h3><button type="button" id="add-packaging-row">+ Добавить упаковку</button></div><p class="field-help">Расход укажите на одну порцию. Бесплатная выдача гостю также учитывается в себестоимости.</p><p id="packaging-catalog-help" class="field-help" ${catalog(getState()).length ? 'hidden' : ''}>Сначала добавьте позиции в справочник «Упаковка и фасовка». Здесь выбираются только его записи, отдельно от пищевых ингредиентов.</p><div class="packaging-rows">${rows(recipe).map(row => `<div class="packaging-row" data-packaging-row="${esc(row.id)}"><label class="packaging-material">Позиция из справочника<select id="pack-ref-${esc(row.id)}">${selectedOptions(row)}</select></label><div class="packaging-quantity-grid"><label>Расход на 1 порцию<input id="pack-qty-${esc(row.id)}" type="text" inputmode="decimal" autocomplete="off" value="${esc(invalid.has(row.id) ? invalid.get(row.id).raw : num(row.quantity))}" placeholder="Не задано"></label><label>Единица<select id="pack-unit-${esc(row.id)}">${unitOptions(row.unit)}</select></label></div><label class="packaging-checkbox"><input id="pack-free-${esc(row.id)}" type="checkbox" ${row.freeForGuest ? 'checked' : ''}>Бесплатно для гостя — закупочная стоимость учитывается</label><label>Как учитывать<select id="pack-mode-${esc(row.id)}"><option value="auto" ${mode(row) === 'auto' ? 'selected' : ''}>Авто: без двойного учёта</option><option value="additional" ${mode(row) === 'additional' ? 'selected' : ''}>Дополнительно к ингредиентам</option><option value="included" ${mode(row) === 'included' ? 'selected' : ''}>Уже учтено в ингредиентах</option></select></label><div class="packaging-row-total"><div><small>На рецепт (${esc(num(portions(recipe)))} порц.)</small><strong id="pack-cost-${esc(row.id)}" class="packaging-row-cost"></strong></div><button type="button" class="remove-packaging-row danger" aria-label="Удалить позицию упаковки">Удалить</button></div><div id="pack-hint-${esc(row.id)}" class="packaging-issues" role="status" hidden></div></div>`).join('')}</div><div id="packaging-subtotal" class="packaging-subtotal" aria-live="polite"></div></section>`;
-      find('#add-packaging-row').addEventListener('click',() => {
+      if(root.KitchenVueServices){
+        root.KitchenVueServices.packaging(host,{rows:rows(recipe).slice(),catalog:catalog(getState()),units:packaging().units,invalid,format:num,portions:portions(recipe)});
+      }else host.innerHTML = `<section class="packaging-panel" aria-labelledby="packaging-editor-title"><div class="section-heading"><h3 id="packaging-editor-title">Упаковка и фасовка</h3><button type="button" id="add-packaging-row">+ Добавить упаковку</button></div><p class="field-help">Расход укажите на одну порцию. Бесплатная выдача гостю также учитывается в себестоимости.</p><p id="packaging-catalog-help" class="field-help" ${catalog(getState()).length ? 'hidden' : ''}>Сначала добавьте позиции в справочник «Упаковка и фасовка». Здесь выбираются только его записи, отдельно от пищевых ингредиентов.</p><div class="packaging-rows">${rows(recipe).map(row => `<div class="packaging-row" data-packaging-row="${esc(row.id)}"><label class="packaging-material">Позиция из справочника<select id="pack-ref-${esc(row.id)}">${selectedOptions(row)}</select></label><div class="packaging-quantity-grid"><label>Расход на 1 порцию<input id="pack-qty-${esc(row.id)}" type="text" inputmode="decimal" autocomplete="off" value="${esc(invalid.has(row.id) ? invalid.get(row.id).raw : num(row.quantity))}" placeholder="Не задано"></label><label>Единица<select id="pack-unit-${esc(row.id)}">${unitOptions(row.unit)}</select></label></div><label class="packaging-checkbox"><input id="pack-free-${esc(row.id)}" type="checkbox" ${row.freeForGuest ? 'checked' : ''}>Бесплатно для гостя — закупочная стоимость учитывается</label><label>Как учитывать<select id="pack-mode-${esc(row.id)}"><option value="auto" ${mode(row) === 'auto' ? 'selected' : ''}>Авто: без двойного учёта</option><option value="additional" ${mode(row) === 'additional' ? 'selected' : ''}>Дополнительно к ингредиентам</option><option value="included" ${mode(row) === 'included' ? 'selected' : ''}>Уже учтено в ингредиентах</option></select></label><div class="packaging-row-total"><div><small>На рецепт (${esc(num(portions(recipe)))} порц.)</small><strong id="pack-cost-${esc(row.id)}" class="packaging-row-cost"></strong></div><button type="button" class="remove-packaging-row danger" aria-label="Удалить позицию упаковки">Удалить</button></div><div id="pack-hint-${esc(row.id)}" class="packaging-issues" role="status" hidden></div></div>`).join('')}</div><div id="packaging-subtotal" class="packaging-subtotal" aria-live="polite"></div></section>`;
+      find('#add-packaging-row').onclick=() => {
         if (!Array.isArray(recipe.packaging)) recipe.packaging = [];
         const row = {id:uid('pack-row'),refId:null,quantity:null,unit:'pcs',freeForGuest:false,costMode:'auto'};
         recipe.packaging.push(row);draw();notify();find('#pack-ref-'+row.id)?.focus();
-      });
+      };
       for (const row of rows(recipe)) {
         const container = find(`[data-packaging-row="${row.id}"]`);
         const quantity = find('#pack-qty-'+row.id);
         if (invalid.has(row.id)) {
           quantity.setAttribute('aria-invalid','true');quantity.setCustomValidity(invalid.get(row.id).message);
         }
-        quantity.addEventListener('input',() => {
+        quantity.oninput=() => {
           try {
             const value = root.KitchenCalc.parseNumber(quantity.value);
             if (value !== null && value <= 0) throw Error('Расход должен быть больше нуля.');
@@ -96,22 +98,22 @@
             invalid.set(row.id,{raw:quantity.value,message:failure.message});quantity.setAttribute('aria-invalid','true');quantity.setCustomValidity(failure.message);error(quantity.id,failure.message);
           }
           notify();
-        });
-        find('#pack-ref-'+row.id).addEventListener('change',event => {
+        };
+        find('#pack-ref-'+row.id).onchange=event => {
           row.refId = event.target.value || null;
           delete row.ingredientRefId;
           const material = catalog(getState()).find(item => item.id === row.refId);
           if (material) {row.unit = material.unit;find('#pack-unit-'+row.id).value = row.unit;}
           refreshChoices();notify();
-        });
-        find('#pack-unit-'+row.id).addEventListener('change',event => {row.unit = event.target.value;notify();});
-        find('#pack-free-'+row.id).addEventListener('change',event => {row.freeForGuest = event.target.checked;notify();});
-        find('#pack-mode-'+row.id).addEventListener('change',event => {row.costMode = event.target.value;notify();});
-        container.querySelector('.remove-packaging-row').addEventListener('click',() => {
+        };
+        find('#pack-unit-'+row.id).onchange=event => {row.unit = event.target.value;notify();};
+        find('#pack-free-'+row.id).onchange=event => {row.freeForGuest = event.target.checked;notify();};
+        find('#pack-mode-'+row.id).onchange=event => {row.costMode = event.target.value;notify();};
+        container.querySelector('.remove-packaging-row').onclick=() => {
           recipe.packaging = rows(recipe).filter(item => item.id !== row.id);
           invalid.delete(row.id);unitErrors.delete(row.id);error('pack-qty-'+row.id,null);error('pack-unit-'+row.id,null);
           draw();notify();find('#add-packaging-row')?.focus();
-        });
+        };
       }
       refreshSummary();
     }

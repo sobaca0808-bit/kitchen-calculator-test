@@ -51,6 +51,7 @@
   }
   function mount() {
     control=root.document.getElementById('appearance-control');if(!control)return;
+    root.KitchenVueServices?.appearance(control,THEMES);
     panel=root.document.getElementById('appearance-panel');toggle=root.document.getElementById('appearance-toggle');status=root.document.getElementById('appearance-status');
     apply(current);
     if(initialError){status.textContent=initialError+' Можно выбрать тему для текущего окна.';status.classList.add('appearance-error');}

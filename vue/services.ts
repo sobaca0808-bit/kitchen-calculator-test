@@ -1,4 +1,9 @@
 import { Fragment, h, render, nextTick } from 'vue'
+import InfoPanel from './services/InfoPanel.vue'
+import StorageSources from './services/StorageSources.vue'
+import PackagingPanel from './services/PackagingPanel.vue'
+import PhotoSlots from './services/PhotoSlots.vue'
+import AppearancePicker from './services/AppearancePicker.vue'
 import ExpenseTabs from './services/ExpenseTabs.vue'
 import FinancialWorkspace from './services/FinancialWorkspace.vue'
 import Conflict from './services/Conflict.vue'
@@ -13,6 +18,25 @@ function previewRoots(panel:Element) {
 }
 export const services = {
   afterRender: nextTick,
+  info(host:Element,props:Record<string,unknown>) {render(h(InfoPanel,props),host)},
+  storageSources(host:Element,props:Record<string,unknown>) {render(h(StorageSources,props),host)},
+  photoFrame(host:Element,src:string|null,alt:string) {
+    render(src ? h('img',{src, alt}) : h('span',{class:'photo-empty'},'Нажмите, чтобы добавить'),host)
+  },
+  gallery(host:Element,ids:(string|null)[]) {
+    render(h(Fragment,ids.map((id,i)=>h('div',{key:i,class:'photo-slot','data-photo-slot':i,'data-empty':String(!id)},
+      [id ? h('div',{class:'recipe-photo'}) : h('span',{class:'photo-empty'},'Фотография '+(i+1))]))),host)
+  },
+  thumbnail(host:Element,src:string,open:(e:MouseEvent)=>void) {
+    render(h('button',{type:'button',class:'photo-open','aria-label':'Открыть фотографию крупно',onClick:open},
+      [h('img',{src, alt:'Фотография готового блюда'})]),host)
+  },
+  packaging(host:Element,props:Record<string,unknown>) {render(h(PackagingPanel,props),host)},
+  photoSlots(host:Element,primary:boolean) {render(h(PhotoSlots,{primary}),host)},
+  appearance(host:Element, themes:Record<string,unknown>) {
+    host.replaceChildren()
+    render(h(AppearancePicker,{themes}),host)
+  },
   tabs(host:Element,view:string,switchView:Function) {render(h(ExpenseTabs,{view,switchView}),host)},
   finance(host:Element, props:Record<string,unknown>) {render(h(FinancialWorkspace,props),host)},
   unmount(host:Element) {render(null,host)},

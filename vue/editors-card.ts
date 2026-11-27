@@ -1,4 +1,4 @@
-import { cloneVNode, createStaticVNode, defineComponent, Fragment, h, type VNodeChild } from 'vue'
+import { createStaticVNode, defineComponent, Fragment, h, type VNodeChild } from 'vue'
 
 interface Amount {quantity: number | null; unit:string}
 interface CardRow {id:string; refId:string|null; name:string; note:string; isPrep:boolean; total:Amount; perPortion:Amount}
@@ -13,7 +13,18 @@ const kitchen=globalThis as any
 // These pure domain views already encode the same calculations and text as print.
 // Only trusted generated sections enter this adapter. User strings in them are
 // escaped by the original modules; recipe text below is rendered as Vue text.
-function section(markup:string) {return markup ? cloneVNode(createStaticVNode(markup,1),{key:markup}) : null}
+// A static subtree must keep its mounted endpoints across parent updates. A
+// changed fragment gets a new instance, so Vue can remove the previous range.
+const DomainSection = defineComponent({
+  props: { markup: { type: String, required: true } },
+  setup(props) {
+    const content = createStaticVNode(props.markup, 1)
+    return () => content
+  }
+})
+function section(markup:string) {
+  return markup ? h(DomainSection, { key: markup, markup }) : null
+}
 function serving(value:Amount) {
   const label=kitchen.KitchenCalc.units[value?.unit]?.label
   return value?.quantity==null||!label?'Не задано':count(value.quantity)+' '+label

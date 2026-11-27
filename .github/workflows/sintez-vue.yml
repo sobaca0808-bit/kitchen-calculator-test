@@ -25,6 +25,7 @@ jobs:
           for suite in tests/*.test.py; do python "$suite"; done
       - name: Prepare browser and reference
         run: |
+          command -v pdftotext >/dev/null || sudo apt-get install -y poppler-utils
           npm install --prefix "$RUNNER_TEMP/browser" --ignore-scripts --no-audit --no-fund playwright@1.62.1
           echo "NODE_PATH=$RUNNER_TEMP/browser/node_modules" >> "$GITHUB_ENV"
           curl -fsSL --retry 3 https://sobaca0808-bit.github.io/kitchen-calculator-test/sintez-workspace-review/sintez-mery-workspace.zip -o "$RUNNER_TEMP/reference.zip"
@@ -38,7 +39,7 @@ jobs:
         run: |
           node tests/workspace-review.browser.test.js
           node tests/ingredient-search.browser.test.js
-          UNIFIED_EXPENSES_FILTER='folders rename|control 1500000' node tests/unified-establishment-expenses.browser.test.js
+          node tests/unified-establishment-expenses.browser.test.js
           node tests/vue-compatibility.browser.test.js "$RUNNER_TEMP/reference" dist
       - uses: actions/upload-artifact@v4
         if: always()
