@@ -1,7 +1,7 @@
 'use strict';
 const assert=require('node:assert/strict'),fs=require('node:fs/promises'),path=require('node:path'),os=require('node:os'),{execFileSync}=require('node:child_process'),{chromium}=require('playwright');
 const {start}=require('./helpers/runtime-server'),fixture=require('./helpers/unified-fixture'),{snapshot}=require('./helpers/persistence-lifecycle'),{guard}=require('./helpers/release-storage-guard');
-const keys={book:'kitchen-calculator-expenses-preview-v1',drafts:'kitchen-calculator-expenses-drafts-v1',photos:'kitchen-calculator-expenses-photos-v1',backups:'kitchen-calculator-expenses-import-backups-v1',appearance:'kitchen-calculator-expenses-appearance-v1'},seen='kitchen-calculator-expenses-presentation-seen-v1';
+let keys={book:'kitchen-calculator-expenses-preview-v1',drafts:'kitchen-calculator-expenses-drafts-v1',photos:'kitchen-calculator-expenses-photos-v1',backups:'kitchen-calculator-expenses-import-backups-v1',appearance:'kitchen-calculator-expenses-appearance-v1'},seen='kitchen-calculator-expenses-presentation-seen-v1';
 const output=process.env.UNIFIED_EXPENSES_ARTIFACTS||path.join(os.tmpdir(),'unified-expenses-proof'),launch={executablePath:process.env.CHROMIUM_PATH||'/usr/bin/chromium',headless:true,args:['--no-sandbox']},results=[],printProof=[];
 let browser,server,url;
 async function seed(context,{empty=false,photos=1,old=false,theme='graphite'}={}){
@@ -57,6 +57,10 @@ async function allocate(p,method='planned-portions'){await expand(p,'allocation'
 async function offlineReady(p){await p.waitForFunction(async()=>{const r=await navigator.serviceWorker.getRegistration();if(!r?.active)return false;return new Promise(resolve=>{const c=new MessageChannel(),t=setTimeout(()=>resolve(false),2000);c.port1.onmessage=e=>{clearTimeout(t);resolve(e.data.ready===true);};r.active.postMessage({type:'PWA_STATUS'},[c.port2]);});},{},{timeout:45000});}
 (async()=>{
  await fs.mkdir(output,{recursive:true});
+ if(process.env.KITCHEN_SINTEZ_RUNTIME_ROOT){
+   const version=JSON.parse(await fs.readFile(path.join(process.env.KITCHEN_SINTEZ_RUNTIME_ROOT,'pwa-version.json'),'utf8'));
+   keys=version.storage_names;seen=version.presentation_key;
+ }
  if(process.env.UNIFIED_EXPENSES_URL){url=process.env.UNIFIED_EXPENSES_URL;assert.equal(url,'https://sobaca0808-bit.github.io/kitchen-calculator-test/sintez-expenses/');}else{server=await start(process.env.KITCHEN_SINTEZ_RUNTIME_ROOT||path.resolve(__dirname,'..'),{home:true});url=server.url;}
  browser=await chromium.launch(launch);
  for(const width of [1440,390]){

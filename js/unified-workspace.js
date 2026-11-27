@@ -10,12 +10,28 @@
   const sidebar=$('#unified-sidebar'),menu=$('#unified-menu'),frame=$('#unified-layout'),content=$('#unified-content');
   // Move the actual nodes with their existing event handlers. No iframe/clone.
   for(const selector of ['#message','#import-panel','#import-backups','#damaged-source','#storage-help','#storage-diagnostics','.workspace'])content.append($(selector));
-  const coreTabs=$('.tabs');menu.append(coreTabs);coreTabs.classList.add('unified-core-tabs');
-  const originalButtons=new Map([...coreTabs.querySelectorAll('[data-tab]')].map(b=>[b.dataset.tab,b]));
+  const shell=globalThis.KitchenVueShell;
+  let alertAction=()=>{};
   const coreIds={dish:'recipes',prep:'prep',products:'products',packaging:'packaging',expenses:'expenses'};
-  for(const [section,button]of originalButtons){const id=coreIds[section],counter=button.querySelector('span');button.replaceChildren();button.insertAdjacentHTML('afterbegin',icon(id)+`<span class="unified-menu-label">${titles[id]}</span>`);if(counter)button.append(counter);button.dataset.unifiedTool=id;}
-  for(const id of Object.keys(titles))if(!Object.values(coreIds).includes(id)){const button=document.createElement('button');button.type='button';button.dataset.unifiedTool=id;button.dataset.sintezRoute=id;button.innerHTML=icon(id)+`<span class="unified-menu-label">${titles[id]}</span>`;coreTabs.append(button);}
-  const backup=$('#sintez-settings [data-sintez-action=export]').parentElement;
+  const coreSections=Object.fromEntries(Object.entries(coreIds).map(([section,id])=>[id,section]));
+  if(shell)shell.mount({
+    home,selectMode:select,settings,leaveSettings,
+    diagnostics:()=>{settings();$('#storage-diagnostics-open').click();},
+    showAlert:()=>alertAction(),
+    show(id){
+      const section=coreSections[id];
+      if(!section)return show(id);
+      if(nav.open(section)){active=id;nav.favorites(false);paint();}
+    }
+  },mode);
+  const coreTabs=$('.tabs');
+  if(!shell){
+    menu.append(coreTabs);coreTabs.classList.add('unified-core-tabs');
+    const originalButtons=new Map([...coreTabs.querySelectorAll('[data-tab]')].map(b=>[b.dataset.tab,b]));
+    for(const [section,button]of originalButtons){const id=coreIds[section],counter=button.querySelector('span');button.replaceChildren();button.insertAdjacentHTML('afterbegin',icon(id)+`<span class="unified-menu-label">${titles[id]}</span>`);if(counter)button.append(counter);button.dataset.unifiedTool=id;button.dataset.sintezRoute=id;}
+    for(const id of Object.keys(titles))if(!Object.values(coreIds).includes(id)){const button=document.createElement('button');button.type='button';button.dataset.unifiedTool=id;button.dataset.sintezRoute=id;button.innerHTML=icon(id)+`<span class="unified-menu-label">${titles[id]}</span>`;coreTabs.append(button);}
+  }
+  const backup=$('#settings-backup .sintez-setting-actions');
   backup.replaceChildren($('#export'),$('#import'),$('#import-file'));
   const settingsBackup=$('#settings-backup');
   for(const id of ['import-panel','import-backups','damaged-source','storage-help','storage-diagnostics'])
@@ -23,13 +39,15 @@
   $('#sintez-status').after($('#message'));
   const appearance=$('#sintez-settings fieldset.sintez-setting');
   const legend=document.createElement('legend');legend.textContent='Оформление приложения';appearance.replaceChildren(legend,$('#appearance-control'));
-  for(const [section,button]of originalButtons)button.dataset.sintezRoute=coreIds[section];
 
-  function notice(text){$('#sintez-status').textContent=text;}
+
+  function notice(text){if(shell)shell.notice(text);else $('#sintez-status').textContent=text;}
   function route(section=nav.current().section){const u=new URL(location.href);u.searchParams.set('mode',mode);u.searchParams.set('section',section);u.searchParams.set('tool',active);u.hash='';history.replaceState(history.state,'',u);}
   let menuMode;
   function paint(){
     root.dataset.sintezScreen='workspace';root.dataset.sintezWorkspaceMode=mode;root.dataset.unifiedTool=active;
+    if(shell)shell.screen('workspace',mode,active);
+    else {
     $('#sintez-home').hidden=false;$('#sintez-mode-panel').hidden=true;$('#sintez-settings').hidden=true;
     $('#sintez-home').querySelectorAll('[data-sintez-mode]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.sintezMode===mode)));
     if(menuMode!==mode){
@@ -37,6 +55,7 @@
       menuMode=mode;
     }
     for(const b of coreTabs.querySelectorAll('[data-unified-tool]')){b.querySelector('.unified-menu-label').textContent=mode==='home'&&b.dataset.unifiedTool==='calculator'?'Новый рецепт':titles[b.dataset.unifiedTool];b.hidden=!P.menus[mode].includes(b.dataset.unifiedTool);b.setAttribute('aria-current',b.dataset.unifiedTool===active?'page':'false');}
+    }
     sidebar.classList.remove('is-open');$('#unified-menu-toggle').setAttribute('aria-expanded','false');
     route();
   }
@@ -59,6 +78,7 @@
   }
   function home(){
     if(!nav.start(mode))return false;
+    shell?.screen('home',mode,active);
     root.dataset.sintezScreen='home';$('#sintez-home').hidden=false;$('#sintez-settings').hidden=true;
     $('#sintez-home').querySelectorAll('[data-sintez-mode]').forEach(button=>button.setAttribute('aria-pressed','false'));
     const url=new URL(location.href);for(const key of ['mode','section','tool','screen'])url.searchParams.delete(key);
@@ -68,7 +88,7 @@
   function settings(){
     if(root.dataset.sintezScreen==='settings')return;
     if(!nav.park())return;
-    settingsReturn=root.dataset.sintezScreen;returnScroll=window.scrollY;
+    settingsReturn=root.dataset.sintezScreen;returnScroll=window.scrollY;shell?.screen('settings',mode,active);
     $('#sintez-home').hidden=true;$('#sintez-settings').hidden=false;root.dataset.sintezScreen='settings';
     $('#sintez-settings-title').focus({preventScroll:true});window.scrollTo(0,0);
   }
@@ -99,7 +119,14 @@
   },true);
   $('#sintez-settings').querySelectorAll('[name=sintez-theme]').forEach(input=>input.addEventListener('change',()=>{if(input.checked){const r=KitchenAppearance.select(input.value);$('#sintez-theme-status').textContent=r.ok?'Оформление сохранено.':r.error;}}));
   document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!e.defaultPrevented&&root.dataset.sintezScreen==='settings'&&!$('#sintez-presentation').open&&!$('#unified-info').open&&$('#appearance-panel')?.hidden!==false&&$('#pwa-panel')?.hidden!==false)leaveSettings();});
-  function critical(){const message=$('#message'),error=!message.hidden&&message.classList.contains('error');$('#sintez-alert').hidden=!error&&!pwaError;$('#sintez-settings-error').hidden=!error&&!pwaError;$('#sintez-alert-text').textContent=error?message.textContent:pwaError;$('#sintez-alert-action').onclick=error?()=>{settings();$('#storage-diagnostics-open').click();}:()=>{settings();if($('#pwa-panel')?.hidden)$('#pwa-toggle').click();};}
+  function critical(){
+    const message=$('#message'),error=!message.hidden&&message.classList.contains('error');
+    const text=error?message.textContent:pwaError;
+    alertAction=error?()=>{settings();$('#storage-diagnostics-open').click();}:()=>{settings();if($('#pwa-panel')?.hidden)$('#pwa-toggle').click();};
+    if(shell){shell.alert(text);return;}
+    $('#sintez-alert').hidden=!text;$('#sintez-settings-error').hidden=!text;
+    $('#sintez-alert-text').textContent=text;$('#sintez-alert-action').onclick=alertAction;
+  }
   new MutationObserver(critical).observe($('#message'),{attributes:true,childList:true,subtree:true});critical();
   root.addEventListener('sintez-pwa-status',e=>{pwaError=e.detail.error||'';critical();});
   new MutationObserver(()=>{if(root.dataset.sintezScreen==='workspace'){route();for(const b of coreTabs.querySelectorAll('[data-unified-tool]'))b.setAttribute('aria-current',b.dataset.unifiedTool===active?'page':'false');}}).observe($('.workspace'),{attributes:true,attributeFilter:['data-section']});
