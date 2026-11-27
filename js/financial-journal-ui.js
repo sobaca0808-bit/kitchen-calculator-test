@@ -130,7 +130,16 @@
     function openDay(d){host.querySelector('[data-panel=revenue]').open=true;$('#fj-daily-fields').hidden=false;$('#fj-day').value=d;$('#fj-day-amount').value=raw(saved.months[period]?.days[d]?.amountCents??null);$('#fj-day-note').textContent=saved.months[period]?.method!=='daily'?'Изменение дневной записи не меняет активный месячный способ.':'';$('#fj-day-amount').focus();}
     function reset(){changes.clear();pending=null;expenseId=categoryId=newExpenseId=newCategoryId=null;activate=false;}
     function committed(j){capture();saved=J.validate(j||J.empty());reset();paint();}
-    paint();if(edit&&view==='entry'){if(edit.kind==='expense')openExpense(edit.id);else{host.querySelector('[data-panel=revenue]').open=true;if(edit.source==='daily')openDay(edit.date);else{$('#fj-method').focus();}}}
+    paint();
+    if(edit && view==='entry'){
+      const openRequested=()=>{
+        if(disposed)return;
+        if(edit.kind==='expense'){openExpense(edit.id);return;}
+        host.querySelector('[data-panel=revenue]').open=true;
+        if(edit.source==='daily')openDay(edit.date);else $('#fj-method').focus();
+      };
+      if(vue)vue.afterRender(openRequested);else openRequested();
+    }
     return {value,committed,dispose(){disposed=true;vue?.unmount(host);},get period(){return period;},get dirty(){return dirty();}};
   }
   root.KitchenFinancialJournalUI={mount,money};
