@@ -1,0 +1,2707 @@
+{
+  "commit": "75452956611dc18c627a48a422fb03a12eb83127",
+  "revision": "7079c7bf13a73e60b718205ecfc664794c9689a8fbf6902baef97ab98d0eb454",
+  "chromium": "156.0.8078.79",
+  "cells": [
+    {
+      "width": 1440,
+      "cpu": 1,
+      "size": 100,
+      "loadMs": 642.1,
+      "actions": {
+        "search": {
+          "handlerMs": 3.2,
+          "settledMs": 33.2,
+          "samples": [
+            {
+              "handlerMs": 3.2,
+              "settledMs": 49.6
+            },
+            {
+              "handlerMs": 3,
+              "settledMs": 33.2
+            },
+            {
+              "handlerMs": 3.7,
+              "settledMs": 30.2
+            }
+          ]
+        },
+        "filterFolder": {
+          "handlerMs": 5.1,
+          "settledMs": 36.9,
+          "samples": [
+            {
+              "handlerMs": 5.1,
+              "settledMs": 37.5
+            },
+            {
+              "handlerMs": 5.3,
+              "settledMs": 36.4
+            },
+            {
+              "handlerMs": 3.4,
+              "settledMs": 36.9
+            }
+          ]
+        },
+        "openCard": {
+          "handlerMs": 17.4,
+          "settledMs": 38.3,
+          "samples": [
+            {
+              "handlerMs": 14.3,
+              "settledMs": 36.2
+            },
+            {
+              "handlerMs": 17.4,
+              "settledMs": 38.3
+            },
+            {
+              "handlerMs": 21,
+              "settledMs": 44.8
+            }
+          ]
+        },
+        "switchPrep": {
+          "handlerMs": 26.8,
+          "settledMs": 109.2,
+          "samples": [
+            {
+              "handlerMs": 16.2,
+              "settledMs": 109.2
+            },
+            {
+              "handlerMs": 35.4,
+              "settledMs": 117.9
+            },
+            {
+              "handlerMs": 26.8,
+              "settledMs": 100.4
+            }
+          ]
+        },
+        "editIngredient": {
+          "handlerMs": 2.7,
+          "settledMs": 33.3,
+          "samples": [
+            {
+              "handlerMs": 4.8,
+              "settledMs": 71.9
+            },
+            {
+              "handlerMs": 2.7,
+              "settledMs": 25.7
+            },
+            {
+              "handlerMs": 2.1,
+              "settledMs": 33.3
+            }
+          ]
+        },
+        "save": {
+          "handlerMs": 19.8,
+          "settledMs": 62.3,
+          "samples": [
+            {
+              "handlerMs": 19.8,
+              "settledMs": 62.3
+            }
+          ]
+        }
+      },
+      "scroll": {
+        "frames": 90,
+        "gapsMs": [
+          16.6,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.6,
+          16.8,
+          16.5,
+          16.8,
+          16.6,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.6,
+          16.7,
+          16.6,
+          16.8,
+          16.6,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.6,
+          16.6,
+          16.8,
+          16.6,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.6,
+          16.8,
+          16.6,
+          16.6,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.6,
+          16.8,
+          16.6
+        ],
+        "p95Ms": 16.8,
+        "maxMs": 16.8,
+        "framesOver32": 0,
+        "fps": 60,
+        "distancePx": 4372
+      },
+      "liveRows": 15,
+      "heap": [
+        {
+          "opens": 0,
+          "heapMiB": 3.93,
+          "nodes": 1411,
+          "listeners": 135
+        },
+        {
+          "opens": 10,
+          "heapMiB": 3.96,
+          "nodes": 1411,
+          "listeners": 135
+        },
+        {
+          "opens": 20,
+          "heapMiB": 4.02,
+          "nodes": 1411,
+          "listeners": 135
+        },
+        {
+          "opens": 30,
+          "heapMiB": 4.04,
+          "nodes": 1411,
+          "listeners": 135
+        }
+      ],
+      "repeatOpenMs": [
+        29.8,
+        35.3,
+        33.2,
+        49.5,
+        32,
+        50.6,
+        52,
+        28.5,
+        33.8,
+        33.2,
+        15,
+        41.8,
+        59.8,
+        30,
+        59.8,
+        73.7,
+        54,
+        30.2,
+        38.4,
+        48.4,
+        28.2,
+        28.5,
+        32.1,
+        46,
+        30.3,
+        40.7,
+        55.4,
+        27.9,
+        62.3,
+        31.6
+      ],
+      "longTaskCount": 2,
+      "maxLongTaskMs": 139,
+      "reloadVerified": true
+    },
+    {
+      "width": 1440,
+      "cpu": 1,
+      "size": 600,
+      "loadMs": 511.2,
+      "actions": {
+        "search": {
+          "handlerMs": 3.8,
+          "settledMs": 38.2,
+          "samples": [
+            {
+              "handlerMs": 3.8,
+              "settledMs": 38.2
+            },
+            {
+              "handlerMs": 4.6,
+              "settledMs": 40.6
+            },
+            {
+              "handlerMs": 2.5,
+              "settledMs": 33.5
+            }
+          ]
+        },
+        "filterFolder": {
+          "handlerMs": 6.3,
+          "settledMs": 39.5,
+          "samples": [
+            {
+              "handlerMs": 7.3,
+              "settledMs": 38.8
+            },
+            {
+              "handlerMs": 6.3,
+              "settledMs": 39.5
+            },
+            {
+              "handlerMs": 3.4,
+              "settledMs": 40.1
+            }
+          ]
+        },
+        "openCard": {
+          "handlerMs": 12.4,
+          "settledMs": 42.2,
+          "samples": [
+            {
+              "handlerMs": 12.3,
+              "settledMs": 42.2
+            },
+            {
+              "handlerMs": 14.5,
+              "settledMs": 57.6
+            },
+            {
+              "handlerMs": 12.4,
+              "settledMs": 34.1
+            }
+          ]
+        },
+        "switchPrep": {
+          "handlerMs": 32.9,
+          "settledMs": 103.9,
+          "samples": [
+            {
+              "handlerMs": 19.3,
+              "settledMs": 103.9
+            },
+            {
+              "handlerMs": 32.9,
+              "settledMs": 73
+            },
+            {
+              "handlerMs": 42.2,
+              "settledMs": 106.5
+            }
+          ]
+        },
+        "editIngredient": {
+          "handlerMs": 3.1,
+          "settledMs": 49.9,
+          "samples": [
+            {
+              "handlerMs": 4.4,
+              "settledMs": 74.2
+            },
+            {
+              "handlerMs": 3.1,
+              "settledMs": 34.1
+            },
+            {
+              "handlerMs": 2.5,
+              "settledMs": 49.9
+            }
+          ]
+        },
+        "save": {
+          "handlerMs": 32,
+          "settledMs": 59.7,
+          "samples": [
+            {
+              "handlerMs": 32,
+              "settledMs": 59.7
+            }
+          ]
+        }
+      },
+      "scroll": {
+        "frames": 90,
+        "gapsMs": [
+          16.6,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.7,
+          16.6,
+          16.6,
+          16.7,
+          16.7,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.6,
+          16.6,
+          16.8,
+          16.7,
+          16.6,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.6,
+          16.6,
+          16.7,
+          16.7,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.7,
+          16.6,
+          16.6,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.7
+        ],
+        "p95Ms": 16.7,
+        "maxMs": 16.8,
+        "framesOver32": 0,
+        "fps": 60,
+        "distancePx": 5760
+      },
+      "liveRows": 15,
+      "heap": [
+        {
+          "opens": 0,
+          "heapMiB": 4.48,
+          "nodes": 1411,
+          "listeners": 135
+        },
+        {
+          "opens": 10,
+          "heapMiB": 4.51,
+          "nodes": 1411,
+          "listeners": 135
+        },
+        {
+          "opens": 20,
+          "heapMiB": 4.57,
+          "nodes": 1411,
+          "listeners": 135
+        },
+        {
+          "opens": 30,
+          "heapMiB": 4.6,
+          "nodes": 1411,
+          "listeners": 135
+        }
+      ],
+      "repeatOpenMs": [
+        30.3,
+        53.2,
+        31.9,
+        39,
+        35.4,
+        31,
+        34.9,
+        63.2,
+        32.1,
+        36.7,
+        19.8,
+        38.6,
+        51.5,
+        33.2,
+        51.1,
+        33,
+        55.7,
+        26.8,
+        58.4,
+        23.4,
+        28.5,
+        44.9,
+        24.9,
+        52.2,
+        32.9,
+        30.4,
+        50.4,
+        43.3,
+        28.8,
+        59.9
+      ],
+      "longTaskCount": 3,
+      "maxLongTaskMs": 70,
+      "reloadVerified": true
+    },
+    {
+      "width": 1440,
+      "cpu": 1,
+      "size": 1000,
+      "loadMs": 539.7,
+      "actions": {
+        "search": {
+          "handlerMs": 3.1,
+          "settledMs": 36.6,
+          "samples": [
+            {
+              "handlerMs": 6,
+              "settledMs": 39.2
+            },
+            {
+              "handlerMs": 3.1,
+              "settledMs": 36.6
+            },
+            {
+              "handlerMs": 2.7,
+              "settledMs": 33.4
+            }
+          ]
+        },
+        "filterFolder": {
+          "handlerMs": 5.1,
+          "settledMs": 38.7,
+          "samples": [
+            {
+              "handlerMs": 6.8,
+              "settledMs": 38.7
+            },
+            {
+              "handlerMs": 5.1,
+              "settledMs": 37.3
+            },
+            {
+              "handlerMs": 4.1,
+              "settledMs": 52
+            }
+          ]
+        },
+        "openCard": {
+          "handlerMs": 14,
+          "settledMs": 39.6,
+          "samples": [
+            {
+              "handlerMs": 19.7,
+              "settledMs": 39.6
+            },
+            {
+              "handlerMs": 14,
+              "settledMs": 72.4
+            },
+            {
+              "handlerMs": 11.5,
+              "settledMs": 33.6
+            }
+          ]
+        },
+        "switchPrep": {
+          "handlerMs": 23.8,
+          "settledMs": 76.2,
+          "samples": [
+            {
+              "handlerMs": 16.3,
+              "settledMs": 98.5
+            },
+            {
+              "handlerMs": 34.1,
+              "settledMs": 72.5
+            },
+            {
+              "handlerMs": 23.8,
+              "settledMs": 76.2
+            }
+          ]
+        },
+        "editIngredient": {
+          "handlerMs": 3.4,
+          "settledMs": 33.4,
+          "samples": [
+            {
+              "handlerMs": 3.5,
+              "settledMs": 86.8
+            },
+            {
+              "handlerMs": 3.4,
+              "settledMs": 33.4
+            },
+            {
+              "handlerMs": 2.8,
+              "settledMs": 33.4
+            }
+          ]
+        },
+        "save": {
+          "handlerMs": 30.8,
+          "settledMs": 58.5,
+          "samples": [
+            {
+              "handlerMs": 30.8,
+              "settledMs": 58.5
+            }
+          ]
+        }
+      },
+      "scroll": {
+        "frames": 90,
+        "gapsMs": [
+          16.8,
+          16.6,
+          16.6,
+          16.7,
+          16.7,
+          16.6,
+          16.8,
+          16.6,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.6,
+          16.6,
+          16.7,
+          16.7,
+          16.7,
+          16.7,
+          16.6,
+          16.6,
+          16.7,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.6,
+          16.6,
+          16.7,
+          16.8,
+          16.6,
+          16.7,
+          16.6,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.7,
+          16.6,
+          16.6,
+          16.8,
+          16.7,
+          16.6,
+          16.7,
+          16.6,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.7,
+          16.6,
+          16.6,
+          16.7,
+          16.7,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.6
+        ],
+        "p95Ms": 16.7,
+        "maxMs": 16.8,
+        "framesOver32": 0,
+        "fps": 60,
+        "distancePx": 5760
+      },
+      "liveRows": 15,
+      "heap": [
+        {
+          "opens": 0,
+          "heapMiB": 4.13,
+          "nodes": 1411,
+          "listeners": 135
+        },
+        {
+          "opens": 10,
+          "heapMiB": 4.15,
+          "nodes": 1411,
+          "listeners": 135
+        },
+        {
+          "opens": 20,
+          "heapMiB": 4.22,
+          "nodes": 1411,
+          "listeners": 135
+        },
+        {
+          "opens": 30,
+          "heapMiB": 4.24,
+          "nodes": 1411,
+          "listeners": 135
+        }
+      ],
+      "repeatOpenMs": [
+        47.7,
+        35,
+        54.5,
+        27.3,
+        35.6,
+        32.6,
+        61,
+        26.9,
+        66.4,
+        27.2,
+        32.3,
+        48.3,
+        30.8,
+        50.6,
+        47.6,
+        47.6,
+        57.9,
+        33.2,
+        62.8,
+        28.9,
+        28,
+        34.6,
+        34.5,
+        35.3,
+        46.9,
+        43.2,
+        29.3,
+        46.2,
+        32.3,
+        70.5
+      ],
+      "longTaskCount": 1,
+      "maxLongTaskMs": 86,
+      "reloadVerified": true
+    },
+    {
+      "width": 1440,
+      "cpu": 1,
+      "size": 5000,
+      "loadMs": 403.8,
+      "actions": {
+        "search": {
+          "handlerMs": 3.3,
+          "settledMs": 37.6,
+          "samples": [
+            {
+              "handlerMs": 6,
+              "settledMs": 49.7
+            },
+            {
+              "handlerMs": 3.3,
+              "settledMs": 37.6
+            },
+            {
+              "handlerMs": 2.7,
+              "settledMs": 33.3
+            }
+          ]
+        },
+        "filterFolder": {
+          "handlerMs": 6.6,
+          "settledMs": 39.5,
+          "samples": [
+            {
+              "handlerMs": 6.6,
+              "settledMs": 39.5
+            },
+            {
+              "handlerMs": 7.3,
+              "settledMs": 41.7
+            },
+            {
+              "handlerMs": 4.2,
+              "settledMs": 34.3
+            }
+          ]
+        },
+        "openCard": {
+          "handlerMs": 21,
+          "settledMs": 76.7,
+          "samples": [
+            {
+              "handlerMs": 23.3,
+              "settledMs": 76.7
+            },
+            {
+              "handlerMs": 19.1,
+              "settledMs": 113.6
+            },
+            {
+              "handlerMs": 21,
+              "settledMs": 38.4
+            }
+          ]
+        },
+        "switchPrep": {
+          "handlerMs": 24.6,
+          "settledMs": 103,
+          "samples": [
+            {
+              "handlerMs": 15.4,
+              "settledMs": 103
+            },
+            {
+              "handlerMs": 44,
+              "settledMs": 120.7
+            },
+            {
+              "handlerMs": 24.6,
+              "settledMs": 84.8
+            }
+          ]
+        },
+        "editIngredient": {
+          "handlerMs": 4.9,
+          "settledMs": 33.2,
+          "samples": [
+            {
+              "handlerMs": 10.4,
+              "settledMs": 106.2
+            },
+            {
+              "handlerMs": 4.1,
+              "settledMs": 27.2
+            },
+            {
+              "handlerMs": 4.9,
+              "settledMs": 33.2
+            }
+          ]
+        },
+        "save": {
+          "handlerMs": 259.7,
+          "settledMs": 338.7,
+          "samples": [
+            {
+              "handlerMs": 259.7,
+              "settledMs": 338.7
+            }
+          ]
+        }
+      },
+      "scroll": {
+        "frames": 90,
+        "gapsMs": [
+          16.6,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.6,
+          16.6,
+          16.8,
+          16.6,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.6,
+          16.7,
+          16.6,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.7,
+          16.7,
+          16.6,
+          16.6,
+          16.7,
+          16.7,
+          33.3,
+          16.6,
+          16.7,
+          16.7,
+          16.7,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.6,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.7,
+          16.6,
+          16.6,
+          16.7,
+          16.6,
+          16.8,
+          16.6,
+          16.7,
+          16.6,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.7
+        ],
+        "p95Ms": 16.7,
+        "maxMs": 33.3,
+        "framesOver32": 1,
+        "fps": 59.3,
+        "distancePx": 5760
+      },
+      "liveRows": 15,
+      "heap": [
+        {
+          "opens": 0,
+          "heapMiB": 9.18,
+          "nodes": 1411,
+          "listeners": 135
+        },
+        {
+          "opens": 10,
+          "heapMiB": 9.2,
+          "nodes": 1411,
+          "listeners": 135
+        },
+        {
+          "opens": 20,
+          "heapMiB": 9.27,
+          "nodes": 1411,
+          "listeners": 135
+        },
+        {
+          "opens": 30,
+          "heapMiB": 9.29,
+          "nodes": 1411,
+          "listeners": 135
+        }
+      ],
+      "repeatOpenMs": [
+        50.7,
+        53.4,
+        29.4,
+        65,
+        36.1,
+        61.4,
+        53.2,
+        31.8,
+        73.9,
+        26.9,
+        38,
+        57.6,
+        28.2,
+        60.6,
+        32.9,
+        37.5,
+        63.4,
+        33.7,
+        36.4,
+        44.2,
+        36.8,
+        58.9,
+        33.8,
+        32.3,
+        56,
+        28.1,
+        32.7,
+        51.4,
+        32.6,
+        50.2
+      ],
+      "longTaskCount": 5,
+      "maxLongTaskMs": 265,
+      "reloadVerified": true
+    },
+    {
+      "width": 1440,
+      "cpu": 1,
+      "size": 10000,
+      "loadMs": 375.1,
+      "actions": {
+        "search": {
+          "handlerMs": 3.9,
+          "settledMs": 42.5,
+          "samples": [
+            {
+              "handlerMs": 15.2,
+              "settledMs": 55.3
+            },
+            {
+              "handlerMs": 3.9,
+              "settledMs": 42.5
+            },
+            {
+              "handlerMs": 3.2,
+              "settledMs": 33.3
+            }
+          ]
+        },
+        "filterFolder": {
+          "handlerMs": 7,
+          "settledMs": 36.5,
+          "samples": [
+            {
+              "handlerMs": 7,
+              "settledMs": 40.5
+            },
+            {
+              "handlerMs": 9,
+              "settledMs": 36.5
+            },
+            {
+              "handlerMs": 5,
+              "settledMs": 17.7
+            }
+          ]
+        },
+        "openCard": {
+          "handlerMs": 16.2,
+          "settledMs": 48.4,
+          "samples": [
+            {
+              "handlerMs": 17.4,
+              "settledMs": 35.3
+            },
+            {
+              "handlerMs": 13.5,
+              "settledMs": 60.7
+            },
+            {
+              "handlerMs": 16.2,
+              "settledMs": 48.4
+            }
+          ]
+        },
+        "switchPrep": {
+          "handlerMs": 30.6,
+          "settledMs": 93.9,
+          "samples": [
+            {
+              "handlerMs": 14.8,
+              "settledMs": 123
+            },
+            {
+              "handlerMs": 34.7,
+              "settledMs": 93.9
+            },
+            {
+              "handlerMs": 30.6,
+              "settledMs": 72.2
+            }
+          ]
+        },
+        "editIngredient": {
+          "handlerMs": 7.7,
+          "settledMs": 65.9,
+          "samples": [
+            {
+              "handlerMs": 7.2,
+              "settledMs": 65.9
+            },
+            {
+              "handlerMs": 7.7,
+              "settledMs": 79.4
+            },
+            {
+              "handlerMs": 13.8,
+              "settledMs": 38.8
+            }
+          ]
+        },
+        "save": {
+          "handlerMs": 146,
+          "settledMs": 173.5,
+          "samples": [
+            {
+              "handlerMs": 146,
+              "settledMs": 173.5
+            }
+          ]
+        }
+      },
+      "scroll": {
+        "frames": 90,
+        "gapsMs": [
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.6,
+          16.6,
+          16.8,
+          16.6,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.7,
+          16.6,
+          16.6,
+          16.8,
+          16.6,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.6,
+          16.6,
+          16.7,
+          16.7,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.6,
+          16.7,
+          16.6,
+          16.8,
+          16.6,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.7,
+          16.6,
+          16.6,
+          16.8,
+          16.6,
+          16.7,
+          16.6,
+          16.6,
+          16.7,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.6
+        ],
+        "p95Ms": 16.7,
+        "maxMs": 16.8,
+        "framesOver32": 0,
+        "fps": 60,
+        "distancePx": 5760
+      },
+      "liveRows": 15,
+      "heap": [
+        {
+          "opens": 0,
+          "heapMiB": 14.44,
+          "nodes": 1411,
+          "listeners": 135
+        },
+        {
+          "opens": 10,
+          "heapMiB": 14.47,
+          "nodes": 1411,
+          "listeners": 135
+        },
+        {
+          "opens": 20,
+          "heapMiB": 14.53,
+          "nodes": 1411,
+          "listeners": 135
+        },
+        {
+          "opens": 30,
+          "heapMiB": 14.56,
+          "nodes": 1411,
+          "listeners": 135
+        }
+      ],
+      "repeatOpenMs": [
+        22,
+        50.4,
+        55.1,
+        27.2,
+        56.1,
+        27.3,
+        68.7,
+        31.7,
+        51.5,
+        27.2,
+        35.5,
+        30.6,
+        39.9,
+        33.2,
+        72.8,
+        37.6,
+        38.2,
+        64.1,
+        35.2,
+        66.4,
+        23.4,
+        48.2,
+        68.5,
+        33.4,
+        81.5,
+        40.4,
+        55.4,
+        53.2,
+        41.3,
+        38.4
+      ],
+      "longTaskCount": 2,
+      "maxLongTaskMs": 149,
+      "reloadVerified": true
+    },
+    {
+      "width": 390,
+      "cpu": 4,
+      "size": 100,
+      "loadMs": 1015.7,
+      "actions": {
+        "search": {
+          "handlerMs": 15,
+          "settledMs": 35,
+          "samples": [
+            {
+              "handlerMs": 18.9,
+              "settledMs": 43.1
+            },
+            {
+              "handlerMs": 15,
+              "settledMs": 35
+            },
+            {
+              "handlerMs": 14.3,
+              "settledMs": 32.3
+            }
+          ]
+        },
+        "filterFolder": {
+          "handlerMs": 15,
+          "settledMs": 38.9,
+          "samples": [
+            {
+              "handlerMs": 30.6,
+              "settledMs": 57.7
+            },
+            {
+              "handlerMs": 15,
+              "settledMs": 38.3
+            },
+            {
+              "handlerMs": 14.1,
+              "settledMs": 38.9
+            }
+          ]
+        },
+        "openCard": {
+          "handlerMs": 59.3,
+          "settledMs": 116.9,
+          "samples": [
+            {
+              "handlerMs": 80.2,
+              "settledMs": 116.9
+            },
+            {
+              "handlerMs": 51.2,
+              "settledMs": 71.7
+            },
+            {
+              "handlerMs": 59.3,
+              "settledMs": 141.8
+            }
+          ]
+        },
+        "switchPrep": {
+          "handlerMs": 92.4,
+          "settledMs": 253.3,
+          "samples": [
+            {
+              "handlerMs": 60.2,
+              "settledMs": 237.8
+            },
+            {
+              "handlerMs": 119.1,
+              "settledMs": 257.1
+            },
+            {
+              "handlerMs": 92.4,
+              "settledMs": 253.3
+            }
+          ]
+        },
+        "editIngredient": {
+          "handlerMs": 16,
+          "settledMs": 72.7,
+          "samples": [
+            {
+              "handlerMs": 10.8,
+              "settledMs": 203.1
+            },
+            {
+              "handlerMs": 16.1,
+              "settledMs": 72.7
+            },
+            {
+              "handlerMs": 16,
+              "settledMs": 66.9
+            }
+          ]
+        },
+        "save": {
+          "handlerMs": 86.6,
+          "settledMs": 122.5,
+          "samples": [
+            {
+              "handlerMs": 86.6,
+              "settledMs": 122.5
+            }
+          ]
+        }
+      },
+      "scroll": {
+        "frames": 90,
+        "gapsMs": [
+          16.6,
+          16.7,
+          16.7,
+          16.7,
+          16.7,
+          16.6,
+          16.6,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.7,
+          16.6,
+          33.3,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.6,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.7,
+          16.6,
+          16.6,
+          16.8,
+          16.6,
+          16.6,
+          16.8,
+          16.6,
+          16.6,
+          16.8,
+          16.6,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.7,
+          16.6,
+          16.6,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.7
+        ],
+        "p95Ms": 16.7,
+        "maxMs": 33.3,
+        "framesOver32": 1,
+        "fps": 59.3,
+        "distancePx": 4564
+      },
+      "liveRows": 12,
+      "heap": [
+        {
+          "opens": 0,
+          "heapMiB": 3.94,
+          "nodes": 1396,
+          "listeners": 135
+        },
+        {
+          "opens": 10,
+          "heapMiB": 3.97,
+          "nodes": 1396,
+          "listeners": 135
+        },
+        {
+          "opens": 20,
+          "heapMiB": 4.01,
+          "nodes": 1396,
+          "listeners": 135
+        },
+        {
+          "opens": 30,
+          "heapMiB": 4.06,
+          "nodes": 1396,
+          "listeners": 135
+        }
+      ],
+      "repeatOpenMs": [
+        79.8,
+        65.2,
+        87,
+        76.2,
+        83.8,
+        157.2,
+        83.3,
+        60.1,
+        81.3,
+        55.7,
+        72.3,
+        47.8,
+        87.8,
+        80.6,
+        75,
+        75.1,
+        90.8,
+        67.2,
+        83.7,
+        67.1,
+        75.5,
+        61,
+        65.4,
+        63.7,
+        72.4,
+        61.1,
+        84.1,
+        51.5,
+        64,
+        56.4
+      ],
+      "longTaskCount": 41,
+      "maxLongTaskMs": 184,
+      "reloadVerified": true
+    },
+    {
+      "width": 390,
+      "cpu": 4,
+      "size": 600,
+      "loadMs": 1020.4,
+      "actions": {
+        "search": {
+          "handlerMs": 19.6,
+          "settledMs": 33.6,
+          "samples": [
+            {
+              "handlerMs": 19.6,
+              "settledMs": 50.4
+            },
+            {
+              "handlerMs": 19.1,
+              "settledMs": 33.6
+            },
+            {
+              "handlerMs": 20.7,
+              "settledMs": 32.4
+            }
+          ]
+        },
+        "filterFolder": {
+          "handlerMs": 20.2,
+          "settledMs": 46.8,
+          "samples": [
+            {
+              "handlerMs": 31.8,
+              "settledMs": 54.4
+            },
+            {
+              "handlerMs": 20.2,
+              "settledMs": 46.8
+            },
+            {
+              "handlerMs": 18.1,
+              "settledMs": 37.6
+            }
+          ]
+        },
+        "openCard": {
+          "handlerMs": 65.8,
+          "settledMs": 86.4,
+          "samples": [
+            {
+              "handlerMs": 65.8,
+              "settledMs": 100.6
+            },
+            {
+              "handlerMs": 45.9,
+              "settledMs": 76.6
+            },
+            {
+              "handlerMs": 66.1,
+              "settledMs": 86.4
+            }
+          ]
+        },
+        "switchPrep": {
+          "handlerMs": 110.2,
+          "settledMs": 241.8,
+          "samples": [
+            {
+              "handlerMs": 69.3,
+              "settledMs": 241.8
+            },
+            {
+              "handlerMs": 110.8,
+              "settledMs": 247
+            },
+            {
+              "handlerMs": 110.2,
+              "settledMs": 233.7
+            }
+          ]
+        },
+        "editIngredient": {
+          "handlerMs": 11.8,
+          "settledMs": 50.1,
+          "samples": [
+            {
+              "handlerMs": 40.3,
+              "settledMs": 225.3
+            },
+            {
+              "handlerMs": 10.9,
+              "settledMs": 50.1
+            },
+            {
+              "handlerMs": 11.8,
+              "settledMs": 49.3
+            }
+          ]
+        },
+        "save": {
+          "handlerMs": 99.5,
+          "settledMs": 141.1,
+          "samples": [
+            {
+              "handlerMs": 99.5,
+              "settledMs": 141.1
+            }
+          ]
+        }
+      },
+      "scroll": {
+        "frames": 90,
+        "gapsMs": [
+          16.6,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.6,
+          16.8,
+          16.6,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.6,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.6,
+          16.8,
+          16.6,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.6,
+          16.6,
+          16.8,
+          16.6,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.6,
+          33.4,
+          16.6,
+          16.7,
+          16.6,
+          16.8,
+          16.6,
+          16.6
+        ],
+        "p95Ms": 16.8,
+        "maxMs": 33.4,
+        "framesOver32": 1,
+        "fps": 59.3,
+        "distancePx": 5760
+      },
+      "liveRows": 12,
+      "heap": [
+        {
+          "opens": 0,
+          "heapMiB": 4.49,
+          "nodes": 1396,
+          "listeners": 135
+        },
+        {
+          "opens": 10,
+          "heapMiB": 4.52,
+          "nodes": 1396,
+          "listeners": 135
+        },
+        {
+          "opens": 20,
+          "heapMiB": 4.56,
+          "nodes": 1396,
+          "listeners": 135
+        },
+        {
+          "opens": 30,
+          "heapMiB": 4.6,
+          "nodes": 1396,
+          "listeners": 135
+        }
+      ],
+      "repeatOpenMs": [
+        97.6,
+        91.3,
+        90.8,
+        63.5,
+        78.4,
+        70,
+        107.1,
+        76.5,
+        113.9,
+        87.9,
+        88.2,
+        80.6,
+        98.7,
+        71,
+        100.8,
+        80.8,
+        165,
+        81.8,
+        101.9,
+        109.3,
+        106,
+        69.4,
+        88.5,
+        78.2,
+        101.4,
+        82.1,
+        107,
+        79.6,
+        98.2,
+        68.4
+      ],
+      "longTaskCount": 50,
+      "maxLongTaskMs": 210,
+      "reloadVerified": true
+    },
+    {
+      "width": 390,
+      "cpu": 4,
+      "size": 1000,
+      "loadMs": 955.9,
+      "actions": {
+        "search": {
+          "handlerMs": 19.3,
+          "settledMs": 36.9,
+          "samples": [
+            {
+              "handlerMs": 22.3,
+              "settledMs": 43.3
+            },
+            {
+              "handlerMs": 18.5,
+              "settledMs": 36.9
+            },
+            {
+              "handlerMs": 19.3,
+              "settledMs": 33.1
+            }
+          ]
+        },
+        "filterFolder": {
+          "handlerMs": 24.1,
+          "settledMs": 50.5,
+          "samples": [
+            {
+              "handlerMs": 25.6,
+              "settledMs": 50.5
+            },
+            {
+              "handlerMs": 14.7,
+              "settledMs": 34.6
+            },
+            {
+              "handlerMs": 24.1,
+              "settledMs": 50.6
+            }
+          ]
+        },
+        "openCard": {
+          "handlerMs": 79.6,
+          "settledMs": 121.1,
+          "samples": [
+            {
+              "handlerMs": 79.6,
+              "settledMs": 121.1
+            },
+            {
+              "handlerMs": 68.7,
+              "settledMs": 102.1
+            },
+            {
+              "handlerMs": 90.5,
+              "settledMs": 123.1
+            }
+          ]
+        },
+        "switchPrep": {
+          "handlerMs": 121.4,
+          "settledMs": 319.6,
+          "samples": [
+            {
+              "handlerMs": 94.4,
+              "settledMs": 328.2
+            },
+            {
+              "handlerMs": 121.4,
+              "settledMs": 294.6
+            },
+            {
+              "handlerMs": 144.5,
+              "settledMs": 319.6
+            }
+          ]
+        },
+        "editIngredient": {
+          "handlerMs": 11,
+          "settledMs": 55.2,
+          "samples": [
+            {
+              "handlerMs": 4.4,
+              "settledMs": 199.9
+            },
+            {
+              "handlerMs": 18.8,
+              "settledMs": 55.2
+            },
+            {
+              "handlerMs": 11,
+              "settledMs": 49.9
+            }
+          ]
+        },
+        "save": {
+          "handlerMs": 125.2,
+          "settledMs": 179.5,
+          "samples": [
+            {
+              "handlerMs": 125.2,
+              "settledMs": 179.5
+            }
+          ]
+        }
+      },
+      "scroll": {
+        "frames": 90,
+        "gapsMs": [
+          16.8,
+          16.6,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.7,
+          16.5,
+          16.7,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.7,
+          16.6,
+          16.6,
+          16.7,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.7,
+          16.6,
+          16.6,
+          16.7,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.6,
+          16.7,
+          16.6,
+          16.8,
+          16.6,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.6,
+          16.8,
+          16.6,
+          16.7,
+          16.6,
+          16.7,
+          16.6,
+          16.7,
+          16.6,
+          16.8,
+          16.6,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.6,
+          16.7,
+          33.4,
+          16.6,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.6,
+          16.7,
+          16.6,
+          16.8,
+          16.6,
+          16.7,
+          16.7,
+          16.5,
+          16.7,
+          16.7,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.6
+        ],
+        "p95Ms": 16.8,
+        "maxMs": 33.4,
+        "framesOver32": 1,
+        "fps": 59.3,
+        "distancePx": 5760
+      },
+      "liveRows": 12,
+      "heap": [
+        {
+          "opens": 0,
+          "heapMiB": 4.86,
+          "nodes": 1396,
+          "listeners": 135
+        },
+        {
+          "opens": 10,
+          "heapMiB": 4.88,
+          "nodes": 1396,
+          "listeners": 135
+        },
+        {
+          "opens": 20,
+          "heapMiB": 4.92,
+          "nodes": 1396,
+          "listeners": 135
+        },
+        {
+          "opens": 30,
+          "heapMiB": 4.97,
+          "nodes": 1396,
+          "listeners": 135
+        }
+      ],
+      "repeatOpenMs": [
+        92.9,
+        68.8,
+        101,
+        62,
+        99.1,
+        71,
+        83.7,
+        63.7,
+        83.7,
+        72,
+        70.7,
+        52.9,
+        81.5,
+        66.5,
+        74.1,
+        64.6,
+        136.9,
+        57.5,
+        90.1,
+        69.7,
+        74.5,
+        66.7,
+        92,
+        68.9,
+        84.3,
+        70.5,
+        83.1,
+        74.9,
+        108.4,
+        47.7
+      ],
+      "longTaskCount": 46,
+      "maxLongTaskMs": 200,
+      "reloadVerified": true
+    },
+    {
+      "width": 390,
+      "cpu": 4,
+      "size": 5000,
+      "loadMs": 905.7,
+      "actions": {
+        "search": {
+          "handlerMs": 19.4,
+          "settledMs": 37.2,
+          "samples": [
+            {
+              "handlerMs": 21.6,
+              "settledMs": 35.3
+            },
+            {
+              "handlerMs": 19.4,
+              "settledMs": 37.2
+            },
+            {
+              "handlerMs": 18.1,
+              "settledMs": 38.9
+            }
+          ]
+        },
+        "filterFolder": {
+          "handlerMs": 21.9,
+          "settledMs": 48.3,
+          "samples": [
+            {
+              "handlerMs": 28.8,
+              "settledMs": 57.9
+            },
+            {
+              "handlerMs": 18.4,
+              "settledMs": 35.4
+            },
+            {
+              "handlerMs": 21.9,
+              "settledMs": 48.3
+            }
+          ]
+        },
+        "openCard": {
+          "handlerMs": 62.2,
+          "settledMs": 88.5,
+          "samples": [
+            {
+              "handlerMs": 59.3,
+              "settledMs": 88.5
+            },
+            {
+              "handlerMs": 62.2,
+              "settledMs": 85.2
+            },
+            {
+              "handlerMs": 73.5,
+              "settledMs": 99.4
+            }
+          ]
+        },
+        "switchPrep": {
+          "handlerMs": 125.1,
+          "settledMs": 257.9,
+          "samples": [
+            {
+              "handlerMs": 54.5,
+              "settledMs": 248.5
+            },
+            {
+              "handlerMs": 165.3,
+              "settledMs": 330.6
+            },
+            {
+              "handlerMs": 125.1,
+              "settledMs": 257.9
+            }
+          ]
+        },
+        "editIngredient": {
+          "handlerMs": 25.2,
+          "settledMs": 66.6,
+          "samples": [
+            {
+              "handlerMs": 25.2,
+              "settledMs": 202.2
+            },
+            {
+              "handlerMs": 19,
+              "settledMs": 66.6
+            },
+            {
+              "handlerMs": 29,
+              "settledMs": 66.5
+            }
+          ]
+        },
+        "save": {
+          "handlerMs": 717.1,
+          "settledMs": 782.4,
+          "samples": [
+            {
+              "handlerMs": 717.1,
+              "settledMs": 782.4
+            }
+          ]
+        }
+      },
+      "scroll": {
+        "frames": 90,
+        "gapsMs": [
+          16.7,
+          16.7,
+          16.6,
+          16.6,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.6,
+          16.8,
+          16.6,
+          16.6,
+          16.7,
+          16.6,
+          16.8,
+          16.6,
+          16.6,
+          16.8,
+          16.6,
+          16.6,
+          16.8,
+          16.7,
+          16.5,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.6,
+          16.6,
+          16.8,
+          16.6,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.6,
+          16.7,
+          16.6,
+          16.8,
+          16.6,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.7
+        ],
+        "p95Ms": 16.8,
+        "maxMs": 16.8,
+        "framesOver32": 0,
+        "fps": 60,
+        "distancePx": 5760
+      },
+      "liveRows": 12,
+      "heap": [
+        {
+          "opens": 0,
+          "heapMiB": 9.19,
+          "nodes": 1396,
+          "listeners": 135
+        },
+        {
+          "opens": 10,
+          "heapMiB": 9.22,
+          "nodes": 1396,
+          "listeners": 135
+        },
+        {
+          "opens": 20,
+          "heapMiB": 9.25,
+          "nodes": 1396,
+          "listeners": 135
+        },
+        {
+          "opens": 30,
+          "heapMiB": 9.3,
+          "nodes": 1396,
+          "listeners": 135
+        }
+      ],
+      "repeatOpenMs": [
+        94.8,
+        69,
+        98.7,
+        64.7,
+        100.5,
+        67,
+        99.9,
+        72.2,
+        126.6,
+        67,
+        78,
+        54.2,
+        87.5,
+        64.8,
+        86.3,
+        63.5,
+        86.5,
+        87.8,
+        132.6,
+        60.6,
+        221.4,
+        72.2,
+        84,
+        66.2,
+        93.4,
+        70.1,
+        83.9,
+        68.1,
+        151.7,
+        59.5
+      ],
+      "longTaskCount": 48,
+      "maxLongTaskMs": 729,
+      "reloadVerified": true
+    },
+    {
+      "width": 390,
+      "cpu": 4,
+      "size": 10000,
+      "loadMs": 1078.1,
+      "actions": {
+        "search": {
+          "handlerMs": 17.1,
+          "settledMs": 37.7,
+          "samples": [
+            {
+              "handlerMs": 36,
+              "settledMs": 55.3
+            },
+            {
+              "handlerMs": 17.1,
+              "settledMs": 37.7
+            },
+            {
+              "handlerMs": 13.8,
+              "settledMs": 33.4
+            }
+          ]
+        },
+        "filterFolder": {
+          "handlerMs": 22.6,
+          "settledMs": 46.4,
+          "samples": [
+            {
+              "handlerMs": 25.6,
+              "settledMs": 57.2
+            },
+            {
+              "handlerMs": 22.6,
+              "settledMs": 46.4
+            },
+            {
+              "handlerMs": 13.4,
+              "settledMs": 32.9
+            }
+          ]
+        },
+        "openCard": {
+          "handlerMs": 78.9,
+          "settledMs": 117.8,
+          "samples": [
+            {
+              "handlerMs": 81.8,
+              "settledMs": 118.9
+            },
+            {
+              "handlerMs": 78.9,
+              "settledMs": 117.8
+            },
+            {
+              "handlerMs": 65.2,
+              "settledMs": 81.9
+            }
+          ]
+        },
+        "switchPrep": {
+          "handlerMs": 127.4,
+          "settledMs": 239.5,
+          "samples": [
+            {
+              "handlerMs": 64.3,
+              "settledMs": 226.2
+            },
+            {
+              "handlerMs": 127.4,
+              "settledMs": 239.5
+            },
+            {
+              "handlerMs": 133.6,
+              "settledMs": 265
+            }
+          ]
+        },
+        "editIngredient": {
+          "handlerMs": 39.3,
+          "settledMs": 88.7,
+          "samples": [
+            {
+              "handlerMs": 39.3,
+              "settledMs": 269.2
+            },
+            {
+              "handlerMs": 46.6,
+              "settledMs": 88.7
+            },
+            {
+              "handlerMs": 32.5,
+              "settledMs": 69
+            }
+          ]
+        },
+        "save": {
+          "handlerMs": 634.8,
+          "settledMs": 679,
+          "samples": [
+            {
+              "handlerMs": 634.8,
+              "settledMs": 679
+            }
+          ]
+        }
+      },
+      "scroll": {
+        "frames": 90,
+        "gapsMs": [
+          16.6,
+          16.8,
+          16.6,
+          16.6,
+          16.8,
+          16.6,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.6,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.7,
+          16.6,
+          16.6,
+          16.8,
+          16.7,
+          16.5,
+          16.7,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.7,
+          16.6,
+          16.6,
+          16.7,
+          16.7,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.7,
+          16.6,
+          16.6,
+          16.7,
+          16.7,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.7,
+          16.6,
+          16.6,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.6,
+          16.7,
+          16.7,
+          16.6
+        ],
+        "p95Ms": 16.7,
+        "maxMs": 16.8,
+        "framesOver32": 0,
+        "fps": 60,
+        "distancePx": 5760
+      },
+      "liveRows": 12,
+      "heap": [
+        {
+          "opens": 0,
+          "heapMiB": 14.43,
+          "nodes": 1396,
+          "listeners": 135
+        },
+        {
+          "opens": 10,
+          "heapMiB": 14.46,
+          "nodes": 1396,
+          "listeners": 135
+        },
+        {
+          "opens": 20,
+          "heapMiB": 14.5,
+          "nodes": 1396,
+          "listeners": 135
+        },
+        {
+          "opens": 30,
+          "heapMiB": 14.54,
+          "nodes": 1396,
+          "listeners": 135
+        }
+      ],
+      "repeatOpenMs": [
+        113.7,
+        78,
+        104.3,
+        84,
+        117.3,
+        75.4,
+        106.1,
+        95.6,
+        131.1,
+        83.5,
+        99.8,
+        71.9,
+        87.5,
+        64.9,
+        230.4,
+        59.8,
+        91.8,
+        87.2,
+        119.9,
+        110.3,
+        106.5,
+        65.1,
+        99.4,
+        87.6,
+        108.3,
+        57.1,
+        96.2,
+        83.9,
+        142.4,
+        77.3
+      ],
+      "longTaskCount": 50,
+      "maxLongTaskMs": 660,
+      "reloadVerified": true
+    }
+  ]
+}
