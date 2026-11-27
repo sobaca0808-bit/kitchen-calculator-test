@@ -1,0 +1,48 @@
+name: Verify experimental Vue calculator
+on:
+  push:
+    branches: [experiment/vue3-workspace]
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      CHROMIUM_PATH: /usr/bin/google-chrome
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci && npm run build
+      - name: Domain and packaging regressions
+        run: |
+          node --test $(find tests -name '*.test.js' ! -name '*browser.test.js')
+          python -m pip install Pillow==12.0.0
+          for suite in tests/*.test.py; do python "$suite"; done
+      - name: Prepare browser and reference
+        run: |
+          command -v pdftotext >/dev/null || sudo apt-get install -y poppler-utils
+          npm install --prefix "$RUNNER_TEMP/browser" --ignore-scripts --no-audit --no-fund playwright@1.62.1
+          echo "NODE_PATH=$RUNNER_TEMP/browser/node_modules" >> "$GITHUB_ENV"
+          curl -fsSL --retry 3 https://sobaca0808-bit.github.io/kitchen-calculator-test/sintez-workspace-review/sintez-mery-workspace.zip -o "$RUNNER_TEMP/reference.zip"
+          unzip -q "$RUNNER_TEMP/reference.zip" -d "$RUNNER_TEMP/reference"
+          python -c 'import json,os; assert json.load(open(os.environ["RUNNER_TEMP"]+"/reference/pwa-version.json"))["source_commit"]=="5cac84953c47713cc8e1396be9fbf880ea933c71"'
+      - name: Check real packaged calculator and bidirectional backups
+        env:
+          KITCHEN_SINTEZ_RUNTIME_ROOT: dist
+          INGREDIENT_SEARCH_RUNTIME_ROOT: dist
+          WORKSPACE_REVIEW_REPORTS: ${{ runner.temp }}/screens
+        run: |
+          node tests/workspace-review.browser.test.js
+          node tests/ingredient-search.browser.test.js
+          node tests/unified-establishment-expenses.browser.test.js
+          node tests/vue-compatibility.browser.test.js "$RUNNER_TEMP/reference" dist
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: vue-functional-evidence
+          path: ${{ runner.temp }}/screens

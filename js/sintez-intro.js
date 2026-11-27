@@ -6,6 +6,38 @@
   const dialog = document.getElementById('sintez-presentation');
   const replay = document.getElementById('sintez-presentation-replay');
   if (!dialog || !replay || !globalThis.KitchenNavigation) return;
+  if(globalThis.KitchenVueShell){
+    let unmount, returnFocus, scroll;
+    function show(pushHistory=true,mode='replay'){
+      if(dialog.open)return;
+      returnFocus=document.activeElement;scroll=window.scrollY;
+      unmount=KitchenVueShell.presentation(dialog,finish);
+      dialog.showModal();document.documentElement.classList.add('sintez-presentation-open');
+      if(pushHistory){try{history.pushState({...history.state,[HISTORY]:mode},'',location.href);}catch{}}
+      dialog.querySelector('[data-intro-skip]').focus({preventScroll:true});
+    }
+    function finish(remember=false,back=true){
+      if(!dialog.open)return;
+      if(document.fullscreenElement && dialog.contains(document.fullscreenElement))document.exitFullscreen().catch(()=>{});
+      dialog.close();unmount();document.documentElement.classList.remove('sintez-presentation-open');
+      if(returnFocus?.isConnected)returnFocus.focus({preventScroll:true});
+      window.scrollTo({top:scroll,behavior:'instant'});
+      if(remember){
+        try{localStorage.setItem(KEY,'seen');if(localStorage.getItem(KEY)!=='seen')throw Error();}catch{
+          document.getElementById('sintez-presentation-status').textContent='Не удалось запомнить просмотр презентации. При следующем входе она может появиться снова.';
+        }
+      }
+      if(back && history.state?.[HISTORY])history.back();
+    }
+    replay.addEventListener('click',()=>show());
+    dialog.addEventListener('cancel',event=>{event.preventDefault();finish();});
+    window.addEventListener('popstate',event=>{
+      if(['first','replay','public'].includes(event.state?.[HISTORY]))show(false,event.state[HISTORY]);
+      else finish(false,false);
+    });
+    initialPresentation(show);
+    return;
+  }
   const slides = [...dialog.querySelectorAll('[data-intro-slide]')];
   const dots = [...dialog.querySelectorAll('[data-intro-dot]')];
   const next = dialog.querySelector('[data-intro-next]');
@@ -149,6 +181,8 @@
     else close(false, false);
   });
 
+  initialPresentation(open);
+  function initialPresentation(open){
   // Read only this app's existing keys. Any record (even damaged/empty) or read
   // error means this is NOT a first run. Never initialize, migrate or clear data.
   const url = new URL(location.href);
@@ -172,4 +206,5 @@
     } catch (_) { /* History restrictions must not affect the calculator. */ }
   }
   // /RELEASE_HISTORY
+  }
 })();

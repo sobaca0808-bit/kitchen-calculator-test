@@ -9,6 +9,7 @@
   const entryName=entry=>entry.kind==='extension'&&entry.id?.startsWith('financialJournal')?(entry.id==='financialJournal'?'Финансовый журнал':'Журнал: '+(entry.name||entry.id)):entry.kind==='extension'&&entry.id==='establishmentExpenses'?'Расходы заведения':entry.name||entry.id||entry.key;
   function mount({getState,canStart,setBusy,onApplied,message,getDraftSource=()=>null,onWriteUncertain=()=>{}}) {
     const $=selector=>document.querySelector(selector), service=root.KitchenImportTransaction.create();
+    const vue=root.KitchenVueServices;
     const panel=$('#import-panel');let preview=null,version=0,applying=false,planning=false;
     function setBackupsExpanded(expanded) {
       $('#import-backups-content').hidden=!expanded;
@@ -27,7 +28,8 @@
         $('#import-backups').hidden=!items.length;
         $('#import-backups-count').textContent='('+items.length+')';
         if(!items.length)setBackupsExpanded(false);
-        $('#import-backup-select').innerHTML=items.map(item=>`<option value="${esc(item.id)}">${esc(new Date(item.createdAt).toLocaleString('ru-RU'))} · ${item.mode==='replace'?'до замены':'до объединения'}</option>`).join('');
+        if(vue)vue.backups($('#import-backup-select'),items);
+        else $('#import-backup-select').innerHTML=items.map(item=>`<option value="${esc(item.id)}">${esc(new Date(item.createdAt).toLocaleString('ru-RU'))} · ${item.mode==='replace'?'до замены':'до объединения'}</option>`).join('');
         $('#download-import-backup').disabled=!items.length;
         if(items.length)$('#import-backup-status').textContent='Копия содержит сохранённую базу и фотографии до применения. Здесь хранятся до трёх последних копий; скачайте нужную на устройство.';
       } catch(error) {if(!quiet)message('Не удалось открыть резервные копии: '+error.message,true);}
@@ -43,6 +45,7 @@
     });
     function close(text='Импорт отменён. Основная база не записана.') {
       if(applying)return;
+      vue?.clearPreview(panel);
       version++;preview=null;planning=false;panel.hidden=true;panel.setAttribute('aria-busy','false');
       $('#import-mode').disabled=false;setBusy(false);message(text);$('#import').focus();
     }
@@ -64,20 +67,27 @@
     function render(plan) {
       const counts=plan.changes;
       $('#import-error').textContent=(plan.errors||[]).join(' ');
-      $('#import-summary').innerHTML=[['added','Будет добавлено'],['updated','Будет обновлено'],['skipped','Будет пропущено'],['conflicts','Конфликтов'],['removed','Будет удалено']].map(([key,label])=>`<div><span>${label}</span><strong>${esc(counts[key]||0)}</strong></div>`).join('');
       $('#import-replace-warning').hidden=preview.mode!=='replace';
-      $('#import-conflicts').innerHTML=(plan.conflicts||[]).map(conflict=>{
-        const options=conflict.options||['local','both'];
-        return `<section class="import-conflict" data-conflict-key="${esc(conflict.key)}"><h3>${esc(entryLabel(conflict))}: ${esc(visibleName(conflict))}</h3><p>${esc(conflict.reason)}</p><label>Решение<select data-conflict-choice="${esc(conflict.key)}"><option value="">Выберите действие…</option>${options.map(value=>`<option value="${esc(value)}" ${conflict.choice===value?'selected':''}>${esc(choiceLabel(value))}</option>`).join('')}</select></label><details><summary>Сравнить содержимое</summary><p class="field-help">${home()?'Финансовые настройки скрыты в текущем режиме. Выбранное действие применяется к полной записи.':'Большие поля показаны сокращённо, данные фото — без длинной строки изображения. Сам файл обрабатывается полностью.'}</p><div class="import-comparison"><div><h4>Текущая версия</h4><pre>${esc(readable(conflict.local,conflict))}</pre></div><div><h4>Из файла</h4><pre>${esc(readable(conflict.incoming,conflict))}</pre></div></div></details></section>`;
-      }).join('');
-      $('#import-warnings').innerHTML=(plan.warnings||[]).map(warning=>`<li>${esc(typeof warning==='string'?warning:warning.text)}</li>`).join('');
       $('#import-warnings').hidden=!(plan.warnings||[]).length;
-      const rows=plan.rows||[];
-      $('#import-details').innerHTML=rows.slice(0,200).map(row=>`<li>${esc(entryLabel(row))} · ${esc(visibleName(row))} — ${esc({added:'добавить',updated:'обновить',skipped:'пропустить',removed:'удалить'}[row.action]||row.action)}${row.reason?' · '+esc(row.reason):''}</li>`).join('')+(rows.length>200?`<li>Ещё ${rows.length-200} позиций. Итоги выше учитывают весь файл.</li>`:'');
-      panel.querySelectorAll('[data-conflict-choice]').forEach(select=>select.addEventListener('change',()=>{
-        if(!preview||applying)return;
-        preview.choices[select.dataset.conflictChoice]=select.value;draw();
-      }));
+      if(vue) {
+        vue.preview(panel,plan,{entryLabel,visibleName,readable,home,choiceLabel,choose(key,value){
+          if(!preview||applying)return;
+          preview.choices[key]=value;draw();
+        }});
+      }else{
+        $('#import-summary').innerHTML=[['added','Будет добавлено'],['updated','Будет обновлено'],['skipped','Будет пропущено'],['conflicts','Конфликтов'],['removed','Будет удалено']].map(([key,label])=>`<div><span>${label}</span><strong>${esc(counts[key]||0)}</strong></div>`).join('');
+        $('#import-conflicts').innerHTML=(plan.conflicts||[]).map(conflict=>{
+          const options=conflict.options||['local','both'];
+          return `<section class="import-conflict" data-conflict-key="${esc(conflict.key)}"><h3>${esc(entryLabel(conflict))}: ${esc(visibleName(conflict))}</h3><p>${esc(conflict.reason)}</p><label>Решение<select data-conflict-choice="${esc(conflict.key)}"><option value="">Выберите действие…</option>${options.map(value=>`<option value="${esc(value)}" ${conflict.choice===value?'selected':''}>${esc(choiceLabel(value))}</option>`).join('')}</select></label><details><summary>Сравнить содержимое</summary><p class="field-help">${home()?'Финансовые настройки скрыты в текущем режиме. Выбранное действие применяется к полной записи.':'Большие поля показаны сокращённо, данные фото — без длинной строки изображения. Сам файл обрабатывается полностью.'}</p><div class="import-comparison"><div><h4>Текущая версия</h4><pre>${esc(readable(conflict.local,conflict))}</pre></div><div><h4>Из файла</h4><pre>${esc(readable(conflict.incoming,conflict))}</pre></div></div></details></section>`;
+        }).join('');
+        $('#import-warnings').innerHTML=(plan.warnings||[]).map(warning=>`<li>${esc(typeof warning==='string'?warning:warning.text)}</li>`).join('');
+        const rows=plan.rows||[];
+        $('#import-details').innerHTML=rows.slice(0,200).map(row=>`<li>${esc(entryLabel(row))} · ${esc(visibleName(row))} — ${esc({added:'добавить',updated:'обновить',skipped:'пропустить',removed:'удалить'}[row.action]||row.action)}${row.reason?' · '+esc(row.reason):''}</li>`).join('')+(rows.length>200?`<li>Ещё ${rows.length-200} позиций. Итоги выше учитывают весь файл.</li>`:'');
+        panel.querySelectorAll('[data-conflict-choice]').forEach(select=>select.addEventListener('change',()=>{
+          if(!preview||applying)return;
+          preview.choices[select.dataset.conflictChoice]=select.value;draw();
+        }));
+      }
       $('#import-apply').disabled=!plan.ready || !(counts.added||counts.updated||counts.removed||preview.mode==='replace');
       $('#import-progress').textContent=(plan.errors||[]).length?'Применение заблокировано. Измените решения по конфликтам или отмените просмотр.':!plan.ready?'Выберите решение для каждого конфликта.':$('#import-apply').disabled?'Новых изменений нет: файл уже есть в этой базе.':'Проверьте итог. Перед записью автоматически создастся резервная копия с фотографиями.';
     }
@@ -101,7 +111,8 @@
       if(preview||applying||!canStart())return false;
       setBusy(true);panel.hidden=false;panel.setAttribute('aria-busy','true');planning=true;
       $('#import-apply').disabled=true;$('#import-mode').disabled=true;$('#import-mode').value='merge';$('#import-file-name').textContent=fileName;
-      $('#import-conflicts').innerHTML='';$('#import-summary').innerHTML='';$('#import-details').innerHTML='';$('#import-warnings').hidden=true;$('#import-error').textContent='';$('#import-progress').textContent='Читаем файл и текущие фотографии…';$('#import-replace-warning').hidden=true;
+      if(vue)vue.clearPreview(panel);else{$('#import-conflicts').innerHTML='';$('#import-summary').innerHTML='';$('#import-details').innerHTML='';}
+      $('#import-warnings').hidden=true;$('#import-error').textContent='';$('#import-progress').textContent='Читаем файл и текущие фотографии…';$('#import-replace-warning').hidden=true;
       const token=++version;
       try {
         checkSource();candidate=S.validate(candidate);
@@ -151,7 +162,7 @@
       } finally {
         applying=false;panel.setAttribute('aria-busy','false');$('#import-cancel').disabled=false;$('#import-mode').disabled=false;
         if(appliedResult)setBackupsExpanded(false);
-        if(!preview)setBusy(false);
+        if(!preview){vue?.clearPreview(panel);setBusy(false);}
         await refreshBackups(true);
       }
     });

@@ -27,13 +27,20 @@
     return `<section class="profitability-card establishment-costs" data-expense-status="${esc(r.status)}"><h2>С учётом расходов заведения</h2><p class="profitability-basis">${r.period?`Месяц: ${esc(r.period)} · ${r.method==='by-revenue'?`По выручке: ${esc(money(r.revenue))}; доля накладных ${esc(percent(r.ratePercent))}.`:`План: ${esc(num(r.plannedPortions))} продаваемых порций.`} `:''}Упаковка учитывается один раз. Продуктовая маржа выше показана отдельно.</p>${detail}<dl class="profitability-grid">${metric('additional-per-portion','Дополнительные расходы на порцию',r.perPortion)}${batch?metric('additional-total','Дополнительные расходы на выбранные порции',r.expenseTotal):''}${metric('food','Продуктовая себестоимость порции',r.foodPerPortion)}${metric('packaging','Упаковка на порцию',r.packagingPerPortion)}${metric('full-per-portion','Расчётная себестоимость порции',r.fullCostPerPortion)}${batch?metric('full-total','Расчётная себестоимость выбранных порций',r.totalCost):''}${metric('result','Результат с порции после указанных затрат',r.profitPerPortion)}${metric('margin','Маржа с учётом расходов',r.marginPercent,percent)}</dl>${r.issues.length?`<div class="profitability-status" role="status">${r.issues.map(issue=>`<p>${esc(issue)}</p>`).join('')}</div>`:''}<p class="profitability-note">${esc(r.note||E.NOTE)}</p>${showBreakdown?'<button type="button" class="expenses-open">Открыть расходы заведения</button>':''}</section>`;
   }
   function mount(host,options){
+    const vue=root.KitchenVueServices;
     let view='entry',active,period;
+    if(vue)vue.tabs(host,view,switchView);
+    else
     host.innerHTML='<nav class="expense-workspace-tabs" aria-label="Расходы и история"><button type="button" id="expense-entry-tab" aria-pressed="true">Расходы заведения</button><button type="button" id="financial-journal-tab" aria-pressed="false">Журнал и календарь</button></nav><div class="expense-workspace-pane"></div>';
     const pane=host.querySelector('.expense-workspace-pane');
-    function render(edit){active=KitchenFinancialJournalUI.mount(pane,{journal:options.getJournal?.(),legacy:options.getConfig?.(),onChange:options.onChange,onSave:options.onSave,onReset:options.onReset||(()=>{}),view,period,edit,onEdit:target=>{period=active.period;view='entry';render(target);}});host.querySelector('#expense-entry-tab').setAttribute('aria-pressed',String(view==='entry'));host.querySelector('#financial-journal-tab').setAttribute('aria-pressed',String(view==='journal'));}
+    function render(edit){active?.dispose?.();if(vue)vue.tabs(host,view,switchView);active=KitchenFinancialJournalUI.mount(pane,{journal:options.getJournal?.(),legacy:options.getConfig?.(),onChange:options.onChange,onSave:options.onSave,onReset:options.onReset||(()=>{}),view,period,edit,onEdit:target=>{period=active.period;view='entry';render(target);}});host.querySelector('#expense-entry-tab').setAttribute('aria-pressed',String(view==='entry'));host.querySelector('#financial-journal-tab').setAttribute('aria-pressed',String(view==='journal'));}
     function switchView(next){if(next===view)return;if(active.dirty&&(!confirm('Сохранить изменения перед открытием другого представления? Отмена оставит форму на экране.')||!options.onSave()))return;period=active.period;view=next;render();}
-    host.querySelector('#expense-entry-tab').onclick=()=>switchView('entry');host.querySelector('#financial-journal-tab').onclick=()=>switchView('journal');render();
-    return {value:()=>active.value(),candidate:state=>({...state,financialJournal:active.value()}),committed:state=>active.committed(state.financialJournal),get journalActive(){return true;}};
+    if(!vue){
+      host.querySelector('#expense-entry-tab').onclick=()=>switchView('entry');
+      host.querySelector('#financial-journal-tab').onclick=()=>switchView('journal');
+    }
+    render();
+    return {dispose(){active?.dispose?.();vue?.unmount(host);},value:()=>active.value(),candidate:state=>({...state,financialJournal:active.value()}),committed:state=>active.committed(state.financialJournal),get journalActive(){return true;}};
   }
   root.KitchenExpensesUI={renderCard,renderControl,mount};
 })(typeof globalThis!=='undefined'?globalThis:this);

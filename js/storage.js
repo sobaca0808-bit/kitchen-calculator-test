@@ -15,13 +15,32 @@
   const UNITS = ['g', 'kg', 'ml', 'l', 'pcs'];
   const PACKAGING_UNITS = [...UNITS, 'm', 'cm'];
   const fail = message => { throw new Error(message); };
+  const unsafeKey = key => key === '__proto__' || key === 'prototype' || key === 'constructor';
+  // Count UTF-8 bytes without allocating an encoded array for every JSON token.
+  function utf8Bytes(text) {
+    let bytes = text.length;
+    for (let i=0; i<text.length; i++) {
+      const code = text.charCodeAt(i);
+      if (code < 0x80) continue;
+      if (code < 0x800) bytes++;
+      else {
+        bytes += 2;
+        if (code >= 0xd800 && code <= 0xdbff && text.charCodeAt(i+1) >= 0xdc00 && text.charCodeAt(i+1) <= 0xdfff) i++;
+      }
+    }
+    return bytes;
+  }
+  function tooLarge(source) {
+    // A UTF-16 code unit contributes at most three UTF-8 bytes.
+    return source.length > MAX_IMPORT_BYTES || source.length > MAX_IMPORT_BYTES / 3 && utf8Bytes(source) > MAX_IMPORT_BYTES;
+  }
   // Extensions are ordinary JSON data. Copy descriptors before touching known
   // fields so accessors, toJSON hooks and prototype setters are never executed.
   function copyJSON(value, allowUndefined = false) {
     let nodes = 0, budget = 0;
     const ancestors = new Set();
     function addBytes(source) {
-      budget += typeof TextEncoder === 'function' ? new TextEncoder().encode(source).length : source.length * 2;
+      budget += utf8Bytes(source);
       if (budget > MAX_IMPORT_BYTES) fail('Данные больше 50 МБ. Дополнительные поля не удалены: операция отменена.');
     }
     function visit(item, depth) {
@@ -50,7 +69,7 @@
         if (prototype !== Object.prototype && prototype !== null) fail('JSON-данные должны состоять из обычных объектов.');
         result = {};addBytes('{}');let count = 0;
         for (const key of Reflect.ownKeys(item)) {
-          if (typeof key !== 'string' || ['__proto__','prototype','constructor'].includes(key)) fail('JSON-данные содержат недопустимое служебное поле.');
+          if (typeof key !== 'string' || unsafeKey(key)) fail('JSON-данные содержат недопустимое служебное поле.');
           const descriptor = Object.getOwnPropertyDescriptor(item,key);
           if (!descriptor?.enumerable || !Object.hasOwn(descriptor,'value')) fail('JSON-данные содержат вычисляемое или скрытое поле.');
           addBytes((count++ ? ',' : '') + JSON.stringify(key) + ':');
@@ -63,9 +82,13 @@
     return visit(value,0);
   }
   function extensions(source, known, normalized) {
-    const keys = new Set(known), extra = {};
-    for (const key of Object.keys(source)) if (!keys.has(key)) extra[key] = copyJSON(source[key]);
-    return {...extra,...normalized};
+    let extra;
+    for (const key of Object.keys(source)) {
+      if (known.includes(key)) continue;
+      if (!extra) extra = {};
+      extra[key] = copyJSON(source[key]);
+    }
+    return extra ? {...extra,...normalized} : normalized;
   }
   const object = (value, label) => {
     if (!value || typeof value !== 'object' || Array.isArray(value)) fail(label + ': ожидался объект.');
@@ -146,7 +169,9 @@
     return extensions(value,['method','period','plannedPortions','rent','utilities','payroll','other'],result);
   }
   function validate(input) {
-    input = copyJSON(input,true);
+    return normalize(copyJSON(input,true));
+  }
+  function normalize(input) {
     object(input, 'Данные');
     if(input.financialJournal!==undefined)input.financialJournal=FinancialJournal.validate(input.financialJournal);
     if (input.version !== 1) fail('Неподдерживаемая версия данных. Ожидается версия 1.');
@@ -339,18 +364,42 @@
   }
   function parseJSON(source) {
     if (typeof source !== 'string') fail('Резервная копия должна быть текстовым JSON-файлом.');
-    const bytes = typeof TextEncoder === 'function' ? new TextEncoder().encode(source).length : source.length * 2;
-    if (bytes > MAX_IMPORT_BYTES) fail('Файл больше 50 МБ. Импорт отменён.');
+    if (tooLarge(source)) fail('Файл больше 50 МБ. Импорт отменён.');
     let value;
     try { value = JSON.parse(source); }
     catch (_) { fail('Не удалось прочитать JSON. Проверьте, что выбран файл резервной копии.'); }
-    return validate(value);
+    // JSON.parse has already detached plain data, with no getters, cycles or
+    // sparse arrays. Check structural limits and reserved keys without cloning
+    // the entire book a second time. Arbitrary JS inputs still use copyJSON.
+    let nodes = 0;
+    function inspect(item, depth) {
+      if (++nodes > MAX_JSON_NODES || depth > MAX_JSON_DEPTH) fail('Данные слишком сложные: превышена глубина или число JSON-значений.');
+      if (item === null || typeof item !== 'object') return;
+      if (Array.isArray(item)) {
+        for (const child of item) inspect(child, depth+1);
+      } else {
+        for (const key of Object.keys(item)) {
+          if (unsafeKey(key)) fail('JSON-данные содержат недопустимое служебное поле.');
+          inspect(item[key], depth+1);
+        }
+      }
+    }
+    inspect(value,0);
+    // Numeric exponents can expand when written canonically. Even in the
+    // worst case they add less than 24 bytes per node; avoid serializing twice
+    // for normal-size files without relaxing the structural byte limit.
+    if (source.length * 3 + nodes * 24 > MAX_IMPORT_BYTES && tooLarge(JSON.stringify(value))) {
+      fail('Данные больше 50 МБ. Операция отменена.');
+    }
+    return normalize(value);
+  }
+  function serialize(clean) {
+    const source = JSON.stringify(clean, null, 2);
+    if (tooLarge(source)) fail('Резервная копия больше 50 МБ. Уменьшите число фотографий перед экспортом.');
+    return source;
   }
   function stringify(data) {
-    const source = JSON.stringify(validate(data), null, 2);
-    const bytes = typeof TextEncoder === 'function' ? new TextEncoder().encode(source).length : source.length * 2;
-    if (bytes > MAX_IMPORT_BYTES) fail('Резервная копия больше 50 МБ. Уменьшите число фотографий перед экспортом.');
-    return source;
+    return serialize(validate(data));
   }
   function getStorage(explicit) {
     if (explicit !== undefined) return explicit;
@@ -370,15 +419,11 @@
   function load(storage) {
     const {data,error}=snapshot(storage);return {data,error};
   }
-  function save(data, storage, expectedSource) {
+  function writeSource(serialized, storage, expectedSource, compare) {
     let written=false;
     try {
-      if (Array.isArray(data?.recipes) && data.recipes.some(recipe => recipe.photo !== undefined || recipe.photos !== undefined)) {
-        fail('Сначала сохраните фотографии в отдельном хранилище устройства.');
-      }
-      const serialized = stringify(data);
       const target=getStorage(storage);
-      if(arguments.length>=3&&target.getItem(KEY)!==expectedSource)fail('База изменилась в другой вкладке. Сохранение отменено; введённые поля остаются на экране.');
+      if(compare&&target.getItem(KEY)!==expectedSource)fail('База изменилась в другой вкладке. Сохранение отменено; введённые поля остаются на экране.');
       target.setItem(KEY, serialized);written=true;
       if(target.getItem(KEY)!==serialized)fail('Браузер не подтвердил запись. Не закрывайте страницу до экспорта изменений.');
       return { ok: true, error: null };
@@ -386,5 +431,23 @@
       return { ok: false, error: (written?'Результат записи не подтверждён: ':'Не удалось сохранить данные: ') + error.message + ' Скачайте JSON, чтобы не потерять изменения.', ...(written?{commitUncertain:true}:{}) };
     }
   }
-  return { KEY, MAX_IMPORT_BYTES, MAX_PHOTO_BYTES, MAX_PHOTO_SIDE, MAX_RECIPE_DEPTH, folderName, expenseConfig, validate, parseJSON, stringify, empty, snapshot, load, save };
+  function prepareSave(input) {
+    const data = validate(input);
+    if (data.recipes.some(recipe => recipe.photo !== undefined || recipe.photos !== undefined)) {
+      fail('Сначала сохраните фотографии в отдельном хранилище устройства.');
+    }
+    const source = serialize(data);
+    return {data,source,commit(storage,expectedSource) {
+      return writeSource(source,storage,expectedSource,arguments.length>=2);
+    }};
+  }
+  function save(data, storage, expectedSource) {
+    try {
+      const prepared = prepareSave(data);
+      return arguments.length>=3 ? prepared.commit(storage,expectedSource) : prepared.commit(storage);
+    } catch (error) {
+      return { ok:false,error:'Не удалось сохранить данные: '+error.message+' Скачайте JSON, чтобы не потерять изменения.' };
+    }
+  }
+  return { KEY, MAX_IMPORT_BYTES, MAX_PHOTO_BYTES, MAX_PHOTO_SIDE, MAX_RECIPE_DEPTH, folderName, expenseConfig, validate, parseJSON, stringify, empty, snapshot, load, prepareSave, save };
 });

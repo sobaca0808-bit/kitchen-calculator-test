@@ -60,8 +60,31 @@
     const explicit=root.location.hash==='#storage-diagnostics';help.hidden=!(missing||failed||explicit);
     let sources=[],busy=false;
     function download(text,name){const url=URL.createObjectURL(new Blob([text],{type:'application/json;charset=utf-8'})),link=root.document.createElement('a');link.href=url;link.download=name;link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
+    function actionsFor(source){
+      const result=[];
+      const add=(label,action,disabled,kind)=>result.push({label,action,disabled,kind});
+        add('Скачать исходный JSON',()=>download(source.raw,'kitchen-source-'+source.id+'-'+Date.now()+'.json'),typeof source.raw!=='string','raw');
+        add('Скачать черновики',()=>download(source.draftRaw,'kitchen-source-drafts-'+source.id+'-'+Date.now()+'.json'),typeof source.draftRaw!=='string','drafts');
+        const run=action=>async()=>{
+          if(busy)return;busy=true;panel.setAttribute('aria-busy','true');for(const el of panel.querySelectorAll('button'))el.disabled=true;
+          try{await action();}catch(error){message('Действие отменено: '+error.message+' Ни один источник не очищен.',true);}
+          finally{busy=false;panel.setAttribute('aria-busy','false');root.KitchenVueServices?.unmount($('#storage-sources'));render();$('#storage-diagnostics-close').disabled=false;$('#storage-diagnostics-refresh').disabled=false;}
+        };
+        add('Скачать JSON с фото',run(async()=>{download(S.stringify(await portable(source)),'kitchen-source-photos-'+source.id+'-'+Date.now()+'.json');message('JSON сохранённых карточек и фотографий подготовлен. Черновики скачиваются отдельно.');}),!source.data,'photos');
+        add('Открыть проверку объединения',run(async()=>{
+          if(source.id==='current')throw Error('Это уже активная база. Для другого файла используйте обычный «Импорт JSON».');
+          const candidate=await portable(source),opened=await openImport(candidate,source.label,()=>unchanged(source));
+          if(opened){panel.hidden=true;message('Открыта проверка объединения. Источник остаётся прежним; изменения применятся только вашей кнопкой и после резервного копирования.');}
+        }),!source.data||source.id==='current','merge');
+      return result;
+    }
     function render(){
-      const host=$('#storage-sources');host.replaceChildren();
+      const host=$('#storage-sources');
+      if(root.KitchenVueServices){
+        root.KitchenVueServices.storageSources(host,{sources,mode:root.document.documentElement.dataset.sintezWorkspaceMode,actions:actionsFor});
+        return;
+      }
+      host.replaceChildren();
       for(const source of sources){
         const article=root.document.createElement('section');article.className='import-conflict';article.dataset.storageSource=source.id;
         const heading=root.document.createElement('h3');heading.textContent=source.label;article.append(heading);
@@ -71,19 +94,7 @@
         const draftNote=root.document.createElement('p');draftNote.className='field-help';draftNote.textContent='Черновики: '+source.draftCount+(source.draftError?' · '+source.draftError:'')+'. Черновики остаются в исходном хранилище и не входят в обычный экспорт карточек.';article.append(draftNote);
         const actions=root.document.createElement('div');actions.className='import-backup-actions';
         function button(label,action,disabled,kind){const el=root.document.createElement('button');el.type='button';el.textContent=label;el.disabled=disabled;el.dataset.diagnosticAction=kind;el.onclick=action;actions.append(el);}
-        button('Скачать исходный JSON',()=>download(source.raw,'kitchen-source-'+source.id+'-'+Date.now()+'.json'),typeof source.raw!=='string','raw');
-        button('Скачать черновики',()=>download(source.draftRaw,'kitchen-source-drafts-'+source.id+'-'+Date.now()+'.json'),typeof source.draftRaw!=='string','drafts');
-        const run=action=>async()=>{
-          if(busy)return;busy=true;panel.setAttribute('aria-busy','true');for(const el of panel.querySelectorAll('button'))el.disabled=true;
-          try{await action();}catch(error){message('Действие отменено: '+error.message+' Ни один источник не очищен.',true);}
-          finally{busy=false;panel.setAttribute('aria-busy','false');render();$('#storage-diagnostics-close').disabled=false;$('#storage-diagnostics-refresh').disabled=false;}
-        };
-        button('Скачать JSON с фото',run(async()=>{download(S.stringify(await portable(source)),'kitchen-source-photos-'+source.id+'-'+Date.now()+'.json');message('JSON сохранённых карточек и фотографий подготовлен. Черновики скачиваются отдельно.');}),!source.data,'photos');
-        button('Открыть проверку объединения',run(async()=>{
-          if(source.id==='current')throw Error('Это уже активная база. Для другого файла используйте обычный «Импорт JSON».');
-          const candidate=await portable(source),opened=await openImport(candidate,source.label,()=>unchanged(source));
-          if(opened){panel.hidden=true;message('Открыта проверка объединения. Источник остаётся прежним; изменения применятся только вашей кнопкой и после резервного копирования.');}
-        }),!source.data||source.id==='current','merge');
+        for(const item of actionsFor(source))button(item.label,item.action,item.disabled,item.kind);
         article.append(actions);host.append(article);
       }
     }
