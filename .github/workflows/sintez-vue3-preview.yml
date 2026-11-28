@@ -1,0 +1,80 @@
+name: Publish isolated Vue 3 integration preview
+on:
+  push:
+    branches: [preview/browser]
+    paths: ['preview-hosting/sintez-vue3/**', '.github/workflows/sintez-vue3-preview.yml']
+concurrency:
+  group: github-pages
+  cancel-in-progress: false
+permissions:
+  contents: read
+  actions: read
+  deployments: read
+  pages: write
+  id-token: write
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    environment:
+      name: github-pages
+      url: https://sobaca0808-bit.github.io/kitchen-calculator-test/sintez-vue3/
+    env:
+      GH_TOKEN: ${{ github.token }}
+      CHROMIUM_PATH: /usr/bin/google-chrome
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Download the tested ZIP and previous complete publication
+        run: |
+          read -r source run < preview-hosting/sintez-vue3/candidate.txt
+          [[ "$source" =~ ^[0-9a-f]{40}$ && "$run" =~ ^[0-9]+$ ]]
+          test "$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$run" --jq '[.head_sha,.head_branch,.conclusion,.path] | join(" ")')" = "$source integration/sintez-vue3 success .github/workflows/sintez-vue-integration.yml"
+          export SOURCE="$source"
+          echo "SOURCE=$SOURCE" >> "$GITHUB_ENV"
+          bash preview-hosting/sintez-vue3/check-current.sh
+          git worktree add --detach "$RUNNER_TEMP/source" "$SOURCE"
+          mkdir "$RUNNER_TEMP/proof"
+          gh run download "$run" -n vue3-integration-package -D "$RUNNER_TEMP/candidate"
+          gh run download 46048400787 -n github-pages-sintez-vue-1 -D "$RUNNER_TEMP/previous"
+          gh run download 46048400787 -n sintez-vue-proof-1 -D "$RUNNER_TEMP/receipt"
+      - name: Append only the new route and check existing HTTPS files
+        run: |
+          python preview-hosting/sintez-vue3/append.py "$RUNNER_TEMP/previous/artifact.tar" "$RUNNER_TEMP/receipt/publication.json" "$RUNNER_TEMP/candidate/sintez-mery-vue3.zip" "$RUNNER_TEMP/site" "$RUNNER_TEMP/proof/publication.json" "$SOURCE"
+          python preview-hosting/sintez-expenses/retry_network.py "$RUNNER_TEMP/source/scripts/verify-sintez-release.py" "$RUNNER_TEMP/proof/publication.json" --phase before
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          name: github-pages-sintez-vue3-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/site
+          retention-days: 7
+      - name: Recheck the active deployment before publishing
+        run: |
+          bash preview-hosting/sintez-vue3/check-current.sh
+          for attempt in $(seq 1 24); do
+            n="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID/artifacts?name=github-pages-sintez-vue3-$GITHUB_RUN_ATTEMPT" --jq .total_count)" || n=0
+            if [[ "$n" == 1 ]]; then exit 0; fi
+            sleep 5
+          done
+          exit 1
+      - uses: actions/deploy-pages@v4
+        with:
+          artifact_name: github-pages-sintez-vue3-${{ github.run_attempt }}
+      - name: Verify live resources and run both browser viewports
+        run: |
+          python preview-hosting/sintez-expenses/retry_network.py "$RUNNER_TEMP/source/scripts/verify-sintez-release.py" "$RUNNER_TEMP/proof/publication.json" --phase after | tee "$RUNNER_TEMP/proof/live.json"
+          npm install --prefix "$RUNNER_TEMP/tools" --ignore-scripts --no-audit --no-fund playwright@1.62.1
+          export NODE_PATH="$RUNNER_TEMP/tools/node_modules"
+          export WORKSPACE_REVIEW_REPORTS="$RUNNER_TEMP/proof/screens"
+          export WORKSPACE_REVIEW_SHA="$SOURCE"
+          export WORKSPACE_REVIEW_URL=https://sobaca0808-bit.github.io/kitchen-calculator-test/sintez-vue3/
+          node "$RUNNER_TEMP/source/tests/workspace-review.browser.test.js"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: vue3-publication-proof
+          path: ${{ runner.temp }}/proof
