@@ -1,0 +1,67 @@
+name: Verify integrated Vue 3 calculator
+on:
+  push:
+    branches: [integration/sintez-vue3]
+permissions:
+  contents: read
+env:
+  CHROMIUM_PATH: /usr/bin/google-chrome
+jobs:
+  integration:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Build site and ZIP
+        run: npm ci && npm run build
+      - name: Domain, storage and release regressions
+        run: |
+          node --test $(find tests -name '*.test.js' ! -name '*browser.test.js')
+          python -m pip install Pillow==12.0.0
+          for suite in tests/*.test.py; do python "$suite"; done
+      - name: Prepare browser and pinned PR44 and PR45 web builds
+        run: |
+          command -v pdftotext >/dev/null || sudo apt-get install -y poppler-utils
+          npm install --prefix "$RUNNER_TEMP/tools" --no-audit --no-fund --ignore-scripts playwright@1.62.1
+          echo "NODE_PATH=$RUNNER_TEMP/tools/node_modules" >> "$GITHUB_ENV"
+          mkdir -p "$RUNNER_TEMP/proof/screens"
+          for pair in '44 sintez-workspace-review/sintez-mery-workspace.zip 5cac84953c47713cc8e1396be9fbf880ea933c71' '45 sintez-vue/sintez-mery-vue.zip 75452956611dc18c627a48a422fb03a12eb83127'; do
+            read -r id remote sha <<< "$pair"
+            curl -fsSL --retry 3 "https://sobaca0808-bit.github.io/kitchen-calculator-test/$remote" -o "$RUNNER_TEMP/$id.zip"
+            unzip -q "$RUNNER_TEMP/$id.zip" -d "$RUNNER_TEMP/pr$id"
+            test "$(jq -r .source_commit "$RUNNER_TEMP/pr$id/pwa-version.json")" = "$sha"
+          done
+          python tests/vue-integration-package.py "$RUNNER_TEMP/pr45" dist
+      - name: Packaged workspace, finance, search, A4, reversible JSON/photos and offline
+        env:
+          KITCHEN_SINTEZ_RUNTIME_ROOT: dist
+          INGREDIENT_SEARCH_RUNTIME_ROOT: dist
+          WORKSPACE_REVIEW_REPORTS: ${{ runner.temp }}/proof/screens
+          UNIFIED_EXPENSES_ARTIFACTS: ${{ runner.temp }}/proof/finance
+        run: |
+          node tests/workspace-review.browser.test.js
+          node tests/ingredient-search.browser.test.js
+          node tests/unified-establishment-expenses.browser.test.js
+          node tests/vue-compatibility.browser.test.js "$RUNNER_TEMP/pr44" dist
+          node tests/vue-appearance-evidence.cjs "$RUNNER_TEMP/pr44" dist "$RUNNER_TEMP/proof/screens"
+          node tests/vue-session-check.cjs dist "$RUNNER_TEMP/proof/session.json"
+      - name: Compare PR45 and integration at five library sizes on the same machine
+        run: |
+          node tests/vue-performance.cjs "$RUNNER_TEMP/pr45" "$RUNNER_TEMP/proof/pr45.json"
+          node tests/vue-performance.cjs dist "$RUNNER_TEMP/proof/integration.json"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: vue3-integration-evidence
+          path: ${{ runner.temp }}/proof
+      - uses: actions/upload-artifact@v4
+        with:
+          name: vue3-integration-package
+          path: dist/sintez-mery-vue3.zip
+          if-no-files-found: error
