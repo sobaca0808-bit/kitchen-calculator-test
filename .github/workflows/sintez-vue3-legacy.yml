@@ -1,0 +1,44 @@
+name: Legacy compatibility of the integrated calculator
+on:
+  push:
+    branches: [preview/browser]
+    paths: ['preview-hosting/sintez-vue3/candidate.txt', '.github/workflows/sintez-vue3-legacy.yml']
+permissions:
+  contents: read
+jobs:
+  legacy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    strategy:
+      fail-fast: false
+      matrix:
+        theme: [graphite, berry, sage]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Check out the pinned application source
+        run: |
+          read -r source run < preview-hosting/sintez-vue3/candidate.txt
+          [[ "$source" =~ ^[0-9a-f]{40}$ ]]
+          git worktree add --detach "$RUNNER_TEMP/source" "$source"
+          npm install --prefix "$RUNNER_TEMP/tools" --ignore-scripts --no-audit --no-fund playwright@1.62.1
+          command -v pdftotext >/dev/null || sudo apt-get install -y poppler-utils
+      - name: Run the original loopback suites against the retained legacy entry
+        env:
+          KITCHEN_TEST_THEME: ${{ matrix.theme }}
+          CHROMIUM_PATH: /usr/bin/google-chrome
+          KITCHEN_TEST_ARTIFACT_ROOT: ${{ runner.temp }}/matrix
+        run: |
+          export NODE_PATH="$RUNNER_TEMP/tools/node_modules"
+          cd "$RUNNER_TEMP/source"
+          node scripts/check-preview.mjs --glass --unified --unified-expenses 2>&1 | tee "$RUNNER_TEMP/matrix.log"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: legacy-checks-${{ matrix.theme }}
+          path: ${{ runner.temp }}/matrix.log
