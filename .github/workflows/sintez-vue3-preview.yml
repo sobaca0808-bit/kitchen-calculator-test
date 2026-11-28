@@ -34,6 +34,11 @@ jobs:
         run: |
           read -r source run < preview-hosting/sintez-vue3/candidate.txt
           [[ "$source" =~ ^[0-9a-f]{40}$ && "$run" =~ ^[0-9]+$ ]]
+          for attempt in $(seq 1 30); do
+            state="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$run" --jq .status)"
+            if [[ "$state" == completed ]]; then break; fi
+            sleep 15
+          done
           test "$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$run" --jq '[.head_sha,.head_branch,.conclusion,.path] | join(" ")')" = "$source integration/sintez-vue3 success .github/workflows/sintez-vue-integration.yml"
           export SOURCE="$source"
           echo "SOURCE=$SOURCE" >> "$GITHUB_ENV"
