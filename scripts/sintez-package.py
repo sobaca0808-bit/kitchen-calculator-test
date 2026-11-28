@@ -30,7 +30,10 @@ SINTEZ_NAMES = dict(zip(FILES,['kitchen-calculator-sintez-preview-v1','kitchen-c
 EXPENSES_NAMES = dict(zip(FILES,['kitchen-calculator-expenses-preview-v1','kitchen-calculator-expenses-drafts-v1','kitchen-calculator-expenses-photos-v1','kitchen-calculator-expenses-import-backups-v1','kitchen-calculator-expenses-appearance-v1']))
 FINANCE_NAMES = dict(zip(FILES,['kitchen-calculator-finance-preview-v1','kitchen-calculator-finance-drafts-v1','kitchen-calculator-finance-photos-v1','kitchen-calculator-finance-import-backups-v1','kitchen-calculator-finance-appearance-v1']))
 VUE_ID = '/kitchen-calculator-test/sintez-vue/'
-VUE_NAMES = {kind: name.replace('-expenses-', '-vue-experiment-') for kind, name in EXPENSES_NAMES.items()}
+VUE_BUILDS = {
+    'vue': ('vue-experiment', VUE_ID, 'Эксперимент Vue'),
+    'vue-integration': ('vue-integration', '/kitchen-calculator-test/sintez-vue3/', 'Единая сборка Vue 3'),
+}
 
 def add_vue(output, root, html):
     bundle = root / '.vue-build/workspace.js'
@@ -66,8 +69,12 @@ def runtime(root):
     assert sum((root/x).stat().st_size for x in files)<10*1024*1024
     return sorted(files)
 def package(output,source,target='preview',root=ROOT):
-    assert target in ['vue','web','pwa','preview','modes','glass','showcase','workspace','homebook','classic','finance','expenses'] and not output.exists()
-    names=VUE_NAMES if target=='vue' else EXPENSES_NAMES if target=='expenses' else FINANCE_NAMES if target=='finance' else PWA_NAMES if target=='pwa' else SINTEZ_NAMES if target in ['preview','modes','glass','showcase','workspace','homebook','classic','finance','expenses'] else {k:v[1] for k,v in FILES.items()}
+    vue_build = VUE_BUILDS.get(target)
+    assert target in [*VUE_BUILDS,'web','pwa','preview','modes','glass','showcase','workspace','homebook','classic','finance','expenses'] and not output.exists()
+    names=EXPENSES_NAMES if target=='expenses' else FINANCE_NAMES if target=='finance' else PWA_NAMES if target=='pwa' else SINTEZ_NAMES if target in ['preview','modes','glass','showcase','workspace','homebook','classic','finance','expenses'] else {k:v[1] for k,v in FILES.items()}
+    if vue_build:
+        namespace, manifest_id, caption = vue_build
+        names = {k: v.replace('-expenses-', f'-{namespace}-') for k, v in EXPENSES_NAMES.items()}
     for file in runtime(root):
         dest=output/file;dest.parent.mkdir(parents=True,exist_ok=True);shutil.copyfile(root/file,dest)
     for kind,(file,old) in FILES.items():
@@ -76,18 +83,18 @@ def package(output,source,target='preview',root=ROOT):
         info={'version':json.loads((root/'package.json').read_text())['version'],'source':source,'builtAt':BUILD_AT}
         (output/'js/build-info.js').write_text('globalThis.KitchenBuildInfo=Object.freeze('+json.dumps(info,separators=(',',':'))+');\n')
     html=(output/'index.html').read_text()
-    if target == 'vue':
+    if vue_build:
         html = add_vue(output, root, html)
     notice='ТЕСТ PR №2 · Отдельное хранилище. Рабочие продукты и рецепты здесь не используются.'
     assert html.count(notice)==1
-    html=html.replace(notice,'СИНТЕЗ МЕРЫ · Эксперимент Vue · Отдельная тестовая база.' if target=='vue' else 'СИНТЕЗ МЕРЫ · Единые расходы · Отдельная тестовая база.' if target=='expenses' else 'СИНТЕЗ МЕРЫ · Финансовый журнал · Отдельная тестовая база.' if target=='finance' else 'СИНТЕЗ МЕРЫ · Проверка стеклянного оформления. Общая тестовая база /sintez/.' if target in ['glass','showcase','workspace','homebook','classic','finance','expenses'] else 'СИНТЕЗ МЕРЫ · Проверка главного экрана. Общая тестовая база /sintez/.' if target=='modes' else 'СИНТЕЗ МЕРЫ · Проверка единого выпуска. Общая тестовая база /sintez/.' if target=='preview' else 'СИНТЕЗ МЕРЫ · Рабочая версия')
+    html=html.replace(notice,f'СИНТЕЗ МЕРЫ · {caption} · Отдельная тестовая база.' if vue_build else 'СИНТЕЗ МЕРЫ · Единые расходы · Отдельная тестовая база.' if target=='expenses' else 'СИНТЕЗ МЕРЫ · Финансовый журнал · Отдельная тестовая база.' if target=='finance' else 'СИНТЕЗ МЕРЫ · Проверка стеклянного оформления. Общая тестовая база /sintez/.' if target in ['glass','showcase','workspace','homebook','classic','finance','expenses'] else 'СИНТЕЗ МЕРЫ · Проверка главного экрана. Общая тестовая база /sintez/.' if target=='modes' else 'СИНТЕЗ МЕРЫ · Проверка единого выпуска. Общая тестовая база /sintez/.' if target=='preview' else 'СИНТЕЗ МЕРЫ · Рабочая версия')
     html=html.replace('<title>ТЕСТ PR №2 — Кухонный калькулятор</title>','<title>СИНТЕЗ МЕРЫ — кухонный калькулятор</title>')
     if target!='preview':html=html.replace('>ПРЕДПРОСМОТР</span>','>СИНТЕЗ МЕРЫ</span>')
     seen='kitchen-calculator-sintez-presentation-seen-v1'
-    if target in ['vue','finance','expenses']:
+    if target in [*VUE_BUILDS,'finance','expenses']:
         path=output/'js/sintez-intro.js';text=path.read_text();assert text.count(seen)==1
-        replacement='kitchen-calculator-'+('vue-experiment' if target=='vue' else target)+'-presentation-seen-v1';path.write_text(text.replace(seen,replacement));seen=replacement
-    if target not in ['vue','preview','modes','glass','showcase','workspace','homebook','classic','finance','expenses']:
+        replacement='kitchen-calculator-'+(namespace if vue_build else target)+'-presentation-seen-v1';path.write_text(text.replace(seen,replacement));seen=replacement
+    if target not in [*VUE_BUILDS,'preview','modes','glass','showcase','workspace','homebook','classic','finance','expenses']:
         path=output/'js/sintez-intro.js';text=path.read_text();assert text.count(seen)==1
         seen='kitchen-calculator-pwa-presentation-seen-v1' if target=='pwa' else 'kitchen-calculator-presentation-seen-v1'
         path.write_text(text.replace('kitchen-calculator-sintez-presentation-seen-v1',seen))
@@ -95,7 +102,7 @@ def package(output,source,target='preview',root=ROOT):
         additions=[('pwa/client.js','js/pwa.js'),('pwa/base.css','assets/pwa.css'),('pwa/placement.js','js/sintez-pwa.js'),('pwa/placement.css','assets/sintez-pwa.css'),('pwa/worker-template.js','sw.js')]
         for src,dst in additions:
             dest=output/dst;dest.parent.mkdir(parents=True,exist_ok=True);shutil.copyfile(root/src,dest)
-        manifest=json.loads((root/'pwa/manifest-template.json').read_text());manifest['id']=VUE_ID if target=='vue' else LIVE_PWA_ID if target=='pwa' else MODES_ID if target=='modes' else GLASS_ID if target=='glass' else SHOWCASE_ID if target=='showcase' else UNIFIED_ID if target=='workspace' else HOMEBOOK_ID if target=='homebook' else EXPENSES_ID if target=='expenses' else FINANCE_ID if target=='finance' else CLASSIC_ID if target=='classic' else PREVIEW_ID
+        manifest=json.loads((root/'pwa/manifest-template.json').read_text());manifest['id']=manifest_id if vue_build else LIVE_PWA_ID if target=='pwa' else MODES_ID if target=='modes' else GLASS_ID if target=='glass' else SHOWCASE_ID if target=='showcase' else UNIFIED_ID if target=='workspace' else HOMEBOOK_ID if target=='homebook' else EXPENSES_ID if target=='expenses' else FINANCE_ID if target=='finance' else CLASSIC_ID if target=='classic' else PREVIEW_ID
         assert manifest['start_url']=='./?source=pwa' and manifest['scope']=='./'
         (output/'manifest.webmanifest').write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+'\n')
         for icon in manifest['icons']:
@@ -110,7 +117,7 @@ def package(output,source,target='preview',root=ROOT):
         html=html.replace(old,new);shutil.copyfile(output/old,output/new);(output/old).unlink()
     (output/'index.html').write_text(html)
     (output/'presentation.html').write_text(html)
-    files=runtime(output)+['presentation.html']+(['js/vue-photo.js'] if target=='vue' else [])
+    files=runtime(output)+['presentation.html']+(['js/vue-photo.js'] if vue_build else [])
     if target!='web':
         worker=(output/'sw.js').read_text();assert worker.count('const BUILD = null; // PWA_BUILD')==1
         revision=sha(json.dumps({'assets':{f:sha((output/f).read_bytes()) for f in files},'worker':sha(worker.encode()),'format':1},sort_keys=True).encode())
@@ -120,6 +127,6 @@ def package(output,source,target='preview',root=ROOT):
         (output/'sw.js').write_text(worker.replace('const BUILD = null; // PWA_BUILD','const BUILD = '+json.dumps(config,separators=(',',':'))+'; // PWA_BUILD'))
         files.append('sw.js')
     else:revision=None
-    result={'source_commit':source,'target':target,'revision':revision,'files':{f:sha((output/f).read_bytes()) for f in sorted(files)},'storage_names':names,'presentation_key':seen,'manifest_id':None if target=='web' else manifest['id'],'offline_assets':len(files)-1 if revision else 0,'data_policy':'Isolated Vue experiment; cross-version transfer by explicit JSON only' if target=='vue' else 'Isolated expenses review namespace; no automatic transfer or seeding' if target=='expenses' else 'Isolated finance review namespace; no automatic transfer or seeding' if target=='finance' else 'Existing namespaces only; never open, clear, migrate or seed browser data'}
+    result={'source_commit':source,'target':target,'revision':revision,'files':{f:sha((output/f).read_bytes()) for f in sorted(files)},'storage_names':names,'presentation_key':seen,'manifest_id':None if target=='web' else manifest['id'],'offline_assets':len(files)-1 if revision else 0,'data_policy':'Isolated Vue integration; cross-version transfer by explicit JSON only' if target=='vue-integration' else 'Isolated Vue experiment; cross-version transfer by explicit JSON only' if vue_build else 'Isolated expenses review namespace; no automatic transfer or seeding' if target=='expenses' else 'Isolated finance review namespace; no automatic transfer or seeding' if target=='finance' else 'Existing namespaces only; never open, clear, migrate or seed browser data'}
     (output/'pwa-version.json' if revision else output/'release-version.json').write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n')
     return result

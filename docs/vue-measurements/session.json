@@ -1,0 +1,175 @@
+{
+  "source": "75452956611dc18c627a48a422fb03a12eb83127",
+  "checks": [
+    {
+      "width": 1440,
+      "seconds": 47.505,
+      "heap": [
+        {
+          "opens": 0,
+          "jsMiB": 5.43,
+          "nodes": 1961,
+          "listeners": 151
+        },
+        {
+          "opens": 100,
+          "jsMiB": 6.07,
+          "nodes": 1608,
+          "listeners": 136
+        },
+        {
+          "opens": 200,
+          "jsMiB": 6.17,
+          "nodes": 1608,
+          "listeners": 136
+        },
+        {
+          "opens": 300,
+          "jsMiB": 6.21,
+          "nodes": 1608,
+          "listeners": 136
+        },
+        {
+          "opens": 400,
+          "jsMiB": 6.23,
+          "nodes": 1608,
+          "listeners": 136
+        },
+        {
+          "opens": 500,
+          "jsMiB": 6.26,
+          "nodes": 1608,
+          "listeners": 136
+        },
+        {
+          "opens": 600,
+          "jsMiB": 6.44,
+          "nodes": 1608,
+          "listeners": 136
+        },
+        {
+          "opens": 700,
+          "jsMiB": 6.44,
+          "nodes": 1608,
+          "listeners": 136
+        },
+        {
+          "opens": 800,
+          "jsMiB": 6.45,
+          "nodes": 1608,
+          "listeners": 136
+        },
+        {
+          "opens": 900,
+          "jsMiB": 6.49,
+          "nodes": 1608,
+          "listeners": 136
+        },
+        {
+          "opens": 1000,
+          "jsMiB": 6.49,
+          "nodes": 1608,
+          "listeners": 136
+        }
+      ],
+      "durations": [
+        4709,
+        4661,
+        4811,
+        4721,
+        4565,
+        5444,
+        4316,
+        4715,
+        4479,
+        4546
+      ],
+      "errors": []
+    },
+    {
+      "width": 390,
+      "seconds": 22.555,
+      "heap": [
+        {
+          "opens": 0,
+          "jsMiB": 5.42,
+          "nodes": 1361,
+          "listeners": 135
+        },
+        {
+          "opens": 100,
+          "jsMiB": 6.08,
+          "nodes": 1593,
+          "listeners": 136
+        },
+        {
+          "opens": 200,
+          "jsMiB": 6.18,
+          "nodes": 1593,
+          "listeners": 136
+        },
+        {
+          "opens": 300,
+          "jsMiB": 6.22,
+          "nodes": 1593,
+          "listeners": 136
+        },
+        {
+          "opens": 400,
+          "jsMiB": 6.24,
+          "nodes": 1593,
+          "listeners": 136
+        },
+        {
+          "opens": 500,
+          "jsMiB": 6.31,
+          "nodes": 1593,
+          "listeners": 136
+        },
+        {
+          "opens": 600,
+          "jsMiB": 6.49,
+          "nodes": 1593,
+          "listeners": 136
+        },
+        {
+          "opens": 700,
+          "jsMiB": 6.49,
+          "nodes": 1593,
+          "listeners": 136
+        },
+        {
+          "opens": 800,
+          "jsMiB": 6.51,
+          "nodes": 1593,
+          "listeners": 136
+        },
+        {
+          "opens": 900,
+          "jsMiB": 6.55,
+          "nodes": 1593,
+          "listeners": 136
+        },
+        {
+          "opens": 1000,
+          "jsMiB": 6.55,
+          "nodes": 1593,
+          "listeners": 136
+        }
+      ],
+      "durations": [
+        2122,
+        2103,
+        2249,
+        2371,
+        2283,
+        2203,
+        2206,
+        2174,
+        2187,
+        2130
+      ],
+      "errors": []
+    }
+  ]
+}

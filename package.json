@@ -1,12 +1,12 @@
 {
-  "name": "kitchen-calculator-pr12-preview",
+  "name": "sintez-mery-workspace",
   "private": true,
   "version": "1.0.0",
   "type": "commonjs",
   "scripts": {
-    "dev": "vite --host 0.0.0.0",
+    "dev": "vite preview --host 0.0.0.0 --base /kitchen-calculator-test/sintez-vue3/",
     "build:vue": "vite build --config vite.vue.config.mjs && vite build --config vite.vue.config.mjs --mode photo",
-    "build": "npm run build:vue && python3 scripts/build-sintez-release-candidate.py --target vue --output dist"
+    "build": "npm run build:vue && python3 scripts/build-vue-integration.py"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "5.2.4",
